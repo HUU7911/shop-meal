@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: identity-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/identity_db
+    username: root
+    password: Huumod7911#
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    format-sql: false
+    open-in-view: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /identity
+
+jwt:
+  signer-key: 9VSkqhzVFvUqeWdm/EF8t42e14YH9aon9/BrmlRdCsY=
+  valid-duration: 60
+  refreshable-duration: 7200

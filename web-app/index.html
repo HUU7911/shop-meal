@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bếp Nhà — Đặt món trực tuyến</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top bepnha-nav">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <span class="brand-mark">Bếp</span><span class="brand-mark-alt">Nhà</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Mở menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="#thuc-don">Thực đơn</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cach-hoat-dong">Cách hoạt động</a></li>
+                <li class="nav-item"><a class="nav-link" href="#lien-he">Liên hệ</a></li>
+            </ul>
+            <button class="btn btn-cart position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartPanel" aria-label="Xem giỏ hàng">
+                <i class="bi bi-basket2"></i> Giỏ hàng
+                <span class="cart-badge" id="cartCount">0</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-6">
+                <p class="hero-eyebrow">Đặt món hôm nay</p>
+                <h1 class="hero-title">Bữa cơm nhà,<br>giao tận cửa trong 30 phút.</h1>
+                <p class="hero-sub">Món ăn nấu mỗi ngày từ nguyên liệu tươi, đóng gói cẩn thận và giao nóng hổi đến tận nơi bạn ở Hà Nội.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="#thuc-don" class="btn btn-primary-brand btn-lg">Xem thực đơn</a>
+                    <a href="#cach-hoat-dong" class="btn btn-outline-brand btn-lg">Cách đặt món</a>
+                </div>
+                <div class="row mt-5 hero-stats">
+                    <div class="col-4"><span class="stat-num">120+</span><span class="stat-label">món mỗi tuần</span></div>
+                    <div class="col-4"><span class="stat-num">30&nbsp;phút</span><span class="stat-label">giao trung bình</span></div>
+                    <div class="col-4"><span class="stat-num">4.8/5</span><span class="stat-label">đánh giá khách hàng</span></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-plate">
+                    <div class="plate-ring">
+                        <i class="bi bi-egg-fried plate-icon"></i>
+                    </div>
+                    <div class="floating-chip chip-1"><i class="bi bi-leaf"></i> Nguyên liệu tươi</div>
+                    <div class="floating-chip chip-2"><i class="bi bi-clock"></i> Giao đúng giờ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- MENU -->
+<main class="container" id="thuc-don">
+    <div class="section-heading">
+        <h2>Thực đơn hôm nay</h2>
+        <p>Chọn món yêu thích, thêm vào giỏ và đặt hàng chỉ trong vài bước.</p>
+    </div>
+
+    <div class="category-bar" id="categoryBar">
+        <button class="cat-btn active" data-cat="all">Tất cả</button>
+        <button class="cat-btn" data-cat="com">Cơm</button>
+        <button class="cat-btn" data-cat="mi">Mì &amp; Phở</button>
+        <button class="cat-btn" data-cat="an-vat">Ăn vặt</button>
+        <button class="cat-btn" data-cat="do-uong">Đồ uống</button>
+    </div>
+
+    <div class="row g-4" id="menuGrid"></div>
+</main>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="cach-hoat-dong">
+    <div class="container">
+        <div class="section-heading light">
+            <h2>Ba bước đơn giản</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <i class="bi bi-search step-icon"></i>
+                    <h3>Chọn món</h3>
+                    <p>Duyệt thực đơn theo danh mục và thêm món bạn thích vào giỏ hàng.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <i class="bi bi-geo-alt step-icon"></i>
+                    <h3>Nhập địa chỉ</h3>
+                    <p>Cho chúng tôi biết bạn ở đâu và chọn cách thanh toán phù hợp.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <i class="bi bi-bicycle step-icon"></i>
+                    <h3>Nhận hàng</h3>
+                    <p>Shipper giao món ăn nóng hổi đến tận cửa trong khoảng 30 phút.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="lien-he">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <span class="brand-mark">Bếp</span><span class="brand-mark-alt">Nhà</span>
+                <p class="mt-3 footer-text">Bữa ăn nhà nấu, giao khắp Hà Nội. Mở cửa mỗi ngày từ 9:00 đến 21:00.</p>
+            </div>
+            <div class="col-lg-4">
+                <h4 class="footer-heading">Liên hệ</h4>
+                <p class="footer-text"><i class="bi bi-telephone"></i> 0987 654 321</p>
+                <p class="footer-text"><i class="bi bi-envelope"></i> hi@bepnha.vn</p>
+                <p class="footer-text"><i class="bi bi-geo-alt"></i> 123 Đường Láng, Đống Đa, Hà Nội</p>
+            </div>
+            <div class="col-lg-4">
+                <h4 class="footer-heading">Giờ giao hàng</h4>
+                <p class="footer-text">Thứ 2 – Chủ nhật: 9:00 – 21:00</p>
+            </div>
+        </div>
+        <hr class="footer-rule">
+        <p class="footer-copy">© 2026 Bếp Nhà. Trang demo minh hoạ.</p>
+    </div>
+</footer>
+
+<!-- ITEM DETAIL MODAL -->
+<div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content item-modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="item-modal-icon"><i id="modalIcon" class="bi bi-egg-fried"></i></div>
+                <h3 id="modalName" class="mt-3"></h3>
+                <p id="modalDesc" class="item-modal-desc"></p>
+
+                <p class="option-label">Chọn size</p>
+                <div class="btn-group w-100 size-group" id="sizeGroup" role="group" aria-label="Chọn size món ăn"></div>
+
+                <p class="option-label mt-4">Số lượng</p>
+                <div class="qty-control">
+                    <button type="button" class="qty-btn" id="qtyMinus" aria-label="Giảm số lượng"><i class="bi bi-dash"></i></button>
+                    <span id="qtyValue">1</span>
+                    <button type="button" class="qty-btn" id="qtyPlus" aria-label="Tăng số lượng"><i class="bi bi-plus"></i></button>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mt-4">
+                    <span class="item-modal-price" id="modalPrice">0đ</span>
+                    <button class="btn btn-primary-brand" id="addToCartBtn">Thêm vào giỏ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CART OFFCANVAS -->
+<div class="offcanvas offcanvas-end cart-panel" tabindex="-1" id="cartPanel" aria-labelledby="cartPanelLabel">
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title" id="cartPanelLabel">Giỏ hàng của bạn</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <div id="cartItems" class="flex-grow-1"></div>
+        <div id="cartEmpty" class="cart-empty">
+            <i class="bi bi-basket2"></i>
+            <p>Giỏ hàng đang trống.</p>
+        </div>
+        <div class="cart-summary">
+            <div class="d-flex justify-content-between mb-2">
+                <span>Tạm tính</span>
+                <span id="cartSubtotal">0đ</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Phí giao hàng</span>
+                <span id="cartShipping">15.000đ</span>
+            </div>
+            <div class="d-flex justify-content-between cart-total-row">
+                <span>Tổng cộng</span>
+                <span id="cartTotal">0đ</span>
+            </div>
+            <button class="btn btn-primary-brand w-100 mt-3" id="checkoutBtn" data-bs-toggle="modal" data-bs-target="#checkoutModal" data-bs-dismiss="offcanvas">Tiến hành thanh toán</button>
+        </div>
+    </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h3 class="modal-title">Thông tin giao hàng</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <form id="checkoutForm" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label" for="custName">Họ và tên</label>
+                        <input type="text" class="form-control" id="custName" placeholder="Nguyễn Văn A" required>
+                        <div class="invalid-feedback">Nhập họ và tên của bạn.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="custPhone">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="custPhone" placeholder="09xx xxx xxx" required>
+                        <div class="invalid-feedback">Nhập số điện thoại hợp lệ.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="custAddress">Địa chỉ giao hàng</label>
+                        <textarea class="form-control" id="custAddress" rows="2" placeholder="Số nhà, đường, quận" required></textarea>
+                        <div class="invalid-feedback">Nhập địa chỉ giao hàng.</div>
+                    </div>
+                    <p class="option-label">Phương thức thanh toán</p>
+                    <div class="payment-options mb-3">
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="cod" checked>
+                            <span><i class="bi bi-cash-coin"></i> Thanh toán khi nhận hàng</span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="bank">
+                            <span><i class="bi bi-bank"></i> Chuyển khoản ngân hàng</span>
+                        </label>
+                    </div>
+                    <div class="d-flex justify-content-between checkout-total-row">
+                        <span>Tổng thanh toán</span>
+                        <span id="checkoutTotal">0đ</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary-brand w-100 mt-3">Xác nhận đặt hàng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ORDER SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center success-modal">
+            <div class="modal-body">
+                <i class="bi bi-check-circle success-icon"></i>
+                <h3 class="mt-3">Đặt hàng thành công</h3>
+                <p class="footer-text">Cảm ơn bạn. Món ăn của bạn đang được chuẩn bị và sẽ giao đến trong khoảng 30 phút.</p>
+                <button class="btn btn-primary-brand mt-2" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
