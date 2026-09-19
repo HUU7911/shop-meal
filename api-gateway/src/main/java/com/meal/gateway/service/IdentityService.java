@@ -1,9 +1,9 @@
-package com.api.api_gateway.service;
+package com.meal.gateway.service;
 
-import com.api.api_gateway.dto.ApiResponse;
-import com.api.api_gateway.dto.request.IntrospectRequest;
-import com.api.api_gateway.dto.response.IntrospectResponse;
-import com.api.api_gateway.repository.HttpClient;
+import com.meal.gateway.dto.ApiResponse;
+import com.meal.gateway.dto.request.IntrospectRequest;
+import com.meal.gateway.dto.response.IntrospectResponse;
+import com.meal.gateway.repository.IdentityClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,10 +15,10 @@ import reactor.core.publisher.Mono;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class IdentityService {
 
-    HttpClient httpClient;
+    IdentityClient identityClient;
 
     public Mono<ApiResponse<IntrospectResponse>> introspect(String token) {
-        return httpClient.introspect(IntrospectRequest.builder()
+        return identityClient.introspect(IntrospectRequest.builder()
                         .token(token)
                 .build());
     }

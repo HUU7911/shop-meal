@@ -1,8 +1,9 @@
-package com.api.api_gateway.configuration;
+package com.meal.gateway.configuration;
 
-import com.api.api_gateway.dto.ApiResponse;
-import com.api.api_gateway.service.IdentityService;
+import com.meal.gateway.dto.ApiResponse;
+import com.meal.gateway.service.IdentityService;
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -35,67 +36,59 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
     ObjectMapper objectMapper;
 
-    @NonFinal
-    final String[] publicEndpoint = {
+    @NonNull
+    final String[] PUBLIC_ENDPOINT = {
             "/identity/auth/login",
             "/identity/auth/introspect",
-            "/identity/auth/logout",
-            "/product",
-            "/notification/.*",
-            "/post/.*",
-            "/file/media/download/.*",
-            "/search/.*",
     };
 
     @Value("${app.api-prefix}")
     @NonFinal
-    private String apiPrefix;
+    private String API_PREFIX;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-        if (isPublicEndpoint(exchange.getRequest()))
+        if (isPubLicEndpoint(exchange.getRequest()))
             return chain.filter(exchange);
 
         List<String> authHeaders = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (CollectionUtils.isEmpty(authHeaders))
+        if (CollectionUtils.isEmpty(authHeaders)) {
             return unauthenticated(exchange.getResponse());
+        }
 
         String token = authHeaders.getFirst().replace("Bearer ", "");
-        log.info("Token: {}", token);
-
-        identityService.introspect(token).subscribe(response -> {
-            log.info("Results: {}", response.getResults().isValid());
-        });
+        log.info("token:{}", token);
 
         return identityService.introspect(token).flatMap(introspectResponse -> {
-            if (introspectResponse.getResults().isValid())
+            if (introspectResponse.getResults().isValid()) {
                 return chain.filter(exchange);
-            else
+            }else {
                 return unauthenticated(exchange.getResponse());
+            }
         }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
     }
 
     @Override
     public int getOrder() {
-        return -1;
+        return 0;
     }
 
-    private boolean isPublicEndpoint(ServerHttpRequest request) {
-        return Arrays.stream(publicEndpoint)
-                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
+    private boolean isPubLicEndpoint(ServerHttpRequest request) {
+        return Arrays.stream(PUBLIC_ENDPOINT)
+                .anyMatch(s -> request.getURI().getPath().matches(API_PREFIX + s));
     }
 
     public Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
-                .message("Unauthorized")
+                .message("Unauthenticated")
                 .build();
 
         String body = null;
         try {
             body = objectMapper.writeValueAsString(apiResponse);
-        } catch (JsonNodeException e) {
+        } catch (JsonNodeException e){
             e.printStackTrace();
             apiResponse.setMessage(e.getMessage());
         }
@@ -104,7 +97,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         return response.writeWith(
-                Mono.just(response.bufferFactory().wrap(body.getBytes()))
+          Mono.just(response.bufferFactory().wrap(body.getBytes()))
         );
     }
-}
+ }

@@ -1,18 +1,19 @@
-package com.api.api_gateway.dto;
+package com.meal.gateway.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
+    
     @Builder.Default
-    int code = 100;
+    int code = 1000;
 
     String message;
     T results;

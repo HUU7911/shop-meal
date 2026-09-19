@@ -1,8 +1,8 @@
-package com.api.api_gateway.configuration;
+package com.meal.gateway.configuration;
 
-import com.api.api_gateway.repository.HttpClient;
+import com.meal.gateway.repository.IdentityClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -10,9 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import java.util.List;
-
-@Configuration
+@Component
 public class WebConfiguration {
 
     @Bean
@@ -25,9 +23,9 @@ public class WebConfiguration {
     @Bean
     public CorsWebFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.setAllowedHeaders(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("*"));
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -37,10 +35,10 @@ public class WebConfiguration {
     }
 
     @Bean
-    HttpClient httpClient(WebClient webClient) {
+    IdentityClient httpClient(WebClient webClient) {
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
                 .builderFor(WebClientAdapter.create(webClient)).build();
 
-        return httpServiceProxyFactory.createClient(HttpClient.class);
+        return httpServiceProxyFactory.createClient(IdentityClient.class);
     }
 }
