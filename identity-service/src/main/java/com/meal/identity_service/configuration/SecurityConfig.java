@@ -23,6 +23,7 @@ public class SecurityConfig{
     private final String[] PUBLIC_MATCHERS = {
         "/users/create",
         "/auth/login",
+            "/auth/logout",
         "/auth/introspect"
     };
 

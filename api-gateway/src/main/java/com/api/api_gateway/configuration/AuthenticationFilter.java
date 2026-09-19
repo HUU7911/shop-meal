@@ -39,6 +39,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     final String[] publicEndpoint = {
             "/identity/auth/login",
             "/identity/auth/introspect",
+            "/identity/auth/logout",
             "/product",
             "/notification/.*",
             "/post/.*",
@@ -61,7 +62,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return unauthenticated(exchange.getResponse());
 
         String token = authHeaders.getFirst().replace("Bearer ", "");
-        log.info("token: {}", token);
+        log.info("Token: {}", token);
+
+        identityService.introspect(token).subscribe(response -> {
+            log.info("Results: {}", response.getResults().isValid());
+        });
 
         return identityService.introspect(token).flatMap(introspectResponse -> {
             if (introspectResponse.getResults().isValid())
