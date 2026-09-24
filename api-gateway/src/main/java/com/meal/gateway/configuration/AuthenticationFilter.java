@@ -38,6 +38,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @NonNull
     final String[] PUBLIC_ENDPOINT = {
+            "/identity/users/create",
             "/identity/auth/login",
             "/identity/auth/introspect",
     };
@@ -100,4 +101,4 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
           Mono.just(response.bufferFactory().wrap(body.getBytes()))
         );
     }
- }
+}

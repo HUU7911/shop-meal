@@ -1,0 +1,34 @@
+package com.meal.profile.dto.request;
+
+import com.meal.profile.convert.EncryptConvertor;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ProfileCreationRequest {
+
+    String id;
+
+    String userId;
+
+    String username;
+
+    String firstName;
+
+    String lastName;
+
+    String email;
+
+    String address;
+
+    String avatar;
+
+    LocalDate dob;
+}

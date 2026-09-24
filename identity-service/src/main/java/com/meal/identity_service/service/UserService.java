@@ -8,9 +8,11 @@ import com.meal.identity_service.entity.Role;
 import com.meal.identity_service.entity.User;
 import com.meal.identity_service.exception.AppException;
 import com.meal.identity_service.exception.ErrorCode;
+import com.meal.identity_service.mapper.ProfileMapper;
 import com.meal.identity_service.mapper.UserMapper;
 import com.meal.identity_service.repository.RoleRepository;
 import com.meal.identity_service.repository.UserRepository;
+import com.meal.identity_service.repository.httpclient.ProfileClient;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class UserService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
+    ProfileClient profileClient;
+    ProfileMapper profileMapper;
 
     @Transactional
     public UserResponse createUser(UserCreationRequest request) {
@@ -40,14 +44,23 @@ public class UserService {
         }
 
         User user = userMapper.toUser(request);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         HashSet<Role> roles = new HashSet<>();
+
         roleRepository.findById(RoleDefine.USER.name()).ifPresent(roles::add);
         user.setRoles(roles);
 
-        return userMapper.toResponse(userRepository.save(user));
+        try {
+            user = userRepository.save(user);
+        }catch (Exception e) {
+            throw new AppException(ErrorCode.USER_EXIST);
+        }
+
+        var profileRequest = profileMapper.toProfileCreationRequest(request);
+        profileRequest.setUserId(user.getId());
+        profileRequest.setDob(user.getBirthday());
+
+        return userMapper.toResponse(user);
     }
 
     @Transactional
@@ -108,7 +121,9 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+        profileClient.delete();
     }
 }
