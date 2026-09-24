@@ -22,3 +22,7 @@ jwt:
   signer-key: 9VSkqhzVFvUqeWdm/EF8t42e14YH9aon9/BrmlRdCsY=
   valid-duration: 60
   refreshable-duration: 7200
+
+app:
+  config:
+    url: http://localhost:8081

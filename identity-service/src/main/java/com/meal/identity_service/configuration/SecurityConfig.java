@@ -21,17 +21,17 @@ public class SecurityConfig{
 
     @NonFinal
     private final String[] PUBLIC_MATCHERS = {
-        "/users/create",
-        "/auth/login",
+            "/users/create",
+            "/auth/login",
             "/auth/logout",
-        "/auth/introspect"
+            "/auth/introspect"
     };
 
     @Autowired
     private CustomJwtDecoder jwtDecoder;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
 
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests.requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()

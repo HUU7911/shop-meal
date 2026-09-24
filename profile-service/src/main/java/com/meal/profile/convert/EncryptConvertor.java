@@ -1,0 +1,27 @@
+package com.meal.profile.convert;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
+import java.util.Base64;
+import java.util.Objects;
+
+@Converter
+public class EncryptConvertor implements AttributeConverter<String, String> {
+    @Override
+    public String convertToDatabaseColumn(String attribute) {
+        if (Objects.isNull(attribute)) {
+            return null;
+        }
+
+        return Base64.getEncoder().encodeToString(attribute.getBytes());
+    }
+
+    @Override
+    public String convertToEntityAttribute(String dbData) {
+        if (Objects.isNull(dbData)) {
+            return null;
+        }
+        return Base64.getEncoder().encodeToString(dbData.getBytes());
+    }
+}
