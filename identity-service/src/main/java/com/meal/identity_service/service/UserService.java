@@ -60,6 +60,8 @@ public class UserService {
         profileRequest.setUserId(user.getId());
         profileRequest.setDob(user.getBirthday());
 
+        profileClient.create(profileRequest);
+
         return userMapper.toResponse(user);
     }
 
