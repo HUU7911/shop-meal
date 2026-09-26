@@ -1,5 +1,6 @@
 package com.meal.identity_service.service;
 
+import com.meal.event.dto.NotificationEvent;
 import com.meal.identity_service.constant.RoleDefine;
 import com.meal.identity_service.dto.request.UserCreationRequest;
 import com.meal.identity_service.dto.request.UserUpdateRequest;
@@ -17,6 +18,8 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -36,6 +40,7 @@ public class UserService {
     RoleRepository roleRepository;
     ProfileClient profileClient;
     ProfileMapper profileMapper;
+    KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
     @Transactional
     public UserResponse createUser(UserCreationRequest request) {
@@ -61,6 +66,20 @@ public class UserService {
         profileRequest.setDob(user.getBirthday());
 
         profileClient.create(profileRequest);
+
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+                .chanel("EMAIL")
+                .recipient(user.getEmail())
+                .subject("Welcome to shop meal")
+                .body("Welcome to shop meal: " + user.getEmail())
+                .build();
+
+        try {
+            kafkaTemplate.send("create-user", notificationEvent);
+        }catch (Exception e) {
+            log.info("Error sending email to create user", e);
+            throw new AppException(ErrorCode.USER_NOT_CREATED);
+        }
 
         return userMapper.toResponse(user);
     }

@@ -19,6 +19,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     ACCESS_DENIED(1007, "Access denied", HttpStatus.FORBIDDEN),
     INVALID_KEY(1008, "Invalid key", HttpStatus.BAD_REQUEST),
+    USER_NOT_CREATED(1009, "User not created", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

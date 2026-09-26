@@ -37,19 +37,10 @@ public class ProfileService {
                 .map(profileMapper::toProfileResponse).toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public ProfileResponse getProfile(String id) {
-        var profile = profileRepository.findById(id).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_FOUND)
-        );
-
-        return profileMapper.toProfileResponse(profile);
-    }
-
     public ProfileResponse getMyProfile() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Profile profile = profileRepository.findById(userId).orElseThrow(
+        Profile profile = profileRepository.findByUserId(userId).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
 
@@ -65,7 +56,7 @@ public class ProfileService {
 
         profileMapper.updateProfile(profile, request);
 
-        return profileMapper.toProfileResponse(profile);
+        return profileMapper.toProfileResponse(profileRepository.save(profile));
     }
 
     public void deleteProfile() {

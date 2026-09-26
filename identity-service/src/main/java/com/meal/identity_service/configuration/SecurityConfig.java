@@ -36,6 +36,7 @@ public class SecurityConfig{
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests.requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(RoleDefine.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/users/delete/{id}").hasRole(RoleDefine.ADMIN.name())
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth ->

@@ -136,7 +136,7 @@ public class AuthenticationService {
         JWSHeader header = new JWSHeader(new JWSAlgorithm("HS256"));
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getId())
                 .issuer("huumod.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now()
