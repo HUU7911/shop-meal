@@ -1,7 +1,5 @@
-package com.meal.identity_service.configuration;
+package com.meal.product.configuration;
 
-import com.meal.identity_service.constant.RoleDefine;
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,33 +15,23 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig{
-
-    @NonFinal
-    private final String[] PUBLIC_MATCHERS = {
-            "/users/create",
-            "/auth/login",
-            "/auth/logout",
-            "/auth/introspect"
-    };
+public class SecurityConfig {
 
     @Autowired
-    private CustomJwtDecoder jwtDecoder;
+    private CustomJwtDecode customJwtDecode;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
-
+    SecurityFilterChain securityFilterChain(HttpSecurity http){
         http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests.requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users").hasRole(RoleDefine.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/users/delete/{id}").hasRole(RoleDefine.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/internal/users/create").hasRole(RoleDefine.ADMIN.name())
+                authorizeRequests
+                        .requestMatchers(HttpMethod.POST, "/food/create").hasAnyRole("ADMIN", "STAFF")
                         .anyRequest().authenticated());
 
-        http.oauth2ResourceServer(oauth ->
-                oauth.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+        http.oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(configurer ->
+                        configurer.decoder(customJwtDecode).jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntrypoint())
+        );
 
         http.csrf(AbstractHttpConfigurer::disable);
 
@@ -53,13 +41,11 @@ public class SecurityConfig{
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimDelimiter("\\s*,\\s*");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-
         return jwtAuthenticationConverter;
     }
 }

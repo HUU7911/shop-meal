@@ -14,5 +14,6 @@
         <module>identity-service</module>
         <module>profile-service</module>
         <module>notification-service</module>
+        <module>product-service</module>
     </modules>
 </project>

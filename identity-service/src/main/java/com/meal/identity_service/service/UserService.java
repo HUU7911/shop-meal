@@ -98,7 +98,29 @@ public class UserService {
         roleRepository.findById(RoleDefine.STAFF.name()).ifPresent(roles::add);
         user.setRoles(roles);
 
-        return userMapper.toResponse(userRepository.save(user));
+        user = userRepository.save(user);
+
+        var profileRequest = profileMapper.toProfileCreationRequest(request);
+        profileRequest.setUserId(user.getId());
+        profileRequest.setDob(user.getBirthday());
+
+        profileClient.create(profileRequest);
+
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+                .chanel("EMAIL")
+                .recipient(user.getEmail())
+                .subject("Welcome to shop meal")
+                .body("Welcome to shop meal has role staff: " + user.getUsername())
+                .build();
+
+        try {
+            kafkaTemplate.send("internal-create-staff", notificationEvent);
+        }catch (Exception e) {
+            log.info("Error sending email to internal create user", e);
+            throw new AppException(ErrorCode.USER_NOT_CREATED);
+        }
+
+        return userMapper.toResponse(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

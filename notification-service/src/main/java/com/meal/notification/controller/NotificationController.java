@@ -34,4 +34,18 @@ public class NotificationController {
                   .build()
         );
     }
+
+    @KafkaListener(topics = "internal-create-staff")
+    public void listenCreateStaff(NotificationEvent event) {
+        log.info("receive notification event create staff: {}", event);
+        emailService.sendEmail(
+            SendEmailRequest.builder()
+                    .to(List.of(Recipient.builder()
+                                    .email(event.getRecipient())
+                            .build()))
+                    .subject(event.getSubject())
+                    .htmlContent(event.getBody())
+                    .build()
+        );
+    }
 }
