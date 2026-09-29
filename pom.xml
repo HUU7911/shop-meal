@@ -16,5 +16,7 @@
         <module>notification-service</module>
         <module>product-service</module>
         <module>payment-service</module>
+        <module>cart-service</module>
+        <module>discovery-service</module>
     </modules>
 </project>
