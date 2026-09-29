@@ -1,0 +1,8 @@
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/ApiGatewayApplication.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/configuration/AuthenticationFilter.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/configuration/WebConfiguration.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/dto/ApiResponse.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/dto/request/IntrospectRequest.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/dto/response/IntrospectResponse.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/repository/IdentityClient.java
+/home/huu-mod/Documents/backend/shop-meal/api-gateway/src/main/java/com/meal/gateway/service/IdentityService.java
