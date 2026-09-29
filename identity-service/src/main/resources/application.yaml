@@ -2,9 +2,9 @@ spring:
   application:
     name: identity-service
   datasource:
-    url: jdbc:mysql://localhost:3306/identity_db
-    username: root
-    password: Huumod7911#
+    url: ${IDENTITY_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -26,9 +26,9 @@ server:
     context-path: /identity
 
 jwt:
-  signer-key: 9VSkqhzVFvUqeWdm/EF8t42e14YH9aon9/BrmlRdCsY=
-  valid-duration: 60
-  refreshable-duration: 7200
+  signer-key: ${SIGNER_KEY}
+  valid-duration: ${VALID_DURATION}
+  refreshable-duration: ${REFRESHABLE_DURATION}
 
 app:
   config:
@@ -37,4 +37,4 @@ app:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA}
