@@ -6,3 +6,9 @@ server:
   port: 8087
   servlet:
     context-path: /payment
+
+vietqr:
+  bank-bin: "970407"
+  account-number: 79112005042006
+  account-name: "TRAN TRI HUU"
+  api-url: "https://api.vietqr.io/v2/generate"
