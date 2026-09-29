@@ -1,1 +1,1 @@
-# Payments-service
+# Payment-service
