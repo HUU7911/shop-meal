@@ -1,4 +1,4 @@
-package com.meal.product.dto;
+package com.meal.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

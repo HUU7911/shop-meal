@@ -22,22 +22,22 @@ public class FoodController {
     @PostMapping("/create")
     ApiResponse<FoodResponse> create(@RequestBody FoodRequest foodRequest) {
         return ApiResponse.<FoodResponse>builder()
-                .results(foodService.create(foodRequest))
+                .results(foodService.createFood(foodRequest))
                 .build();
     }
 
     @GetMapping
     ApiResponse<List<FoodResponse>> findAll() {
         return ApiResponse.<List<FoodResponse>>builder()
-                .results(foodService.findAll())
+                .results(foodService.findAllFood())
                 .build();
     }
 
-    @DeleteMapping("{Id}")
-    ApiResponse<Void> delete(@PathVariable String id) {
-        foodService.deleteById(id);
+    @DeleteMapping("/delete/{Id}")
+    ApiResponse<Void> delete(@PathVariable("Id") String Id) {
+        foodService.deleteFoodById(Id);
         return ApiResponse.<Void>builder()
-                .message("delete success")
+                .message("Product deleted successfully")
                 .build();
     }
 }

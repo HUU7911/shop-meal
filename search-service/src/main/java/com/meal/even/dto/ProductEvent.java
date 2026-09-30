@@ -1,6 +1,7 @@
 package com.meal.even.dto;
 
 import com.meal.search.constants.Type;
+import com.meal.search.document.CategoryDocument;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -31,5 +32,5 @@ public class ProductEvent {
 
     Type type;
 
-    String categories;
+    List<CategoryDocument> categories;
 }

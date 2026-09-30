@@ -1,6 +1,6 @@
 package com.meal.product.configuration;
 
-import com.meal.event.dto.ProductEvent;
+import com.meal.even.dto.ProductEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

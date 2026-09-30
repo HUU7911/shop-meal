@@ -1,11 +1,13 @@
-package com.meal.event.dto;
+package com.meal.even.dto;
 
 import com.meal.product.constant.Type;
+import com.meal.product.entity.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -31,5 +33,5 @@ public class ProductEvent {
 
     Type type;
 
-    String categories;
+    Set<Category> categories;
 }

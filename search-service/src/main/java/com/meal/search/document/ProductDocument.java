@@ -44,5 +44,5 @@ public class ProductDocument {
     Type type;
 
     @Field(type = FieldType.Keyword)
-    String categoryName;
+    List<CategoryDocument> categories;
 }

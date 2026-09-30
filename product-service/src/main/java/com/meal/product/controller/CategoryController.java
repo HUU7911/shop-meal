@@ -20,24 +20,24 @@ public class CategoryController {
     CategoryService categoryService;
 
     @PostMapping("/create")
-    public ApiResponse<CategoryResponse> create(@RequestBody CategoryRequest request){
+    ApiResponse<CategoryResponse> create(@RequestBody CategoryRequest categoryRequest) {
         return ApiResponse.<CategoryResponse>builder()
-                .results(categoryService.create(request))
+                .results(categoryService.create(categoryRequest))
                 .build();
     }
 
     @GetMapping
-    public ApiResponse<List<CategoryResponse>> list(){
+    ApiResponse<List<CategoryResponse>> list() {
         return ApiResponse.<List<CategoryResponse>>builder()
-                .results(categoryService.getAll())
+                .results(categoryService.findAll())
                 .build();
     }
 
     @DeleteMapping("/delete/{name}")
-    public ApiResponse<Void> delete(@PathVariable String name){
+    ApiResponse<Void> delete(@PathVariable("name") String name) {
         categoryService.deleteById(name);
         return ApiResponse.<Void>builder()
-                .message("category deleted successfully")
+                .message("Delete category successfully")
                 .build();
     }
 }

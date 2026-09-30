@@ -1,4 +1,4 @@
-package com.meal.product.exception;
+package com.meal.order.exception;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,7 +1,7 @@
-package com.meal.product.configuration;
+package com.meal.order.configuration;
 
-import com.meal.product.dto.ApiResponse;
-import com.meal.product.exception.ErrorCode;
+import com.meal.order.dto.ApiResponse;
+import com.meal.order.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,11 +14,11 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Configuration
-public class JwtAuthenticationEntrypoint implements AuthenticationEntryPoint {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
-        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
 
         response.setStatus(errorCode.getHttpStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -28,9 +28,9 @@ public class JwtAuthenticationEntrypoint implements AuthenticationEntryPoint {
                 .message(errorCode.getMessage())
                 .build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
 
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+        response.getWriter().write(mapper.writeValueAsString(apiResponse));
         response.flushBuffer();
     }
 }

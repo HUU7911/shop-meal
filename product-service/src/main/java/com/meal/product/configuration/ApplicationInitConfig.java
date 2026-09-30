@@ -1,7 +1,7 @@
 package com.meal.product.configuration;
 
 import com.meal.product.entity.Category;
-import com.meal.product.repository.CategoriesRepository;
+import com.meal.product.repository.CategoryRepository;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -24,15 +24,15 @@ public class ApplicationInitConfig {
     };
 
     @Bean
-    public ApplicationRunner initApplicationRunner(CategoriesRepository repository) {
+    ApplicationRunner applicationRunner(CategoryRepository categoryRepository) {
         return args -> {
-            if (repository.findAllById(List.of(categories)).isEmpty()) {
-                for(String category : categories) {
+            if (categoryRepository.findAllById(List.of(categories)).isEmpty()) {
+                for (String category : categories) {
                     Category categories = Category.builder()
                             .name(category)
-                            .description("has " + category.toLowerCase(Locale.ROOT))
+                            .description("has" + category.toLowerCase(Locale.ROOT))
                             .build();
-                    repository.save(categories);
+                    categoryRepository.save(categories);
                 }
             }
             log.info("Category initial by name: {}", (Object) categories);

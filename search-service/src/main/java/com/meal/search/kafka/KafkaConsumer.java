@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KafkaConsumer {
 
     ProductSearchRepository productSearchRepository;
@@ -23,11 +23,12 @@ public class KafkaConsumer {
             ProductDocument productDocument = ProductDocument.builder()
                     .id(event.getId())
                     .name(event.getName())
+                    .timeWork(event.getTimeWork())
                     .position(event.getPosition())
                     .description(event.getDescription())
                     .price(event.getPrice())
                     .images(event.getImages())
-                    .timeWork(event.getTimeWork())
+                    .categories(event.getCategories())
                     .type(event.getType())
                     .build();
 

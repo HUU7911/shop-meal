@@ -1,4 +1,4 @@
-package com.meal.product.configuration;
+package com.meal.order.configuration;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.context.annotation.Configuration;
@@ -16,13 +16,13 @@ public class CustomJwtDecode implements JwtDecoder {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
             return new Jwt(token,
-                    signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
-                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
-                    signedJWT.getHeader().toJSONObject(),
-                    signedJWT.getJWTClaimsSet().getClaims()
+                signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
+                signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
+                signedJWT.getHeader().toJSONObject(),
+                signedJWT.getJWTClaimsSet().getClaims()
             );
         } catch (ParseException e) {
-            throw new RuntimeException("invalid token", e);
+            throw new RuntimeException("Invalid JWT Token", e);
         }
     }
 }

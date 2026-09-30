@@ -1,11 +1,11 @@
-package com.meal.product;
+package com.meal.order;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ProductServiceApplication {
+public class OrderServiceApplication {
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure()
                 .ignoreIfMissing()
@@ -14,6 +14,6 @@ public class ProductServiceApplication {
         dotenv.entries().forEach(entry ->
                 System.setProperty(entry.getKey(), entry.getValue())
         );
-        SpringApplication.run(ProductServiceApplication.class, args);
+        SpringApplication.run(OrderServiceApplication.class, args);
     }
 }

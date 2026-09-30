@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: ${CART_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    format-sql: false
+    open-in-view: false
+
+server:
+  port: 8086
+  servlet:
+    context-path: /order
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA}

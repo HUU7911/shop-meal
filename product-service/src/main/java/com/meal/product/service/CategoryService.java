@@ -3,7 +3,7 @@ package com.meal.product.service;
 import com.meal.product.dto.request.CategoryRequest;
 import com.meal.product.dto.response.CategoryResponse;
 import com.meal.product.mapper.CategoryMapper;
-import com.meal.product.repository.CategoriesRepository;
+import com.meal.product.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,22 +16,21 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryService {
 
-    CategoriesRepository categoriesRepository;
+    CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
-    public CategoryResponse create(CategoryRequest request) {
-        var category = categoryMapper.toCategory(request);
+    public CategoryResponse create(CategoryRequest categoryRequest) {
+        var category = categoryMapper.toCategory(categoryRequest);
 
-        return categoryMapper.toCategoryResponse(categoriesRepository.save(category));
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
-    public List<CategoryResponse> getAll() {
-        return categoriesRepository.findAll()
-                .stream().map(categoryMapper::toCategoryResponse)
-                .toList();
+    public List<CategoryResponse> findAll() {
+        return categoryRepository.findAll().stream()
+                .map(categoryMapper::toCategoryResponse).toList();
     }
 
     public void deleteById(String id) {
-        categoriesRepository.deleteById(id);
+        categoryRepository.deleteById(id);
     }
 }

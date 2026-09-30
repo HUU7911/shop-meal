@@ -1,17 +1,3 @@
 package com.meal.product.dto.request;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryRequest {
-
-    String name;
-
-    String description;
-}
+public record CategoryRequest(String name, String description) {}

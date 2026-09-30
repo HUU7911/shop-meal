@@ -5,16 +5,17 @@ import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Map;
 import java.util.Objects;
 
+@ControllerAdvice
 @Slf4j
-@RestControllerAdvice
 public class GlobalExceptionHandler {
+
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
@@ -22,11 +23,14 @@ public class GlobalExceptionHandler {
 
         log.error("Uncategorized exception: ", e);
 
-        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+        e.printStackTrace();
+
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED;
         ApiResponse apiResponse = new ApiResponse();
 
         apiResponse.setMessage(errorCode.getMessage());
         apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(e.getMessage());
 
         return ResponseEntity
                 .badRequest()
@@ -48,7 +52,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiResponse> handleException(AccessDeniedException e) {
-        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED;
 
         return ResponseEntity.status(errorCode.getCode())
                 .body(ApiResponse.builder()

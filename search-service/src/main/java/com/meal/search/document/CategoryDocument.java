@@ -1,20 +1,18 @@
-package com.meal.product.entity;
+package com.meal.search.document;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 
-@Entity
+@Document(indexName = "categories")
 @Getter
 @Setter
 @Builder
-@Table(name = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category {
+public class CategoryDocument {
 
     @Id
     String name;
