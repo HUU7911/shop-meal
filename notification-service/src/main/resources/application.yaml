@@ -22,3 +22,12 @@ server:
 brev:
   apiKey: ${API_KEY_BREVO}
   url: https://api.brevo.com
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA}

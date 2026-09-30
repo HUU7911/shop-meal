@@ -33,3 +33,12 @@ server:
   port: 8084
   servlet:
     context-path: /search
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA}

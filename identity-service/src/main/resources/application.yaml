@@ -35,6 +35,10 @@ app:
     url: http://localhost:8081
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: ${EUREKA}

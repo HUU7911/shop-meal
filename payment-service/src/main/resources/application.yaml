@@ -12,3 +12,12 @@ vietqr:
   account-number: ${ACCOUNT_NUMBER}
   account-name: ${ACCOUNT_NAME}
   api-url: "https://api.vietqr.io/v2/generate"
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA}
