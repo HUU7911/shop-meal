@@ -1,6 +1,7 @@
 package com.meal.product.service;
 
 import com.meal.even.dto.ProductEvent;
+import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.response.FoodResponse;
 import com.meal.product.entity.Category;
@@ -13,11 +14,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -39,6 +43,7 @@ public class FoodService {
         HashSet<Category> categories = new HashSet<>(
                 categoryRepository.findAllById(request.categories()));
         food.setCategories(categories);
+        food.setCreatedDate(Instant.now());
 
         food = foodRepository.save(food);
 
@@ -60,9 +65,21 @@ public class FoodService {
         return foodMapper.toFoodResponse(food);
     }
 
-    public List<FoodResponse> findAllFood() {
-        return foodRepository.findAll().stream()
-                .map(foodMapper::toFoodResponse).toList();
+    public PageResponse<FoodResponse> findAllFood(int page, int size) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = foodRepository.findAll(pageable);
+
+        return PageResponse.<FoodResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPage(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(pageData.getContent().stream()
+                        .map(foodMapper::toFoodResponse).toList()
+                )
+                .build();
     }
 
     public void deleteFoodById(String id) {

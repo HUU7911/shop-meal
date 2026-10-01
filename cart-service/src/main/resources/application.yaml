@@ -9,8 +9,20 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    format-sql: false
     open-in-view: false
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: cart-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+        spring.json.value.default.type: com.meal.cart.event.ProductEvent
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: com.meal.cart.event
 
 server:
   port: 8085
@@ -25,3 +37,9 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA}
+
+app:
+  jwt:
+    user-id-claim: sub
+  cart:
+    max-quantity-per-item: 99

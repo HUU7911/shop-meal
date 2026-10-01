@@ -1,6 +1,7 @@
 package com.meal.product.controller;
 
 import com.meal.product.dto.ApiResponse;
+import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.response.FoodResponse;
 import com.meal.product.service.FoodService;
@@ -27,9 +28,12 @@ public class FoodController {
     }
 
     @GetMapping
-    ApiResponse<List<FoodResponse>> findAll() {
-        return ApiResponse.<List<FoodResponse>>builder()
-                .results(foodService.findAllFood())
+    ApiResponse<PageResponse<FoodResponse>> findAll(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size
+    ) {
+        return ApiResponse.<PageResponse<FoodResponse>>builder()
+                .results(foodService.findAllFood(page, size))
                 .build();
     }
 

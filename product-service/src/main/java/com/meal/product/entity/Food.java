@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,8 @@ public class Food {
     List<String> images;
 
     Type type;
+
+    Instant createdDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
     Set<Category> categories;
