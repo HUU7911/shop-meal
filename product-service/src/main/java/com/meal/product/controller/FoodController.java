@@ -4,13 +4,12 @@ import com.meal.product.dto.ApiResponse;
 import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.response.FoodResponse;
+import com.meal.product.dto.response.FoodSnapshotResponse;
 import com.meal.product.service.FoodService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/food")
@@ -42,6 +41,20 @@ public class FoodController {
         foodService.deleteFoodById(Id);
         return ApiResponse.<Void>builder()
                 .message("Product deleted successfully")
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<FoodResponse> findById(@PathVariable String id) {
+        return ApiResponse.<FoodResponse>builder()
+                .results(foodService.getFoodById(id))
+                .build();
+    }
+
+    @GetMapping("/snapshot/{Id}")
+    ApiResponse<FoodSnapshotResponse> getFoodSnapshotById(@PathVariable String Id) {
+        return ApiResponse.<FoodSnapshotResponse>builder()
+                .results(foodService.getFoodSnapshotById(Id))
                 .build();
     }
 }

@@ -23,7 +23,8 @@ public enum ErrorCode {
     QUANTITY_EXCEEDED(1005, "Quantity exceeds the allowed maximum per item", HttpStatus.BAD_REQUEST),
     FOOD_ID_REQUIRED(1006, "foodId is required", HttpStatus.BAD_REQUEST),
     INVALID_QUANTITY(1007, "Quantity must be at least 1", HttpStatus.BAD_REQUEST),
-    NOTE_TOO_LONG(1008, "Note must be at most 255 characters", HttpStatus.BAD_REQUEST);
+    NOTE_TOO_LONG(1008, "Note must be at most 255 characters", HttpStatus.BAD_REQUEST),
+    CART_NOT_FOUND(1009, "Cart not found", HttpStatus.NOT_FOUND),
     ;
 
     private int code;

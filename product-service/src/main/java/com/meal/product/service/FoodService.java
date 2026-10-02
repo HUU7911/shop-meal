@@ -4,6 +4,7 @@ import com.meal.even.dto.ProductEvent;
 import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.response.FoodResponse;
+import com.meal.product.dto.response.FoodSnapshotResponse;
 import com.meal.product.entity.Category;
 import com.meal.product.exception.AppException;
 import com.meal.product.exception.ErrorCode;
@@ -63,6 +64,30 @@ public class FoodService {
         publishProductEvent(productEvent);
 
         return foodMapper.toFoodResponse(food);
+    }
+
+    public FoodResponse getFoodById(String id) {
+        var food = foodRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        return foodMapper.toFoodResponse(food);
+    }
+
+    public FoodSnapshotResponse getFoodSnapshotById(String id) {
+        var food = foodRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        food = foodRepository.save(food);
+
+        return FoodSnapshotResponse.builder()
+                .id(id)
+                .name(food.getName())
+                .price(food.getPrice())
+                .image(food.getImages().getFirst())
+                .price(food.getPrice())
+                .build();
     }
 
     public PageResponse<FoodResponse> findAllFood(int page, int size) {

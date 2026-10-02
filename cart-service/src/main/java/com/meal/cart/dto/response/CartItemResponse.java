@@ -1,14 +1,27 @@
 package com.meal.cart.dto.response;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.math.BigDecimal;
 
-public record CartItemResponse(
-        String itemId,
-        String foodId,
-        String name,
-        String image,
-        BigDecimal unitPrice,
-        int quantity,
-        String note,
-        BigDecimal subtotal) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class CartItemResponse {
+
+    String id;
+
+    String productId;
+
+    String productName;
+
+    BigDecimal price;
+
+    String image;
+
+    Integer quantity;
 }

@@ -1,31 +1,25 @@
 package com.meal.cart.service;
 
-import com.meal.cart.dto.request.AddCartItemRequest;
-import com.meal.cart.dto.request.UpdateCartItemRequest;
-import com.meal.cart.dto.response.CartItemResponse;
+import com.meal.cart.dto.ApiResponse;
 import com.meal.cart.dto.response.CartResponse;
+import com.meal.cart.dto.response.FoodSnapshotResponse;
 import com.meal.cart.entity.Cart;
 import com.meal.cart.entity.CartItem;
-import com.meal.cart.entity.ProductSnapshot;
 import com.meal.cart.exception.AppException;
 import com.meal.cart.exception.ErrorCode;
+import com.meal.cart.mapper.CartMapper;
 import com.meal.cart.repository.CartRepository;
-import com.meal.cart.repository.ProductSnapshotRepository;
+import com.meal.cart.repository.httpclient.ProductItemClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -33,77 +27,97 @@ import java.util.stream.Collectors;
 public class CartService {
 
     CartRepository cartRepository;
-    ProductSnapshotRepository productSnapshotRepository;
-    CurrentUser currentUser;
-
-    @Value("${app.cart.max-quantity-per-item:99}")
-    private int maxQuantity;
-
-    @Transactional(readOnly = true)
-    public CartResponse getMyCart() {
-        return cartRepository.findByUserId(currentUser.id())
-                .map(this::toResponse)
-                .orElseGet(() -> new CartResponse(null, List.of(), 0, BigDecimal.ZERO));
-    }
+    CartMapper cartMapper;
+    ProductItemClient productItemClient;
 
     @Transactional
-    public CartResponse addItem(AddCartItemRequest request) {
-        productSnapshotRepository.findById(request.foodId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+    public CartResponse addProductToCart(String productId) {
+        String userId = userId();
 
-        Cart cart = getOrCreateCart(currentUser.id());
+        ApiResponse<FoodSnapshotResponse> product = productItemClient.getFoodById(productId);
+        if (Objects.isNull(product) || Objects.isNull(product.getResults())) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        FoodSnapshotResponse food = product.getResults();
 
-        CartItem item = cart.getItems().stream()
-                .filter(i -> i.getFoodId().equals(request.foodId()))
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseGet(() -> Cart.builder()
+                        .userId(userId)
+                        .items(new HashSet<>())
+                        .totalPrice(BigDecimal.ZERO)
+                        .build());
+
+        CartItem existing = cart.getItems().stream()
+                .filter(i -> i.getProductId().equals(productId))
                 .findFirst()
                 .orElse(null);
 
-        if (item == null) {
-            checkQuantity(request.quantity());
-            cart.getItems().add(CartItem.builder()
-                    .cart(cart)
-                    .foodId(request.foodId())
-                    .quantity(request.quantity())
-                    .note(request.note())
-                    .build());
+        if (existing != null) {
+            existing.setQuantity(existing.getQuantity() + 1);
         } else {
-            int newQuantity = item.getQuantity() + request.quantity();
-            checkQuantity(newQuantity);
-            item.setQuantity(newQuantity);
-            if (request.note() != null) item.setNote(request.note());
+            CartItem cartItem = CartItem.builder()
+                    .productId(productId)
+                    .productName(food.name())
+                    .image(food.image())
+                    .price(food.price())
+                    .quantity(1)
+                    .build();
+            cart.addItem(cartItem);
         }
-        return save(cart);
+
+        return saveAndMap(cart);
+    }
+
+    @Transactional(readOnly = true)
+    public CartResponse getMyCart() {
+        String userId = userId();
+
+        Cart cart = cartRepository.findByUserId(userId).orElseGet(() ->
+                Cart.builder()
+                        .userId(userId)
+                        .totalPrice(BigDecimal.ZERO)
+                        .build());
+
+        return cartMapper.toCartResponse(cart);
     }
 
     @Transactional
-    public CartResponse updateItem(String itemId, UpdateCartItemRequest request) {
-        Cart cart = findMyCart();
+    public CartResponse increaseQuantity(String itemId) {
+        Cart cart = getCurrentUserCart();
         CartItem item = findItem(cart, itemId);
-        checkQuantity(request.quantity());
-        item.setQuantity(request.quantity());
-        item.setNote(request.note());
-        return save(cart);
+
+        item.setQuantity(item.getQuantity() + 1);
+
+        return saveAndMap(cart);
+    }
+
+    @Transactional
+    public CartResponse decreaseQuantity(String itemId) {
+        Cart cart = getCurrentUserCart();
+        CartItem item = findItem(cart, itemId);
+
+        if (item.getQuantity() <= 1) {
+            cart.getItems().removeIf(i -> i.getId().equals(itemId));
+        } else {
+            item.setQuantity(item.getQuantity() - 1);
+        }
+
+        return saveAndMap(cart);
     }
 
     @Transactional
     public CartResponse removeItem(String itemId) {
-        Cart cart = findMyCart();
-        CartItem item = findItem(cart, itemId);
-        cart.getItems().remove(item); // orphanRemoval sẽ xóa dòng trong DB
-        return save(cart);
+        Cart cart = getCurrentUserCart();
+        findItem(cart, itemId);
+
+        cart.getItems().removeIf(i -> i.getId().equals(itemId));
+
+        return saveAndMap(cart);
     }
 
-    @Transactional
-    public void clear() {
-        cartRepository.findByUserId(currentUser.id()).ifPresent(cart -> {
-            cart.getItems().clear();
-            save(cart);
-        });
-    }
-
-    private Cart findMyCart() {
-        return cartRepository.findByUserId(currentUser.id())
-                .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
+    private Cart getCurrentUserCart() {
+        return cartRepository.findByUserId(userId())
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
     }
 
     private CartItem findItem(Cart cart, String itemId) {
@@ -113,43 +127,19 @@ public class CartService {
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
     }
 
-    private void checkQuantity(int quantity) {
-        if (quantity > maxQuantity) throw new AppException(ErrorCode.QUANTITY_EXCEEDED);
+    private CartResponse saveAndMap(Cart cart) {
+        cart.setTotalPrice(calculateTotal(cart));
+        Cart saved = cartRepository.save(cart);
+        return cartMapper.toCartResponse(saved);
     }
 
-    private Cart getOrCreateCart(String userId) {
-        return cartRepository.findByUserId(userId).orElseGet(() -> {
-            try {
-                return cartRepository.saveAndFlush(Cart.builder().userId(userId).updatedAt(Instant.now()).build());
-            } catch (DataIntegrityViolationException e) {
-                return cartRepository.findByUserId(userId).orElseThrow(() -> e);
-            }
-        });
+    private BigDecimal calculateTotal(Cart cart) {
+        return cart.getItems().stream()
+                .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private CartResponse save(Cart cart) {
-        cart.setUpdatedAt(Instant.now());
-        return toResponse(cartRepository.save(cart));
-    }
-
-    private CartResponse toResponse(Cart cart) {
-        Map<String, ProductSnapshot> products = productSnapshotRepository
-                .findAllById(cart.getItems().stream().map(CartItem::getFoodId).toList())
-                .stream().collect(Collectors.toMap(ProductSnapshot::getFoodId, Function.identity()));
-
-        List<CartItemResponse> items = new ArrayList<>();
-        BigDecimal total = BigDecimal.ZERO;
-        int totalItems = 0;
-
-        for (CartItem i : cart.getItems()) {
-            ProductSnapshot p = products.get(i.getFoodId());
-            if (p == null) continue;
-            BigDecimal subtotal = p.getPrice().multiply(BigDecimal.valueOf(i.getQuantity()));
-            items.add(new CartItemResponse(i.getId(), i.getFoodId(), p.getName(), p.getImage(),
-                    p.getPrice(), i.getQuantity(), i.getNote(), subtotal));
-            total = total.add(subtotal);
-            totalItems += i.getQuantity();
-        }
-        return new CartResponse(cart.getId(), items, totalItems, total);
+    private String userId() {
+        return Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
     }
 }

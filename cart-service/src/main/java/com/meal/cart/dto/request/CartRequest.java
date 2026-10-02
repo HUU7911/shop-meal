@@ -1,25 +1,20 @@
-package com.meal.cart.dto.response;
+package com.meal.cart.dto.request;
 
 import com.meal.cart.entity.CartItem;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CartResponse {
-
+public class CartRequest {
     String id;
-
     String userId;
-
-    Set<CartItemResponse> items;
-
+    List<CartItem> item;
     BigDecimal totalPrice;
 }

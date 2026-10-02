@@ -1,44 +1,59 @@
 package com.meal.cart.controller;
 
 import com.meal.cart.dto.ApiResponse;
-import com.meal.cart.dto.request.AddCartItemRequest;
-import com.meal.cart.dto.request.UpdateCartItemRequest;
 import com.meal.cart.dto.response.CartResponse;
 import com.meal.cart.service.CartService;
-import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import lombok.experimental.FieldDefaults;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CartController {
 
-    private final CartService cartService;
+    CartService cartService;
 
-    @GetMapping
+    @PostMapping("/add/{productId}")
+    public ApiResponse<CartResponse> addProductToCart(@PathVariable String productId) {
+        return ApiResponse.<CartResponse>builder()
+                .results(cartService.addProductToCart(productId))
+                .build();
+    }
+
+    @GetMapping("/my-cart")
     public ApiResponse<CartResponse> getMyCart() {
-        return ApiResponse.<CartResponse>builder().results(cartService.getMyCart()).build();
+        return ApiResponse.<CartResponse>builder()
+                .results(cartService.getMyCart())
+                .build();
     }
 
-    @PostMapping("/items")
-    public ApiResponse<CartResponse> addItem(@RequestBody @Valid AddCartItemRequest request) {
-        return ApiResponse.<CartResponse>builder().results(cartService.addItem(request)).build();
+    @PatchMapping("/items/{itemId}/increase")
+    public ApiResponse<CartResponse> increaseQuantity(@PathVariable String itemId) {
+        return ApiResponse.<CartResponse>builder()
+                .results(cartService.increaseQuantity(itemId))
+                .build();
     }
 
-    @PutMapping("/items/{itemId}")
-    public ApiResponse<CartResponse> updateItem(@PathVariable String itemId,
-                                                @RequestBody @Valid UpdateCartItemRequest request) {
-        return ApiResponse.<CartResponse>builder().results(cartService.updateItem(itemId, request)).build();
+    @PatchMapping("/items/{itemId}/decrease")
+    public ApiResponse<CartResponse> decreaseQuantity(@PathVariable String itemId) {
+        return ApiResponse.<CartResponse>builder()
+                .results(cartService.decreaseQuantity(itemId))
+                .build();
     }
 
     @DeleteMapping("/items/{itemId}")
     public ApiResponse<CartResponse> removeItem(@PathVariable String itemId) {
-        return ApiResponse.<CartResponse>builder().results(cartService.removeItem(itemId)).build();
-    }
-
-    @DeleteMapping
-    public ApiResponse<Void> clear() {
-        cartService.clear();
-        return ApiResponse.<Void>builder().message("Cart cleared successfully").build();
+        return ApiResponse.<CartResponse>builder()
+                .results(cartService.removeItem(itemId))
+                .build();
     }
 }

@@ -22,7 +22,7 @@ public class CustomJwtDecode implements JwtDecoder {
                     signedJWT.getJWTClaimsSet().getClaims()
             );
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("invalid token: " + e.getMessage());
         }
     }
 }

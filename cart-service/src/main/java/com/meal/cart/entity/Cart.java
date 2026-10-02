@@ -2,29 +2,35 @@ package com.meal.cart.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "carts")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    String id;
 
-    @Column(nullable = false, unique = true)
-    private String userId;
-
-    private Instant updatedAt;
+    String userId;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<CartItem> items = new ArrayList<>();
+    Set<CartItem> items = new HashSet<>();
+
+    BigDecimal totalPrice;
+
+    public void addItem(CartItem item) {
+        items.add(item);
+    }
 }
