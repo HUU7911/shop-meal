@@ -6,16 +6,6 @@ Project bao gồm nhiều service độc lập, giao tiếp với nhau thông qu
 
 ---
 
-## Member
-
----
-1. Trần Trí Hữu
-2. Nguyễn Bật Quân
-3. Lê Phú Quý
-4. Bùi Huy Sơn
-5. Nguyễn Quốc Tuấn
----
-
 ## 🏗️ Architecture
 
 ```text
