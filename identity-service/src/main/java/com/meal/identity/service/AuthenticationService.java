@@ -1,9 +1,6 @@
 package com.meal.identity.service;
 
-import com.meal.identity.dto.request.AuthenticationRequest;
-import com.meal.identity.dto.request.IntrospectRequest;
-import com.meal.identity.dto.request.LogoutRequest;
-import com.meal.identity.dto.request.RefreshRequest;
+import com.meal.identity.dto.request.*;
 import com.meal.identity.dto.response.AuthenticationResponse;
 import com.meal.identity.dto.response.IntrospectResponse;
 import com.meal.identity.entity.InvalidateToken;
@@ -12,6 +9,7 @@ import com.meal.identity.exception.AppException;
 import com.meal.identity.exception.ErrorCode;
 import com.meal.identity.repository.InvalidateTokenRepository;
 import com.meal.identity.repository.UserRepository;
+import com.meal.identity.repository.httpclient.OutboundIdentityClient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -20,6 +18,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,22 +47,49 @@ public class AuthenticationService {
     @Value("${jwt.valid-duration}")
     private int VALIDATION_DURATION;
 
+    @Value("${outbound.identity.client-id}")
+    private String CLIENT_ID;
+
+    @Value("${outbound.identity.client-secret}")
+    private String CLIENT_SECRET;
+
+    @Value("${outbound.identity.redirect-uri}")
+    private String REDIRECT_URI;
+
+    @NonFinal
+    private final String GRANT_TYPE = "authorization_code";
+
     final PasswordEncoder passwordEncoder;
     final UserRepository userRepository;
     final InvalidateTokenRepository invalidateTokenRepository;
+    final OutboundIdentityClient outboundIdentityClient;
 
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
         boolean isValid = true;
 
         try {
-            verifyToken(token, false);
+            verifyToken(token, true);
         }catch (Exception e) {
             isValid = false;
         }
 
         return IntrospectResponse.builder()
                 .valid(isValid)
+                .build();
+    }
+
+    public AuthenticationResponse outboundIdentityClient(String code) {
+        var response = outboundIdentityClient.token(ExchangeTokenRequest.builder()
+                        .code(code)
+                        .clientId(CLIENT_ID)
+                        .clientSecret(CLIENT_SECRET)
+                        .grantType(GRANT_TYPE)
+                .build());
+        log.info("outbound identity client response: {}", response);
+
+        return AuthenticationResponse.builder()
+                .token(response.getAccessToken())
                 .build();
     }
 

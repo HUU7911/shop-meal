@@ -38,6 +38,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(RoleDefine.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/users/delete/{id}").hasRole(RoleDefine.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/internal/users/create").hasRole(RoleDefine.ADMIN.name())
+                        .requestMatchers("/users").hasAuthority("GET_ALL_USER")
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth ->
@@ -55,6 +56,7 @@ public class SecurityConfig{
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimDelimiter("\\s*,\\s*");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 

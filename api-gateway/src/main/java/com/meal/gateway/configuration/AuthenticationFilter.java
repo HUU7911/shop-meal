@@ -42,7 +42,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/login",
             "/identity/auth/introspect",
             "/notification/email/send",
-            "/search/product"
+            "/search/product",
+            "/product/food"
     };
 
     @Value("${app.api-prefix}")

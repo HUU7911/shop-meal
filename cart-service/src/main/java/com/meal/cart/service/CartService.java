@@ -56,6 +56,7 @@ public class CartService {
             existing.setQuantity(existing.getQuantity() + 1);
         } else {
             CartItem cartItem = CartItem.builder()
+                    .cart(cart)
                     .productId(productId)
                     .productName(food.name())
                     .image(food.image())

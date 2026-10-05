@@ -21,31 +21,19 @@ public class NotificationController {
 
     EmailService emailService;
 
-    @KafkaListener(topics = "create-user")
-    public void listenCreateUsers(NotificationEvent event) {
-        log.info("receive notification event:{}", event);
-        emailService.sendEmail(
-          SendEmailRequest.builder()
-                  .to(List.of(Recipient.builder()
-                                  .email(event.getRecipient())
-                          .build()))
-                  .subject(event.getSubject())
-                  .htmlContent(event.getBody())
-                  .build()
-        );
-    }
-
-    @KafkaListener(topics = "internal-create-staff")
-    public void listenCreateStaff(NotificationEvent event) {
-        log.info("receive notification event create staff: {}", event);
-        emailService.sendEmail(
-            SendEmailRequest.builder()
-                    .to(List.of(Recipient.builder()
-                                    .email(event.getRecipient())
-                            .build()))
-                    .subject(event.getSubject())
-                    .htmlContent(event.getBody())
-                    .build()
-        );
+    @KafkaListener(topics = {
+                    "order-notification",
+                    "internal-create-staff",
+                    "create-user"}
+    )
+    public void listenCreateOrder(NotificationEvent event) {
+        log.info("Receive to notification service: {}", event);
+        emailService.sendEmail(SendEmailRequest.builder()
+                        .to(List.of(Recipient.builder()
+                                .email(event.getRecipient())
+                                .build()))
+                        .subject(event.getSubject())
+                        .htmlContent(event.getBody())
+                .build());
     }
 }

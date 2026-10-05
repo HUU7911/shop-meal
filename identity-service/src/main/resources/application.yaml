@@ -42,3 +42,9 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA}
+
+outbound:
+  identity:
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIENT_SECRET}
+    redirect-uri: ${DIRECT_URL}
