@@ -21,16 +21,10 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
-    @NonFinal
-    private String[] PUBLIC_MATCHERS = new String[]{
-            "/email/send",
-    };
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http){
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
                         .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);

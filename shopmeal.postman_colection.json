@@ -1,0 +1,288 @@
+{
+  "info": {
+    "_postman_id": "6f1f0f0e-2b5a-4f3d-9a3d-shop-meal-identity-2026",
+    "name": "Shop-Meal - Identity Service API Tests",
+    "description": "Postman collection for testing the Shop-Meal identity-service through API Gateway. Flow: Create User -> Login -> Introspect -> Refresh -> Logout.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8888/api/v1"
+    },
+    {
+      "key": "identityPath",
+      "value": "/identity"
+    },
+    {
+      "key": "email",
+      "value": "test@gmail.com"
+    },
+    {
+      "key": "password",
+      "value": "123456"
+    },
+    {
+      "key": "username",
+      "value": "test@gmail.com"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{identityPath}}/users/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "{{identityPath}}",
+            "users",
+            "create"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is successful', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{identityPath}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "{{identityPath}}",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is successful', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {};",
+              "try { json = pm.response.json(); } catch (e) {}",
+              "const result = json.result || json.results || json.data || {};",
+              "if (result.token) pm.collectionVariables.set('accessToken', result.token);",
+              "if (result.refreshToken) pm.collectionVariables.set('refreshToken', result.refreshToken);",
+              "if (result.userId) pm.collectionVariables.set('userId', result.userId);",
+              "pm.test('Access token was returned', function () {",
+              "    pm.expect(pm.collectionVariables.get('accessToken')).to.not.be.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Introspect Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"{{accessToken}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{identityPath}}/auth/introspect",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "{{identityPath}}",
+            "auth",
+            "introspect"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is successful', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {};",
+              "try { json = pm.response.json(); } catch (e) {}",
+              "if (typeof json.valid === 'boolean') {",
+              "    pm.test('Token is valid', function () { pm.expect(json.valid).to.eql(true); });",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"{{refreshToken}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{identityPath}}/auth/refresh",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "{{identityPath}}",
+            "auth",
+            "refresh"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is successful', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {};",
+              "try { json = pm.response.json(); } catch (e) {}",
+              "const result = json.result || json.results || json.data || {};",
+              "if (result.token) pm.collectionVariables.set('accessToken', result.token);",
+              "if (result.refreshToken) pm.collectionVariables.set('refreshToken', result.refreshToken);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"{{accessToken}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{identityPath}}/auth/logout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "{{identityPath}}",
+            "auth",
+            "logout"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Logout request completed', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

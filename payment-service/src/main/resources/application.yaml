@@ -1,17 +1,21 @@
 spring:
   application:
     name: payment-service
+  datasource:
+    url: ${PAYMENT_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    format-sql: false
+    open-in-view: false
 
 server:
   port: 8087
   servlet:
     context-path: /payment
-
-vietqr:
-  bank-bin: ${BANK_BIN}
-  account-number: ${ACCOUNT_NUMBER}
-  account-name: ${ACCOUNT_NAME}
-  api-url: "https://api.vietqr.io/v2/generate"
 
 eureka:
   instance:
@@ -21,3 +25,11 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA}
+
+payos:
+  client-id: ${PAYOS_CLIENT_ID}
+  api-key: ${PAYOS_API_KEY}
+  checksum-key: ${PAYOS_CHECKSUM_KEY}
+  return-url: http://localhost:5173/payment/success
+  cancel-url: http://localhost:5173/payment/cancel
+  expire-minutes: 15

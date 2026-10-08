@@ -5,10 +5,7 @@ import com.meal.order.constants.PaymentMethod;
 import com.meal.order.constants.PaymentStatus;
 import com.meal.order.dto.ApiResponse;
 import com.meal.order.dto.PageResponse;
-import com.meal.order.dto.client.CartItemResponse;
-import com.meal.order.dto.client.CartResponse;
-import com.meal.order.dto.client.FoodSnapshotResponse;
-import com.meal.order.dto.client.ProfileResponse;
+import com.meal.order.dto.client.*;
 import com.meal.order.dto.request.CreateOrderRequest;
 import com.meal.order.dto.response.OrderItemResponse;
 import com.meal.order.dto.response.OrderResponse;
@@ -37,7 +34,6 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -55,11 +51,12 @@ public class OrderService {
     PaymentClient paymentClient;
     OrderNotificationPublisher notificationPublisher;
 
+    @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
         String userId = currentUserId();
-
         CartResponse cart = fetchCart();
-        if (Objects.isNull(cart)) {
+
+        if (cart == null || cart.items() == null || cart.items().isEmpty()) {
             throw new AppException(ErrorCode.CART_EMPTY);
         }
 
@@ -76,29 +73,64 @@ public class OrderService {
                 .totalAmount(BigDecimal.ZERO)
                 .build();
 
-        BigDecimal total = BigDecimal.ZERO;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
         for (CartItemResponse cartItem : cart.items()) {
+            if (cartItem.quantity() <= 0) {
+                throw new AppException(ErrorCode.INVALID_QUANTITY);
+            }
+
             FoodSnapshotResponse food = fetchFood(cartItem.productId());
 
-            order.getItems().add(OrderItem.builder()
+            BigDecimal itemTotal = food.price()
+                    .multiply(BigDecimal.valueOf(cartItem.quantity()));
+
+            OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .productId(cartItem.productId())
                     .productName(food.name())
                     .image(food.image())
                     .unitPrice(food.price())
                     .quantity(cartItem.quantity())
-                    .build());
+                    .build();
 
-            total = total.add(food.price().multiply(BigDecimal.valueOf(cartItem.quantity())));
+            order.getItems().add(orderItem);
+            totalAmount = totalAmount.add(itemTotal);
         }
-        order.setTotalAmount(total);
 
-        Order saved = orderRepository.save(order);
+        order.setTotalAmount(totalAmount);
+
+        Order savedOrder = orderRepository.save(order);
+        PaymentResponse payment = null;
+
+        if (request.paymentMethod() == PaymentMethod.PAYOS) {
+            payment = createPayOSPayment(savedOrder);
+        }
 
         clearCartQuietly();
-        notifyQuietly(saved);
+        notifyQuietly(savedOrder);
 
-        return toResponse(saved);
+        return toResponse(savedOrder, payment);
+    }
+
+    private PaymentResponse createPayOSPayment(Order order) {
+        try {
+            CreatePaymentRequest request = CreatePaymentRequest.builder()
+                    .orderId(order.getId().toString())
+                    .amount(order.getTotalAmount())
+                    .build();
+
+            ApiResponse<PaymentResponse> response = paymentClient.createPayment(request);
+
+            if (response == null || response.getResults() == null) {
+                throw new AppException(ErrorCode.PAYMENT_SERVICE_ERROR);
+            }
+
+            return response.getResults();
+        } catch (FeignException e) {
+            log.error("Payment service error. orderId={}, status={}", order.getId(), e.status(), e);
+            throw new AppException(ErrorCode.PAYMENT_SERVICE_ERROR);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -116,9 +148,8 @@ public class OrderService {
     public OrderResponse cancelMyOrder(String id) {
         Order order = findOwnedOrder(id);
 
-        // Khách chỉ được hủy khi đơn còn PENDING và chưa trả tiền.
-        // Đơn đã trả tiền cần hoàn tiền thủ công => để staff xử lý.
-        if (order.getStatus() != OrderStatus.PENDING || order.getPaymentStatus() == PaymentStatus.PAID) {
+        if (order.getStatus() != OrderStatus.PENDING
+                || order.getPaymentStatus() == PaymentStatus.PAID) {
             throw new AppException(ErrorCode.ORDER_CANNOT_CANCEL);
         }
 
@@ -126,16 +157,14 @@ public class OrderService {
         return toResponse(order);
     }
 
-    // =====================================================================
-    // ADMIN / STAFF
-    // =====================================================================
-
     @Transactional(readOnly = true)
     public PageResponse<OrderResponse> getAllOrders(OrderStatus status, int page, int size) {
         Pageable pageable = pageable(page, size);
-        Page<Order> data = (status == null)
+
+        Page<Order> data = status == null
                 ? orderRepository.findAll(pageable)
                 : orderRepository.findByStatus(status, pageable);
+
         return toPage(data, page);
     }
 
@@ -150,62 +179,64 @@ public class OrderService {
 
         order.setStatus(next);
 
-        // COD: giao xong tức là đã thu tiền mặt
-        if (next == OrderStatus.COMPLETED && order.getPaymentMethod() == PaymentMethod.COD) {
+        if (next == OrderStatus.COMPLETED
+                && order.getPaymentMethod() == PaymentMethod.COD) {
             order.setPaymentStatus(PaymentStatus.PAID);
         }
-        // Lưu ý: hủy đơn đã PAID thì hoàn tiền xử lý ngoài hệ thống (chưa có refund).
 
         return toResponse(order);
     }
 
-    /** Staff xác nhận đã nhận chuyển khoản QR (chưa có webhook ngân hàng nên làm thủ công). */
     @Transactional
     public OrderResponse confirmPayment(String id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if (order.getPaymentMethod() != PaymentMethod.QR_CODE
+        if (order.getPaymentMethod() != PaymentMethod.PAYOS
                 || order.getPaymentStatus() == PaymentStatus.PAID
                 || order.getStatus() == OrderStatus.CANCELLED) {
             throw new AppException(ErrorCode.INVALID_PAYMENT_OPERATION);
         }
 
         order.setPaymentStatus(PaymentStatus.PAID);
+
         if (order.getStatus() == OrderStatus.PENDING) {
             order.setStatus(OrderStatus.CONFIRMED);
         }
+
         return toResponse(order);
     }
 
-    // =====================================================================
-    // Gọi service khác
-    // =====================================================================
-
     private CartResponse fetchCart() {
         try {
-            ApiResponse<CartResponse> res = cartClient.getMyCart();
-            return res == null ? null : res.getResults();
+            ApiResponse<CartResponse> response = cartClient.getMyCart();
+            return response == null ? null : response.getResults();
         } catch (FeignException e) {
-            log.error("cart-service error, status={}", e.status(), e);
+            log.error("Cart service error. status={}", e.status(), e);
             throw new AppException(ErrorCode.CART_SERVICE_ERROR);
         }
     }
 
     private FoodSnapshotResponse fetchFood(String productId) {
         try {
-            ApiResponse<FoodSnapshotResponse> res = productClient.getFoodSnapshot(productId);
-            if (res == null || res.getResults() == null || res.getResults().price() == null) {
+            ApiResponse<FoodSnapshotResponse> response =
+                    productClient.getFoodSnapshot(productId);
+
+            if (response == null
+                    || response.getResults() == null
+                    || response.getResults().price() == null) {
                 throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
             }
-            return res.getResults();
+
+            return response.getResults();
         } catch (FeignException e) {
-            log.error("product-service error, productId={}, status={}", productId, e.status(), e);
-            // status > 0: product-service có trả lời nhưng báo lỗi (món đã bị xóa...).
-            // status <= 0: không kết nối được.
-            throw new AppException(e.status() > 0
-                    ? ErrorCode.PRODUCT_NOT_FOUND
-                    : ErrorCode.PRODUCT_SERVICE_ERROR);
+            log.error("Product service error. productId={}, status={}", productId, e.status(), e);
+
+            throw new AppException(
+                    e.status() > 0
+                            ? ErrorCode.PRODUCT_NOT_FOUND
+                            : ErrorCode.PRODUCT_SERVICE_ERROR
+            );
         }
     }
 
@@ -213,45 +244,55 @@ public class OrderService {
         try {
             cartClient.clearMyCart();
         } catch (Exception e) {
-            log.warn("order saved but could not clear cart: {}", e.getMessage());
+            log.warn("Could not clear cart: {}", e.getMessage());
         }
     }
 
     private void notifyQuietly(Order order) {
         try {
-            ApiResponse<ProfileResponse> res = profileClient.getMyProfile();
-            ProfileResponse profile = res == null ? null : res.getResults();
+            ApiResponse<ProfileResponse> response = profileClient.getMyProfile();
+            ProfileResponse profile = response == null ? null : response.getResults();
+
             if (profile != null && StringUtils.hasText(profile.email())) {
                 notificationPublisher.publishOrderCreated(order, profile.email());
             }
         } catch (Exception e) {
-            log.warn("could not send order notification: {}", e.getMessage());
+            log.warn("Could not send order notification: {}", e.getMessage());
         }
     }
 
-    // =====================================================================
-    // Helper
-    // =====================================================================
-
     private Order findOwnedOrder(String id) {
-        // lọc theo userId để người khác không đọc được đơn của mình (và không lộ việc đơn có tồn tại)
         return orderRepository.findByIdAndUserId(id, currentUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
     }
 
     private String currentUserId() {
-        return Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        return authentication.getName();
     }
 
     private String generateOrderCode() {
-        // vd: MEAL3F9A1C7B, chỉ gồm chữ + số để dùng làm nội dung chuyển khoản
-        return "MEAL" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+        return "MEAL" + UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 8)
+                .toUpperCase();
     }
 
     private Pageable pageable(int page, int size) {
-        int safePage = Math.max(page, 1) - 1;                       // API dùng page bắt đầu từ 1 (giống product-service)
-        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);  // chặn size quá lớn
-        return PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        int safePage = Math.max(page, 1) - 1;
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+
+        return PageRequest.of(
+                safePage,
+                safeSize,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
     }
 
     private PageResponse<OrderResponse> toPage(Page<Order> data, int page) {
@@ -264,31 +305,44 @@ public class OrderService {
                 .build();
     }
 
-    private OrderResponse toResponse(Order o) {
-        List<OrderItemResponse> items = o.getItems().stream()
-                .map(i -> new OrderItemResponse(
-                        i.getId(),
-                        i.getProductId(),
-                        i.getProductName(),
-                        i.getImage(),
-                        i.getUnitPrice(),
-                        i.getQuantity(),
-                        i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity()))))
+    private OrderResponse toResponse(Order order) {
+        return toResponse(order, null);
+    }
+
+    private OrderResponse toResponse(Order order, PaymentResponse payment) {
+        List<OrderItemResponse> items = order.getItems()
+                .stream()
+                .map(item -> new OrderItemResponse(
+                        item.getId(),
+                        item.getProductId(),
+                        item.getProductName(),
+                        item.getImage(),
+                        item.getUnitPrice(),
+                        item.getQuantity(),
+                        item.getUnitPrice()
+                                .multiply(BigDecimal.valueOf(item.getQuantity()))
+                ))
                 .toList();
 
+        String checkoutUrl = payment != null
+                ? payment.checkoutUrl()
+                : null;
+
         return new OrderResponse(
-                o.getId(),
-                o.getOrderCode(),
-                o.getUserId(),
-                o.getReceiverName(),
-                o.getPhone(),
-                o.getAddress(),
-                o.getNote(),
-                o.getStatus(),
-                o.getPaymentMethod(),
-                o.getPaymentStatus(),
-                o.getTotalAmount(),
-                o.getCreatedAt(),
-                items);
+                order.getId(),
+                order.getOrderCode(),
+                order.getUserId(),
+                order.getReceiverName(),
+                order.getPhone(),
+                order.getAddress(),
+                order.getNote(),
+                order.getStatus(),
+                order.getPaymentMethod(),
+                order.getPaymentStatus(),
+                order.getTotalAmount(),
+                order.getCreatedAt(),
+                items,
+                checkoutUrl
+        );
     }
 }

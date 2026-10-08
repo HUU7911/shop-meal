@@ -15,6 +15,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1002, "unauthenticated", HttpStatus.UNAUTHORIZED),
     EMAIL_NOT_SEND(1001, "email not send", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED(1003, "access denied", HttpStatus.FORBIDDEN),
+    PAID_NOT_SEND(1004, "paid not send", HttpStatus.BAD_REQUEST),
     ;
 
     private int code;

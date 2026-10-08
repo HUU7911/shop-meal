@@ -21,5 +21,6 @@ public record OrderResponse(
         PaymentStatus paymentStatus,
         BigDecimal totalAmount,
         Instant createdAt,
-        List<OrderItemResponse> items) {
+        List<OrderItemResponse> items,
+        String checkoutUrl){
 }
