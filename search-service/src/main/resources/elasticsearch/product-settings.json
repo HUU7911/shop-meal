@@ -2,7 +2,12 @@
   "index": {
     "analysis": {
       "analyzer": {
-        "vietnamese_analyzer": {
+        "vi_accent": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase"]
+        },
+        "vi_folded": {
           "type": "custom",
           "tokenizer": "standard",
           "filter": ["lowercase", "asciifolding"]

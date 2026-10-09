@@ -19,5 +19,6 @@
         <module>cart-service</module>
         <module>discovery-service</module>
         <module>search-service</module>
+        <module>file-service</module>
     </modules>
 </project>
