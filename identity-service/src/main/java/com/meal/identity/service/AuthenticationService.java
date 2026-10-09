@@ -84,12 +84,14 @@ public class AuthenticationService {
                         .code(code)
                         .clientId(CLIENT_ID)
                         .clientSecret(CLIENT_SECRET)
+                        .redirectUri(REDIRECT_URI)
                         .grantType(GRANT_TYPE)
                 .build());
         log.info("outbound identity client response: {}", response);
 
         return AuthenticationResponse.builder()
                 .token(response.getAccessToken())
+                .authenticated(true)
                 .build();
     }
 

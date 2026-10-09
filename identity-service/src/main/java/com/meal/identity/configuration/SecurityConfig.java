@@ -24,7 +24,8 @@ public class SecurityConfig{
             "/users/create",
             "/auth/login",
             "/auth/logout",
-            "/auth/introspect"
+            "/auth/introspect",
+            "/auth/outbound/identity"
     };
 
     @Autowired

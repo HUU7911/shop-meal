@@ -24,6 +24,7 @@ public enum ErrorCode {
     CART_SERVICE_ERROR(2101, "Cart service is unavailable", HttpStatus.BAD_GATEWAY),
     PRODUCT_SERVICE_ERROR(2102, "Product service is unavailable", HttpStatus.BAD_GATEWAY),
     PAYMENT_SERVICE_ERROR(2103, "Payment service is unavailable", HttpStatus.BAD_GATEWAY),
+    ORDER_IS_EMPTY(2104, "Order is empty", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

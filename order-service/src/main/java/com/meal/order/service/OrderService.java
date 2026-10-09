@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -41,8 +42,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderService {
-
-    static final int MAX_PAGE_SIZE = 50;
 
     OrderRepository orderRepository;
     CartClient cartClient;
@@ -56,7 +55,7 @@ public class OrderService {
         String userId = currentUserId();
         CartResponse cart = fetchCart();
 
-        if (cart == null || cart.items() == null || cart.items().isEmpty()) {
+        if (Objects.isNull(cart) || Objects.isNull(cart.items()) || cart.items().isEmpty()) {
             throw new AppException(ErrorCode.CART_EMPTY);
         }
 
@@ -82,8 +81,7 @@ public class OrderService {
 
             FoodSnapshotResponse food = fetchFood(cartItem.productId());
 
-            BigDecimal itemTotal = food.price()
-                    .multiply(BigDecimal.valueOf(cartItem.quantity()));
+            BigDecimal itemTotal = food.price().multiply(BigDecimal.valueOf(cartItem.quantity()));
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
@@ -116,13 +114,13 @@ public class OrderService {
     private PaymentResponse createPayOSPayment(Order order) {
         try {
             CreatePaymentRequest request = CreatePaymentRequest.builder()
-                    .orderId(order.getId().toString())
+                    .orderId(order.getId())
                     .amount(order.getTotalAmount())
                     .build();
 
             ApiResponse<PaymentResponse> response = paymentClient.createPayment(request);
 
-            if (response == null || response.getResults() == null) {
+            if (Objects.isNull(response) || Objects.isNull(response.getResults())) {
                 throw new AppException(ErrorCode.PAYMENT_SERVICE_ERROR);
             }
 
@@ -135,7 +133,15 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public PageResponse<OrderResponse> getMyOrders(int page, int size) {
-        Page<Order> data = orderRepository.findByUserId(currentUserId(), pageable(page, size));
+        String userId = currentUserId();
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var data = orderRepository.findByUserId(userId, pageable);
+        if (Objects.isNull(data)) {
+            throw new AppException(ErrorCode.ORDER_IS_EMPTY);
+        }
+
         return toPage(data, page);
     }
 
@@ -148,8 +154,8 @@ public class OrderService {
     public OrderResponse cancelMyOrder(String id) {
         Order order = findOwnedOrder(id);
 
-        if (order.getStatus() != OrderStatus.PENDING
-                || order.getPaymentStatus() == PaymentStatus.PAID) {
+        if (!OrderStatus.PENDING.equals(order.getStatus())
+                || PaymentStatus.PAID.equals(order.getPaymentStatus())) {
             throw new AppException(ErrorCode.ORDER_CANNOT_CANCEL);
         }
 
@@ -159,19 +165,21 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public PageResponse<OrderResponse> getAllOrders(OrderStatus status, int page, int size) {
-        Pageable pageable = pageable(page, size);
 
-        Page<Order> data = status == null
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        var response = Objects.isNull(status)
                 ? orderRepository.findAll(pageable)
                 : orderRepository.findByStatus(status, pageable);
 
-        return toPage(data, page);
+        return toPage(response, page);
     }
 
     @Transactional
     public OrderResponse updateStatus(String id, OrderStatus next) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
         if (!order.getStatus().canTransitionTo(next)) {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
@@ -179,8 +187,8 @@ public class OrderService {
 
         order.setStatus(next);
 
-        if (next == OrderStatus.COMPLETED
-                && order.getPaymentMethod() == PaymentMethod.COD) {
+        if (Objects.equals(next, OrderStatus.COMPLETED)
+                && Objects.equals(order.getPaymentMethod(), PaymentMethod.COD)) {
             order.setPaymentStatus(PaymentStatus.PAID);
         }
 
@@ -189,12 +197,12 @@ public class OrderService {
 
     @Transactional
     public OrderResponse confirmPayment(String id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if (order.getPaymentMethod() != PaymentMethod.PAYOS
-                || order.getPaymentStatus() == PaymentStatus.PAID
-                || order.getStatus() == OrderStatus.CANCELLED) {
+        if (!Objects.equals(order.getPaymentMethod(), PaymentMethod.PAYOS)
+                || Objects.equals(order.getPaymentStatus(), PaymentStatus.PAID)
+                || Objects.equals(order.getStatus(), OrderStatus.CANCELLED)) {
             throw new AppException(ErrorCode.INVALID_PAYMENT_OPERATION);
         }
 
@@ -210,7 +218,7 @@ public class OrderService {
     private CartResponse fetchCart() {
         try {
             ApiResponse<CartResponse> response = cartClient.getMyCart();
-            return response == null ? null : response.getResults();
+            return Objects.isNull(response) ? null : response.getResults();
         } catch (FeignException e) {
             log.error("Cart service error. status={}", e.status(), e);
             throw new AppException(ErrorCode.CART_SERVICE_ERROR);
@@ -219,21 +227,18 @@ public class OrderService {
 
     private FoodSnapshotResponse fetchFood(String productId) {
         try {
-            ApiResponse<FoodSnapshotResponse> response =
-                    productClient.getFoodSnapshot(productId);
+            ApiResponse<FoodSnapshotResponse> response = productClient.getFoodSnapshot(productId);
 
-            if (response == null
-                    || response.getResults() == null
-                    || response.getResults().price() == null) {
+            if (Objects.isNull(response)
+                    || Objects.isNull(response.getResults())
+                    || Objects.isNull(response.getResults().price())) {
                 throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
             }
 
             return response.getResults();
         } catch (FeignException e) {
             log.error("Product service error. productId={}, status={}", productId, e.status(), e);
-
-            throw new AppException(
-                    e.status() > 0
+            throw new AppException(e.status() > 0
                             ? ErrorCode.PRODUCT_NOT_FOUND
                             : ErrorCode.PRODUCT_SERVICE_ERROR
             );
@@ -251,9 +256,9 @@ public class OrderService {
     private void notifyQuietly(Order order) {
         try {
             ApiResponse<ProfileResponse> response = profileClient.getMyProfile();
-            ProfileResponse profile = response == null ? null : response.getResults();
+            ProfileResponse profile = Objects.isNull(response) ? null : response.getResults();
 
-            if (profile != null && StringUtils.hasText(profile.email())) {
+            if (!Objects.isNull(profile) && StringUtils.hasText(profile.email())) {
                 notificationPublisher.publishOrderCreated(order, profile.email());
             }
         } catch (Exception e) {
@@ -262,14 +267,14 @@ public class OrderService {
     }
 
     private Order findOwnedOrder(String id) {
-        return orderRepository.findByIdAndUserId(id, currentUserId())
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        return orderRepository.findByIdAndUserId(id, currentUserId()).orElseThrow(
+                () -> new AppException(ErrorCode.ORDER_NOT_FOUND));
     }
 
     private String currentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (Objects.isNull(authentication) || !authentication.isAuthenticated()) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
@@ -282,17 +287,6 @@ public class OrderService {
                 .replace("-", "")
                 .substring(0, 8)
                 .toUpperCase();
-    }
-
-    private Pageable pageable(int page, int size) {
-        int safePage = Math.max(page, 1) - 1;
-        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
-
-        return PageRequest.of(
-                safePage,
-                safeSize,
-                Sort.by(Sort.Direction.DESC, "createdAt")
-        );
     }
 
     private PageResponse<OrderResponse> toPage(Page<Order> data, int page) {
@@ -324,7 +318,7 @@ public class OrderService {
                 ))
                 .toList();
 
-        String checkoutUrl = payment != null
+        String checkoutUrl = !Objects.isNull(payment)
                 ? payment.checkoutUrl()
                 : null;
 

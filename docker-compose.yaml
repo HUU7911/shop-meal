@@ -21,6 +21,8 @@ services:
     container_name: shop-elasticsearch
     environment:
       discovery.type: single-node
+      USERNAME: elastic
+      PASSWORD: 123456
     ports:
       - "9200:9200"
 
@@ -44,6 +46,15 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   mysql_data:
   mongodb_data:
+  redis_data:

@@ -20,6 +20,9 @@ public enum ErrorCode {
     ACCESS_DENIED(1007, "Access denied", HttpStatus.FORBIDDEN),
     INVALID_KEY(1008, "Invalid key", HttpStatus.BAD_REQUEST),
     USER_NOT_CREATED(1009, "User not created", HttpStatus.BAD_REQUEST),
+    OTP_EXPIRED(10010, "OTP expired", HttpStatus.BAD_REQUEST),
+    INVALID_OTP(10011, "Invalid OTP", HttpStatus.BAD_REQUEST),
+    INVALID_RESET_TOKEN(10012, "Invalid reset token", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

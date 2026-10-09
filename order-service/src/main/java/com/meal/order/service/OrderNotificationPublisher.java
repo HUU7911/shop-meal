@@ -5,6 +5,7 @@ import com.meal.order.entity.Order;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,6 @@ import java.util.Locale;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderNotificationPublisher {
 
-    static final String TOPIC = "order-notification";
-
     KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
     public void publishOrderCreated(Order order, String email) {
@@ -32,7 +31,7 @@ public class OrderNotificationPublisher {
                     .body(buildBody(order))
                     .build();
 
-            kafkaTemplate.send(TOPIC, order.getId(), event)
+            kafkaTemplate.send("order-notification", order.getId(), event)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("publish order notification failed, orderCode={}", order.getOrderCode(), ex);

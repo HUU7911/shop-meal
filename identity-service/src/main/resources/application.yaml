@@ -12,6 +12,11 @@ spring:
     show-sql: true
     format-sql: false
     open-in-view: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -47,4 +52,4 @@ outbound:
   identity:
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}
-    redirect-uri: ${DIRECT_URL}
+    redirect-uri: ${REDIRECT_URL}

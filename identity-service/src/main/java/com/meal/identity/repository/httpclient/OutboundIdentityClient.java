@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(name = "outbound-identity", url = "https://oauth2.googleapis.com")
 public interface OutboundIdentityClient {
-    @PostMapping(value = "/token", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/token", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     ExchangeTokenResponse token(@QueryMap ExchangeTokenRequest request);
 }

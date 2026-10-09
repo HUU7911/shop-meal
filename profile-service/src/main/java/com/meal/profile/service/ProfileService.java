@@ -8,13 +8,16 @@ import com.meal.profile.exception.AppException;
 import com.meal.profile.exception.ErrorCode;
 import com.meal.profile.mapper.ProfileMapper;
 import com.meal.profile.repository.ProfileRepository;
+import com.meal.profile.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -24,6 +27,7 @@ public class ProfileService {
 
     ProfileMapper profileMapper;
     ProfileRepository profileRepository;
+    FileClient fileClient;
 
     public ProfileResponse createProfile(ProfileCreationRequest request) {
         Profile profile = profileMapper.toProfile(request);
@@ -55,6 +59,20 @@ public class ProfileService {
         );
 
         profileMapper.updateProfile(profile, request);
+
+        return profileMapper.toProfileResponse(profileRepository.save(profile));
+    }
+
+    public ProfileResponse uploadAvatar(MultipartFile file) throws IOException {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        var profile = profileRepository.findByUserId(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        var avatar = fileClient.uploadMedia(file);
+
+        profile.setAvatar(avatar.getResults().getUrl());
 
         return profileMapper.toProfileResponse(profileRepository.save(profile));
     }
