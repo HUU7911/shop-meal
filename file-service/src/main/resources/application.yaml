@@ -8,3 +8,16 @@ server:
   port: 8088
   servlet:
     context-path: /file
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA}
+
+app:
+  localDir: "/upload"
+  download: "http://localhost:8888/api/v1/file/media/download/"

@@ -11,6 +11,7 @@ import com.meal.product.exception.ErrorCode;
 import com.meal.product.mapper.FoodMapper;
 import com.meal.product.repository.CategoryRepository;
 import com.meal.product.repository.FoodRepository;
+import com.meal.product.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,9 +21,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -33,9 +36,10 @@ public class FoodService {
     FoodMapper foodMapper;
     CategoryRepository categoryRepository;
     FoodRepository foodRepository;
+    FileClient fileClient;
     KafkaTemplate<String, ProductEvent> kafkaTemplate;
 
-    public FoodResponse createFood(FoodRequest request) {
+    public FoodResponse createFood(FoodRequest request, MultipartFile file) {
         if (foodRepository.existsByName(request.name())){
             throw new AppException(ErrorCode.PRODUCT_EXIST);
         }
@@ -45,6 +49,9 @@ public class FoodService {
                 categoryRepository.findAllById(request.categories()));
         food.setCategories(categories);
         food.setCreatedDate(Instant.now());
+
+        var response = fileClient.upload(file);
+        food.setImages(List.of(response.getResults().getUrl()));
 
         food = foodRepository.save(food);
 

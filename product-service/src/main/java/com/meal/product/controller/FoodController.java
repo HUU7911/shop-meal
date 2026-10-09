@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/food")
@@ -20,9 +21,10 @@ public class FoodController {
     FoodService foodService;
 
     @PostMapping("/create")
-    ApiResponse<FoodResponse> create(@RequestBody FoodRequest foodRequest) {
+    ApiResponse<FoodResponse> create(@RequestBody FoodRequest foodRequest,
+                                     @RequestParam("file") MultipartFile file) {
         return ApiResponse.<FoodResponse>builder()
-                .results(foodService.createFood(foodRequest))
+                .results(foodService.createFood(foodRequest, file))
                 .build();
     }
 

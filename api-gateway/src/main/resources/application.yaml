@@ -68,6 +68,13 @@ spring:
               filters:
                 - StripPrefix=2
 
+            - id: file-service
+              uri: lb://file-service
+              predicates:
+                - Path=${app.api-prefix}/file/**
+              filters:
+                - StripPrefix=2
+
 eureka:
   client:
     service-url:

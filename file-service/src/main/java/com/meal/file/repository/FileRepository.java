@@ -2,6 +2,7 @@ package com.meal.file.repository;
 
 import com.meal.file.dto.FileInfor;
 import com.meal.file.entity.FileMgmt;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
@@ -20,8 +21,14 @@ import java.util.UUID;
 @Repository
 public class FileRepository {
 
+    @Value("${app.localDir}")
+    private String localDir;
+
+    @Value("app.download")
+    private String download;
+
     public FileInfor store(MultipartFile file) throws IOException {
-        Path folder = Paths.get("/upload");
+        Path folder = Paths.get(localDir);
 
         String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
 
@@ -39,7 +46,7 @@ public class FileRepository {
                 .contentType(file.getContentType())
                 .md5Checksum(DigestUtils.md5DigestAsHex(file.getInputStream()))
                 .path(filePath.toString())
-                .url("http://localhost:8088/file/media/download/")
+                .url(download + fileName)
                 .build();
     }
 
