@@ -24,7 +24,7 @@ public class FileRepository {
     @Value("${app.localDir}")
     private String localDir;
 
-    @Value("app.download")
+    @Value("${app.download}")
     private String download;
 
     public FileInfor store(MultipartFile file) throws IOException {

@@ -56,14 +56,14 @@ public class PaymentService {
 
             paymentRepository.save(payment);
 
-            return new PaymentResponse(
-                    payment.getId().toString(),
-                    payment.getOrderId(),
-                    payment.getOrderCode(),
-                    payment.getAmount(),
-                    payment.getCheckoutUrl(),
-                    payment.getStatus().name()
-            );
+            return PaymentResponse.builder()
+                    .orderId(payment.getOrderId())
+                    .orderCode(orderCode)
+                    .amount(payment.getAmount())
+                    .paymentId(payment.getPaymentLinkId())
+                    .checkoutUrl(payment.getCheckoutUrl())
+                    .status(String.valueOf(payment.getStatus()))
+                    .build();
 
         } catch (Exception e) {
             throw new AppException(ErrorCode.PAID_NOT_SEND);

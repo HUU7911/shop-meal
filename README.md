@@ -704,6 +704,51 @@ mvn spring-boot:run
 cd ../order-service
 mvn spring-boot:run
 ```
+# Tech advanced
+ 1. Rate limiting
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+</dependency>
+```
+ 2. SocketIO
+
+```xml
+<dependency>
+    <groupId>com.corundumstudio.socketio</groupId>
+    <artifactId>netty-socketio</artifactId>
+    <version>2.0.3</version> <!-- Use the latest stable version -->
+</dependency>
+```
+
+# Read .env
+
+```xml
+<dependency>
+    <groupId>io.github.cdimascio</groupId>
+    <artifactId>dotenv-java</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
+
+* Config Application.java
+
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMissing()
+                .load();
+
+        dotenv.entries().forEach(entry ->
+                System.setProperty(entry.getKey(), entry.getValue())
+        );
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
 
 ---
 

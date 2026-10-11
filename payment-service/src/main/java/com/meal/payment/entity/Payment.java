@@ -3,6 +3,7 @@ package com.meal.payment.entity;
 import com.meal.payment.constant.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,31 +16,32 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    UUID id;
 
     @Column(nullable = false, unique = true)
-    private String orderId;
+    String orderId;
 
     @Column(nullable = false, unique = true)
-    private Long orderCode;
+    Long orderCode;
 
     @Column(nullable = false)
-    private BigDecimal amount;
+    BigDecimal amount;
 
-    private String paymentLinkId;
+    String paymentLinkId;
 
-    private String checkoutUrl;
+    String checkoutUrl;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
+    PaymentStatus status;
 
-    private String transactionReference;
+    String transactionReference;
 
-    private LocalDateTime createdAt;
+    LocalDateTime createdAt;
 
-    private LocalDateTime paidAt;
+    LocalDateTime paidAt;
 }
