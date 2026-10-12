@@ -7,7 +7,7 @@ import com.meal.order.dto.client.PaymentResponse;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
@@ -16,6 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface PaymentClient {
-    @GetMapping(value = "/payment/paid", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/payment/paid/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<PaymentResponse> createPayment(@RequestBody @Valid CreatePaymentRequest request);
 }

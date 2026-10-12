@@ -15,8 +15,11 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         ApiResponse apiResponse = new ApiResponse();
 
+        e.fillInStackTrace();
+
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
+        apiResponse.setMessage(e.getMessage());
 
         return ResponseEntity.badRequest()
                 .body(apiResponse);
@@ -27,8 +30,11 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
         ApiResponse apiResponse = new ApiResponse();
 
+        e.printStackTrace();
+
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
+        apiResponse.setMessage(e.getMessage());
 
         return ResponseEntity.badRequest()
                 .body(apiResponse);

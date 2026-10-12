@@ -1,28 +1,40 @@
 package com.meal.payment.configuration;
 
-import com.meal.payment.properties.PayOSProperties;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import vn.payos.PayOS;
+import vn.payos.core.ClientOptions;
 
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@EnableConfigurationProperties(PayOSProperties.class)
 public class PayOSConfig {
 
-    PayOSProperties properties;
+    @NonFinal
+    @Value("${payos.client-id}")
+    private String clientId;
+
+    @NonFinal
+    @Value("${payos.api-key}")
+    private String apiKey;
+
+    @NonFinal
+    @Value("${payos.checksum-key}")
+    private String checksumKey;
 
     @Bean
     public PayOS payOS() {
         return new PayOS(
-                properties.getClientId(),
-                properties.getApiKey(),
-                properties.getChecksumKey()
+                ClientOptions.builder()
+                        .clientId(clientId)
+                        .apiKey(apiKey)
+                        .checksumKey(checksumKey)
+                        .build()
         );
     }
 }

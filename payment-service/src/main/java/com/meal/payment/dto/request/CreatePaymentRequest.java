@@ -12,6 +12,4 @@ public record CreatePaymentRequest(
 
         @Min(1000)
         BigDecimal amount
-
-) {
-}
+) {}

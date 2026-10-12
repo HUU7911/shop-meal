@@ -30,21 +30,17 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductSearchService {
 
-    private static final int MAX_PAGE_SIZE = 50;
+    static final int MAX_PAGE_SIZE = 50;
 
     ElasticsearchOperations elasticsearchOperations;
 
     public enum SortOption { RELEVANCE, PRICE_ASC, PRICE_DESC }
 
     public PageResponse<ProductDocument> searchProduct(
-            String keyword,
-            String category,
-            Type type,
-            BigDecimal minPrice,
-            BigDecimal maxPrice,
-            SortOption sortOption,
-            int page,
-            int size) {
+            String keyword, String category,
+            Type type, BigDecimal minPrice,
+            BigDecimal maxPrice, SortOption sortOption,
+            int page, int size) {
 
         int safePage = Math.max(page, 0);
         int safeSize = Math.clamp(size, 1, MAX_PAGE_SIZE);

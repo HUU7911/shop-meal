@@ -18,7 +18,7 @@ public class PaymentController {
 
     PaymentService paymentService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ApiResponse<PaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
 
         return ApiResponse.<PaymentResponse>builder()

@@ -6,11 +6,12 @@ import com.meal.payment.dto.response.PaymentResponse;
 import com.meal.payment.entity.Payment;
 import com.meal.payment.exception.AppException;
 import com.meal.payment.exception.ErrorCode;
-import com.meal.payment.properties.PayOSProperties;
 import com.meal.payment.repository.PaymentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
@@ -24,8 +25,15 @@ import java.time.LocalDateTime;
 public class PaymentService {
 
     PayOS payOS;
-    PayOSProperties properties;
     PaymentRepository paymentRepository;
+
+    @NonFinal
+    @Value("${payos.cancel-url}")
+    private String cancelUrl;
+
+    @NonFinal
+    @Value("${payos.return-url}")
+    private String returnUrl;
 
     public PaymentResponse createPayment(CreatePaymentRequest request) {
 
@@ -34,10 +42,10 @@ public class PaymentService {
         CreatePaymentLinkRequest paymentRequest =
                 CreatePaymentLinkRequest.builder()
                         .orderCode(orderCode)
-                        .amount(Long.valueOf(String.valueOf(request.amount())))
-                        .description("Thanh toan " + request.orderId())
-                        .cancelUrl(properties.getCancelUrl())
-                        .returnUrl(properties.getReturnUrl())
+                        .amount(request.amount().longValueExact())
+                        .description("Thanh toan don hang")
+                        .cancelUrl(cancelUrl)
+                        .returnUrl(returnUrl)
                         .build();
 
         try {

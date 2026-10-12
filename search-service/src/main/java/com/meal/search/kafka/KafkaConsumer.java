@@ -11,9 +11,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -27,13 +29,15 @@ public class KafkaConsumer {
             topics = "${app.kafka.product-topic:product-event}",
             groupId = "${spring.kafka.consumer.group-id:search-service}")
     public void consume(ProductEvent event) {
-        if (event == null || event.getId() == null || event.getEventType() == null) {
+        if (Objects.isNull(event)
+                || !StringUtils.hasText(event.getId())
+                || !StringUtils.hasText(String.valueOf(event.getEventType())))
+        {
             log.warn("Bỏ qua product event không hợp lệ: {}", event);
             return;
         }
 
         switch (event.getEventType().toUpperCase(Locale.ROOT)) {
-            // save() = upsert theo id nên xử lý lại cùng một event là an toàn (idempotent)
             case "CREATED", "UPDATED" -> productSearchRepository.save(toDocument(event));
             case "DELETED" -> productSearchRepository.deleteById(event.getId());
             default -> log.warn("Bỏ qua eventType không hỗ trợ: {} (productId={})",
@@ -56,7 +60,7 @@ public class KafkaConsumer {
     }
 
     private List<CategoryDocument> toCategoryDocuments(List<CategoryEvent> categories) {
-        if (categories == null) {
+        if (Objects.isNull(categories)) {
             return List.of();
         }
         return categories.stream()
