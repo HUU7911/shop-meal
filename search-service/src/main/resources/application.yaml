@@ -6,7 +6,7 @@ spring:
       pem:
         elastic:
           truststore:
-            certificate: file:///home/huu-mod/elastic-http-ca.crt
+            certificate: ${SSL}
   elasticsearch:
     uris: https://localhost:9200
     username: elastic
