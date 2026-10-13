@@ -10,7 +10,7 @@ spring:
   elasticsearch:
     uris: https://localhost:9200
     username: elastic
-    password: Qzue*oJCvqWIbC_BQXPv
+    password: ${PASSWORD}
     restclient:
       ssl:
         bundle: elastic

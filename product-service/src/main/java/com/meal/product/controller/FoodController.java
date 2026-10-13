@@ -9,6 +9,7 @@ import com.meal.product.service.FoodService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,9 +21,10 @@ public class FoodController {
 
     FoodService foodService;
 
-    @PostMapping("/create")
-    ApiResponse<FoodResponse> create(@RequestBody FoodRequest foodRequest,
-                                     @RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<FoodResponse> create(
+            @RequestPart("food") FoodRequest foodRequest,
+            @RequestPart("file") MultipartFile file) {
         return ApiResponse.<FoodResponse>builder()
                 .results(foodService.createFood(foodRequest, file))
                 .build();

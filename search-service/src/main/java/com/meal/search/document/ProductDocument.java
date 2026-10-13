@@ -21,7 +21,6 @@ public class ProductDocument {
     @Id
     String id;
 
-    /** name: giữ dấu (khớp chính xác hơn) - name.folded: bỏ dấu (gõ "pho" vẫn ra "phở"). */
     @MultiField(
             mainField = @Field(type = FieldType.Text, analyzer = "vi_accent"),
             otherFields = @InnerField(suffix = "folded", type = FieldType.Text, analyzer = "vi_folded"))
@@ -39,7 +38,6 @@ public class ProductDocument {
     @Field(type = FieldType.Double)
     BigDecimal price;
 
-    /** Chỉ để trả về, không dùng để tìm kiếm nên không đánh index. */
     @Field(type = FieldType.Keyword, index = false)
     List<String> images;
 
