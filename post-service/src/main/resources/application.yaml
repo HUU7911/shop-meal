@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: post-service
+  mongodb:
+    uri: ${POST_DB}
+
+server:
+  port: 8089
+  servlet:
+    context-path: /post
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA}
