@@ -1,5 +1,6 @@
 package com.meal.product.configuration;
 
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +21,18 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecode customJwtDecode;
 
+    @NonFinal
+    private final String[] INTERNAL_ENDPOINTS = {
+            "/food/create",
+            "/food/update",
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers(HttpMethod.POST, "/food/create").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers(INTERNAL_ENDPOINTS).hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers(HttpMethod.GET, "/food").permitAll()
                         .anyRequest().authenticated());
 

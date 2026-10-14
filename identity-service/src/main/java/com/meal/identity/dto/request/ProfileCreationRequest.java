@@ -22,6 +22,8 @@ public class ProfileCreationRequest {
 
     String lastName;
 
+    String phoneNumber;
+
     String email;
 
     String address;

@@ -18,6 +18,8 @@ public class ProfileUpdateRequest {
 
     String lastName;
 
+    String phoneNumber;
+
     String email;
 
     String address;

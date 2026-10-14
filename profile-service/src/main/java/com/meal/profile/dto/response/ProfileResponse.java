@@ -22,6 +22,8 @@ public class ProfileResponse {
 
     String lastName;
 
+    String phoneNumber;
+
     String email;
 
     String address;

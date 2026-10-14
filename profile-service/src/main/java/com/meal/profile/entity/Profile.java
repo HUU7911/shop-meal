@@ -33,6 +33,9 @@ public class Profile {
     String lastName;
 
     @Convert(converter = EncryptConvertor.class)
+    String phoneNumber;
+
+    @Convert(converter = EncryptConvertor.class)
     String email;
 
     @Convert(converter = EncryptConvertor.class)

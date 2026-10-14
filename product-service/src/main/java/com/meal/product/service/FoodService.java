@@ -3,6 +3,7 @@ package com.meal.product.service;
 import com.meal.even.dto.ProductEvent;
 import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
+import com.meal.product.dto.request.FoodUpdateRequest;
 import com.meal.product.dto.response.FoodResponse;
 import com.meal.product.dto.response.FoodSnapshotResponse;
 import com.meal.product.entity.Category;
@@ -69,6 +70,21 @@ public class FoodService {
                 .build();
 
         publishProductEvent(productEvent);
+
+        return foodMapper.toFoodResponse(food);
+    }
+
+    public FoodResponse updateFood(String id, FoodUpdateRequest request, MultipartFile file) {
+        var food = foodRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        foodMapper.updateFood(food, request);
+
+        var response = fileClient.upload(file);
+        food.setImages(List.of(response.getResults().getUrl()));
+
+        food = foodRepository.save(food);
 
         return foodMapper.toFoodResponse(food);
     }
