@@ -19,7 +19,7 @@ public class Post {
     String id;
 
     String userId;
-
+    String userName;
     String postTitle;
     String postContent;
 

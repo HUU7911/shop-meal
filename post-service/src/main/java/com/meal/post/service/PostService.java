@@ -27,7 +27,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -42,12 +41,14 @@ public class PostService {
     ProfileClient profileClient;
     ProductClient productClient;
     PostForProductRepository postForProductRepository;
+    DateTimeFormater dateTimeFormater;
 
     public PostResponse createPost(PostRequest request) {
         Instant now = Instant.now();
 
         Post post = postMapper.toPostResponse(request);
         post.setUserId(currentUserId());
+        post.setUserName(fetchUsername(currentUserId()));
         post.setCreatedDate(now);
         post.setModifiedDate(now);
 
@@ -93,13 +94,12 @@ public class PostService {
 
         String username = result.isEmpty() ? null : fetchUsername(userId);
 
-        List<PostResponse> data = result.getContent().stream()
-                .map(post -> {
-                    PostResponse response = postMapper.toPostResponse(post);
+        var data = result.getContent().stream().map(post -> {
+                    var response = postMapper.toPostResponse(post);
+                    response.setCreatedDate(dateTimeFormater.format(post.getCreatedDate()));
                     response.setUserName(username);
                     return response;
-                })
-                .toList();
+                }).toList();
 
         return PageResponse.<PostResponse>builder()
                 .currentPage(pageNumber)

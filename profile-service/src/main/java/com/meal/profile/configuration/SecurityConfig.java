@@ -27,7 +27,7 @@ public class SecurityConfig{
     };
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http.authorizeHttpRequests(
                 authorizeRequests -> authorizeRequests
                                 .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
@@ -45,6 +45,7 @@ public class SecurityConfig{
         return http.build();
     }
 
+    @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
