@@ -112,6 +112,7 @@ shop-meal/
 | `discovery-service` | Service Discovery |
 | `identity-service` | Authentication và Authorization |
 | `profile-service` | Quản lý thông tin người dùng |
+| `post-service` | Quản lý thông tin bài viết và banner|
 | `product-service` | Quản lý sản phẩm |
 | `search-service` | Tìm kiếm sản phẩm |
 | `cart-service` | Quản lý giỏ hàng |
