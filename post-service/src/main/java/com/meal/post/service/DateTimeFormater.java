@@ -22,7 +22,7 @@ public class DateTimeFormater {
         strategyMap.put(Long.MAX_VALUE, this::formatInDate);
     }
 
-    public Instant format(Instant instant){
+    public String format(Instant instant){
         long elapseSeconds = ChronoUnit.SECONDS.between(instant, Instant.now());
 
         var strategy = strategyMap.entrySet()

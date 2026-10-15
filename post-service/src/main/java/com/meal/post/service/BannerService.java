@@ -7,11 +7,13 @@ import com.meal.post.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,17 @@ public class BannerService {
                 .id(banner.getId())
                 .url(banner.getUrl())
                 .build();
+    }
+
+    public List<BannerResponse> getAll() {
+        return bannerRepository.findAll()
+                .stream().map(banner -> {
+                    var response = BannerResponse.builder()
+                            .id(banner.getId())
+                            .url(banner.getUrl())
+                            .build();
+                    return response;
+                }).toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/banner")
@@ -31,6 +32,13 @@ public class BannerController {
         bannerService.deleteBanner(Id);
         return ApiResponse.<Void>builder()
                 .message("delete banner success")
+                .build();
+    }
+
+    @GetMapping("/getAll")
+    ApiResponse<List<BannerResponse>> getAllBanner() {
+        return ApiResponse.<List<BannerResponse>>builder()
+                .results(bannerService.getAll())
                 .build();
     }
 }

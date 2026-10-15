@@ -27,6 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -84,7 +86,7 @@ public class PostService {
 
     public PageResponse<PostResponse> getMyPost(int page, int size) {
         int pageNumber = Math.max(page, 1);
-        int pageSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        int pageSize = Math.clamp(size, 1, MAX_PAGE_SIZE);
 
         String userId = currentUserId();
         Pageable pageable = PageRequest.of(
@@ -94,9 +96,9 @@ public class PostService {
 
         String username = result.isEmpty() ? null : fetchUsername(userId);
 
-        var data = result.getContent().stream().map(post -> {
+        List<PostResponse> data = result.getContent().stream().map(post -> {
                     var response = postMapper.toPostResponse(post);
-                    response.setCreatedDate(dateTimeFormater.format(post.getCreatedDate()));
+                    response.setCreated(dateTimeFormater.format(post.getCreatedDate()));
                     response.setUserName(username);
                     return response;
                 }).toList();
@@ -129,12 +131,12 @@ public class PostService {
                     ? response.getResults().getUsername()
                     : null;
         } catch (Exception e) {
-            log.warn("Không lấy được profile của user {}: {}", userId, e.getMessage());
+            log.warn("Can't get profile for user: {}: {}", userId, e.getMessage());
             return null;
         }
     }
 
     private String currentUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        return Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
     }
 }
