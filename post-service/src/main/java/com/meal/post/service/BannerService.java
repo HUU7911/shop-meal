@@ -7,6 +7,7 @@ import com.meal.post.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ public class BannerService {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteBanner(String id) {
         bannerRepository.deleteById(id);
     }

@@ -2,9 +2,10 @@ package com.meal.post.service;
 
 import com.meal.post.dto.PageResponse;
 import com.meal.post.dto.request.PostRequest;
+import com.meal.post.dto.response.FoodInfoResponse;
 import com.meal.post.dto.response.PostForProductResponse;
 import com.meal.post.dto.response.PostResponse;
-import com.meal.post.dto.response.ProfileResponse;
+import com.meal.post.entity.Post;
 import com.meal.post.entity.PostForProduct;
 import com.meal.post.exception.AppException;
 import com.meal.post.exception.ErrorCode;
@@ -13,24 +14,28 @@ import com.meal.post.repository.PostForProductRepository;
 import com.meal.post.repository.PostRepository;
 import com.meal.post.repository.httpclient.ProductClient;
 import com.meal.post.repository.httpclient.ProfileClient;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostService {
+
+    private static final int MAX_PAGE_SIZE = 50;
 
     PostMapper postMapper;
     PostRepository postRepository;
@@ -38,82 +43,98 @@ public class PostService {
     ProductClient productClient;
     PostForProductRepository postForProductRepository;
 
-    @Transactional
-    public PostResponse createPost(PostRequest postRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public PostResponse createPost(PostRequest request) {
+        Instant now = Instant.now();
 
-        var post = postMapper.toPostResponse(postRequest);
-        post.setUserId(authentication.getName());
-        post.setCreatedDate(Instant.now());
-        post.setModifiedDate(Instant.now());
+        Post post = postMapper.toPostResponse(request);
+        post.setUserId(currentUserId());
+        post.setCreatedDate(now);
+        post.setModifiedDate(now);
 
-        post = postRepository.save(post);
-
-        return postMapper.toPostResponse(post);
+        return postMapper.toPostResponse(postRepository.save(post));
     }
 
-    @Transactional
     public PostForProductResponse createPostForProduct(PostRequest request, String productId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        var product = productClient.getFoodInfo(productId);
-        if (Objects.isNull(product)) {
-            throw new AppException(ErrorCode.NOT_FOUND);
-        }
+        FoodInfoResponse food = fetchFood(productId);
+        Instant now = Instant.now();
 
-        var postInfor = PostForProduct.builder()
-                .userId(authentication.getName())
-                .productId(productId)
-                .productName(product.getResults().name())
-                .postTitle(request.getPostTitle())
-                .postContent(request.getPostContent())
-                .createdDate(Instant.now())
-                .modifiedDate(Instant.now())
-                .build();
-
-        postInfor = postForProductRepository.save(postInfor);
+        PostForProduct saved = postForProductRepository.save(
+                PostForProduct.builder()
+                        .userId(currentUserId())
+                        .productId(productId)
+                        .productName(food.name())
+                        .postTitle(request.getPostTitle())
+                        .postContent(request.getPostContent())
+                        .createdDate(now)
+                        .modifiedDate(now)
+                        .build());
 
         return PostForProductResponse.builder()
-                .id(postInfor.getId())
-                .userId(postInfor.getUserId())
-                .productId(postInfor.getProductId())
-                .productName(postInfor.getProductName())
-                .postTitle(postInfor.getPostTitle())
-                .postContent(postInfor.getPostContent())
-                .createdDate(postInfor.getCreatedDate())
-                .modifiedDate(postInfor.getModifiedDate())
+                .id(saved.getId())
+                .userId(saved.getUserId())
+                .productId(saved.getProductId())
+                .productName(saved.getProductName())
+                .postTitle(saved.getPostTitle())
+                .postContent(saved.getPostContent())
+                .createdDate(saved.getCreatedDate())
+                .modifiedDate(saved.getModifiedDate())
                 .build();
     }
 
     public PageResponse<PostResponse> getMyPost(int page, int size) {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        int pageNumber = Math.max(page, 1);
+        int pageSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
 
-        ProfileResponse profileResponse = null;
+        String userId = currentUserId();
+        Pageable pageable = PageRequest.of(
+                pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
 
-        try {
-            profileResponse = profileClient.getProfile(userId).getResults();
-        }catch (Exception e){
-           throw new RuntimeException(e.fillInStackTrace());
-        }
+        Page<Post> result = postRepository.findAllByUserId(userId, pageable);
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
-        Pageable pageable = PageRequest.of(page-1, size, sort);
+        String username = result.isEmpty() ? null : fetchUsername(userId);
 
-        var response = postRepository.findAllByUserId(userId, pageable);
-
-        String username = !Objects.isNull(profileResponse)
-                ? profileResponse.getUsername()
-                : null;
-        var responseList = response.getContent().stream().map(post -> {
-            var result = postMapper.toPostResponse(post);
-            result.setUserName(username);
-            return result;
-        }).toList();
+        List<PostResponse> data = result.getContent().stream()
+                .map(post -> {
+                    PostResponse response = postMapper.toPostResponse(post);
+                    response.setUserName(username);
+                    return response;
+                })
+                .toList();
 
         return PageResponse.<PostResponse>builder()
-                .currentPage(page)
-                .pageSize(response.getSize())
-                .totalElements(response.getTotalElements())
-                .data(responseList)
+                .currentPage(pageNumber)
+                .pageSize(result.getSize())
+                .totalPage(result.getTotalPages())
+                .totalElements(result.getTotalElements())
+                .data(data)
                 .build();
+    }
+
+    private FoodInfoResponse fetchFood(String productId) {
+        try {
+            var response = productClient.getFoodInfo(productId);
+            if (response == null || response.getResults() == null) {
+                throw new AppException(ErrorCode.NOT_FOUND);
+            }
+            return response.getResults();
+        } catch (FeignException.NotFound e) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+    }
+
+    private String fetchUsername(String userId) {
+        try {
+            var response = profileClient.getProfile(userId);
+            return (response != null && response.getResults() != null)
+                    ? response.getResults().getUsername()
+                    : null;
+        } catch (Exception e) {
+            log.warn("Không lấy được profile của user {}: {}", userId, e.getMessage());
+            return null;
+        }
+    }
+
+    private String currentUserId() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
