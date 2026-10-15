@@ -86,6 +86,13 @@ spring:
               filters:
                 - StripPrefix=2
 
+            - id: post-service
+              uri: lb://post-service
+              predicates:
+                - Path=${app.api-prefix}/post/**
+              filters:
+                - StripPrefix=2
+
 eureka:
   client:
     service-url:

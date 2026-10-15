@@ -4,6 +4,7 @@ import com.meal.product.dto.ApiResponse;
 import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.request.FoodUpdateRequest;
+import com.meal.product.dto.response.FoodInfoResponse;
 import com.meal.product.dto.response.FoodResponse;
 import com.meal.product.dto.response.FoodSnapshotResponse;
 import com.meal.product.service.FoodService;
@@ -60,6 +61,13 @@ public class FoodController {
     ApiResponse<FoodSnapshotResponse> getFoodSnapshotById(@PathVariable String Id) {
         return ApiResponse.<FoodSnapshotResponse>builder()
                 .results(foodService.getFoodSnapshotById(Id))
+                .build();
+    }
+
+    @GetMapping("/info/{id}")
+    ApiResponse<FoodInfoResponse> getFoodInfoById(@PathVariable String id) {
+        return ApiResponse.<FoodInfoResponse>builder()
+                .results(foodService.findFoodInfoById(id))
                 .build();
     }
 

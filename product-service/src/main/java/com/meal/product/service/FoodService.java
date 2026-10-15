@@ -4,6 +4,7 @@ import com.meal.even.dto.ProductEvent;
 import com.meal.product.dto.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.request.FoodUpdateRequest;
+import com.meal.product.dto.response.FoodInfoResponse;
 import com.meal.product.dto.response.FoodResponse;
 import com.meal.product.dto.response.FoodSnapshotResponse;
 import com.meal.product.entity.Category;
@@ -87,6 +88,17 @@ public class FoodService {
         food = foodRepository.save(food);
 
         return foodMapper.toFoodResponse(food);
+    }
+
+    public FoodInfoResponse findFoodInfoById(String id) {
+        var response = foodRepository.findFoodInfoById(id).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        return FoodInfoResponse.builder()
+                .id(id)
+                .name(response.name())
+                .build();
     }
 
     public FoodResponse getFoodById(String id) {

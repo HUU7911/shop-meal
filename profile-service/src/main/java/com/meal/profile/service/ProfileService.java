@@ -41,6 +41,14 @@ public class ProfileService {
                 .map(profileMapper::toProfileResponse).toList();
     }
 
+    public ProfileResponse getProfile(String id) {
+        var response = profileRepository.findByUserId(id).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        return profileMapper.toProfileResponse(response);
+    }
+
     public ProfileResponse getMyProfile() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 

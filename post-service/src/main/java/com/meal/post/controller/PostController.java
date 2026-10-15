@@ -1,0 +1,47 @@
+package com.meal.post.controller;
+
+import com.meal.post.dto.ApiResponse;
+import com.meal.post.dto.PageResponse;
+import com.meal.post.dto.request.PostRequest;
+import com.meal.post.dto.response.PostForProductResponse;
+import com.meal.post.dto.response.PostResponse;
+import com.meal.post.service.PostService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class PostController {
+
+    PostService postService;
+
+    @PostMapping("/create")
+    ApiResponse<PostResponse> createPost(@RequestBody PostRequest postRequest) {
+        return ApiResponse.<PostResponse>builder()
+                .results(postService.createPost(postRequest))
+                .build();
+    }
+
+    @GetMapping("/my-posts")
+    ApiResponse<PageResponse<PostResponse>> getMyPosts(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .results(postService.getMyPost(page, size))
+                .build();
+    }
+
+    @PostMapping("/product/create")
+    ApiResponse<PostForProductResponse> createPostForProduct(
+            @RequestBody PostRequest postRequest,
+            @RequestParam("Id") String Id
+    ) {
+        return ApiResponse.<PostForProductResponse>builder()
+                .results(postService.createPostForProduct(postRequest, Id))
+                .build();
+    }
+}
