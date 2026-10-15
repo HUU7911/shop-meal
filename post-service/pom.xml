@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.meal</groupId>
-    <artifactId>post-services</artifactId>
+    <artifactId>post-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>post-service</name>
     <description>post-service</description>
