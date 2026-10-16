@@ -25,6 +25,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http){
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
+                        .requestMatchers(HttpMethod.POST, "/paid/payos-webhook").permitAll()
                         .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);

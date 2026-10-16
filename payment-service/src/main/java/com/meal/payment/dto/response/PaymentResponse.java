@@ -3,6 +3,7 @@ package com.meal.payment.dto.response;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Builder
 public record PaymentResponse(
@@ -11,6 +12,7 @@ public record PaymentResponse(
         Long orderCode,
         BigDecimal amount,
         String checkoutUrl,
-        String status
+        String status,
+        LocalDateTime expiredAt
 ) {
 }

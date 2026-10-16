@@ -9,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import vn.payos.model.webhooks.Webhook;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/paid")
@@ -23,6 +26,14 @@ public class PaymentController {
 
         return ApiResponse.<PaymentResponse>builder()
                 .results(paymentService.createPayment(request))
+                .build();
+    }
+
+    @PostMapping("/payos-webhook")
+    public ApiResponse<Map<String, Object>> handleWebhook(@RequestBody Webhook body) {
+        paymentService.handleWebhook(body);
+        return ApiResponse.<Map<String, Object>>builder()
+                .results(Map.of("success", true))
                 .build();
     }
 }

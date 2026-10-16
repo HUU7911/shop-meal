@@ -43,5 +43,7 @@ public class Payment {
 
     LocalDateTime createdAt;
 
+    LocalDateTime expiredAt;
+
     LocalDateTime paidAt;
 }
