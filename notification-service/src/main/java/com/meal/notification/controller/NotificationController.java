@@ -1,7 +1,6 @@
 package com.meal.notification.controller;
 
 import com.meal.even.dto.NotificationEvent;
-import com.meal.even.dto.PasswordResetOtpEvent;
 import com.meal.notification.dto.request.Recipient;
 import com.meal.notification.dto.request.SendEmailRequest;
 import com.meal.notification.service.EmailService;
@@ -39,14 +38,14 @@ public class NotificationController {
     }
 
     @KafkaListener(topics = "password-reset-otp")
-    public void listenResetPassword(PasswordResetOtpEvent event) {
+    public void listenResetPassword(NotificationEvent event) {
         log.info("Receive to notification service with reset password: {}", event);
         emailService.sendEmail(SendEmailRequest.builder()
                         .to(List.of(Recipient.builder()
-                                        .email(event.getEmail())
+                                        .email(event.getRecipient())
                                 .build()))
                         .subject("Reset Password")
-                        .htmlContent(event.getOtp())
+                        .htmlContent(event.getBody())
                 .build());
     }
 }

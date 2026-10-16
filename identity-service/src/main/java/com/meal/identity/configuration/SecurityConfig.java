@@ -30,9 +30,9 @@ public class SecurityConfig{
 
     @NonFinal
     private final String[] PUBLIC_RESET_PASSWORD = {
-            "/forgot-password",
-            "/reset-password",
-            "/verify-otp"
+            "/auth/forgot-password",
+            "/auth/reset-password",
+            "/auth/verify-otp"
     };
 
     @Autowired

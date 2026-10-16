@@ -1,6 +1,6 @@
 package com.meal.identity.service;
 
-import com.meal.event.dto.PasswordResetOtpEvent;
+import com.meal.event.dto.NotificationEvent;
 import com.meal.identity.dto.request.ForgotPasswordRequest;
 import com.meal.identity.dto.request.ResetPasswordRequest;
 import com.meal.identity.dto.request.VerifyOtpRequest;
@@ -30,27 +30,27 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PasswordResetService {
 
-    private static final String OTP_PREFIX = "password-reset:otp:";
-    private static final String ATTEMPT_PREFIX = "password-reset:attempt:";
-    private static final String COOLDOWN_PREFIX = "password-reset:cooldown:";
-    private static final String TOKEN_PREFIX = "password-reset:token:";
-    private static final String USER_TOKEN_PREFIX = "password-reset:user-token:";
+    static final String OTP_PREFIX = "password-reset:otp:";
+    static final String ATTEMPT_PREFIX = "password-reset:attempt:";
+    static final String COOLDOWN_PREFIX = "password-reset:cooldown:";
+    static final String TOKEN_PREFIX = "password-reset:token:";
+    static final String USER_TOKEN_PREFIX = "password-reset:user-token:";
 
-    private static final Duration OTP_TTL = Duration.ofMinutes(5);
-    private static final Duration RESET_TOKEN_TTL = Duration.ofMinutes(10);
-    private static final Duration REQUEST_COOLDOWN = Duration.ofSeconds(60);
-    private static final int MAX_OTP_ATTEMPTS = 5;
+    static final Duration OTP_TTL = Duration.ofMinutes(5);
+    static final Duration RESET_TOKEN_TTL = Duration.ofMinutes(10);
+    static final Duration REQUEST_COOLDOWN = Duration.ofSeconds(60);
+    static final int MAX_OTP_ATTEMPTS = 5;
 
-    private static final String OTP_TOPIC = "password-reset-otp";
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    static final String OTP_TOPIC = "password-reset-otp";
+    static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     StringRedisTemplate redisTemplate;
-    KafkaTemplate<String, PasswordResetOtpEvent> kafkaTemplate;
+    KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
     public void forgotPassword(ForgotPasswordRequest request) {
-        String email = normalizeEmail(request.getEmail());
+        String email = request.getEmail();
 
         Boolean acquired = redisTemplate.opsForValue()
                 .setIfAbsent(COOLDOWN_PREFIX + email, "1", REQUEST_COOLDOWN);
@@ -71,9 +71,11 @@ public class PasswordResetService {
         redisTemplate.delete(ATTEMPT_PREFIX + email);
         revokeExistingResetToken(user.getId());
 
-        PasswordResetOtpEvent event = PasswordResetOtpEvent.builder()
-                .email(email)
-                .otp(otp)
+        NotificationEvent event = NotificationEvent.builder()
+                .chanel("EMAIL")
+                .recipient(email)
+                .subject("Reset Password")
+                .body("Otp: " + otp)
                 .build();
 
         kafkaTemplate.send(OTP_TOPIC, email, event).whenComplete((result, ex) -> {
