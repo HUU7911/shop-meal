@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @FeignClient(
         name = "profile-service",
-        url = "${app.services.profile-url}",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface ProfileClient {

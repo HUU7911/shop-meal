@@ -755,13 +755,19 @@ public class Application {
 
 # 🌐 Frontend
 
-Di chuyển vào thư mục:
+Clone repository frontend
+
+```bash
+git clone https://github.com/HUU7911/web-app.git
+```
+
+Change directory folder:
 
 ```bash
 cd web-app
 ```
 
-Cài dependencies:
+Install dependencies:
 
 ```bash
 npm install

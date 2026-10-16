@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @FeignClient(
         name = "cart-service",
-        url = "${app.services.cart-url}",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface CartClient {
@@ -18,6 +17,6 @@ public interface CartClient {
     @GetMapping(value = "/cart/my-cart", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<CartResponse> getMyCart();
 
-    @DeleteMapping(value = "/cart/my-cart", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/cart/clear-my-cart", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<Void> clearMyCart();
 }

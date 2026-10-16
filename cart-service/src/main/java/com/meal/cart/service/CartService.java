@@ -8,6 +8,7 @@ import com.meal.cart.entity.CartItem;
 import com.meal.cart.exception.AppException;
 import com.meal.cart.exception.ErrorCode;
 import com.meal.cart.mapper.CartMapper;
+import com.meal.cart.repository.CartItemRepository;
 import com.meal.cart.repository.CartRepository;
 import com.meal.cart.repository.httpclient.ProductItemClient;
 import lombok.AccessLevel;
@@ -29,10 +30,11 @@ public class CartService {
     CartRepository cartRepository;
     CartMapper cartMapper;
     ProductItemClient productItemClient;
+    CartItemRepository cartItemRepository;
 
     @Transactional
     public CartResponse addProductToCart(String productId) {
-        String userId = userId();
+        String userId = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
         ApiResponse<FoodSnapshotResponse> product = productItemClient.getFoodById(productId);
         if (Objects.isNull(product) || Objects.isNull(product.getResults())) {
@@ -52,7 +54,7 @@ public class CartService {
                 .findFirst()
                 .orElse(null);
 
-        if (existing != null) {
+        if (Objects.isNull(existing)) {
             existing.setQuantity(existing.getQuantity() + 1);
         } else {
             CartItem cartItem = CartItem.builder()
@@ -71,7 +73,7 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public CartResponse getMyCart() {
-        String userId = userId();
+        String userId = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() ->
                 Cart.builder()
@@ -116,9 +118,21 @@ public class CartService {
         return saveAndMap(cart);
     }
 
+    public void deleteAllCart() {
+        var userId = Objects.requireNonNull(
+                SecurityContextHolder.getContext().getAuthentication()).getName();
+
+        var cart = cartRepository.findByUserId(userId).orElseThrow(
+                () -> new AppException(ErrorCode.CART_NOT_FOUND)
+        );
+
+        cartItemRepository.deleteAll(cart.getItems());
+    }
+
     private Cart getCurrentUserCart() {
-        return cartRepository.findByUserId(userId())
-                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+        var userId = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        return cartRepository.findByUserId(userId).orElseThrow(
+                () -> new AppException(ErrorCode.CART_NOT_FOUND));
     }
 
     private CartItem findItem(Cart cart, String itemId) {
@@ -138,9 +152,5 @@ public class CartService {
         return cart.getItems().stream()
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    private String userId() {
-        return Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
     }
 }

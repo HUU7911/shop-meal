@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "profile-service", url = "${app.config.url}",
+@FeignClient(
+        name = "profile-service",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface ProfileClient {

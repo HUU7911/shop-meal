@@ -1,7 +1,10 @@
 package com.meal.identity.service;
 
 import com.meal.identity.dto.request.RoleRequest;
+import com.meal.identity.dto.request.RoleUpdateRequest;
 import com.meal.identity.dto.response.RoleResponse;
+import com.meal.identity.exception.AppException;
+import com.meal.identity.exception.ErrorCode;
 import com.meal.identity.mapper.RoleMapper;
 import com.meal.identity.repository.PermissionRepository;
 import com.meal.identity.repository.RoleRepository;
@@ -37,6 +40,16 @@ public class RoleService {
                 .findAll().stream()
                 .map(roleMapper::toRoleResponse)
                 .toList();
+    }
+
+    public RoleResponse updateRole(String name, RoleUpdateRequest request) {
+        var role = roleRepository.findById(name).orElseThrow(
+                () -> new AppException(ErrorCode.UNAUTHENTICATED)
+        );
+
+        roleMapper.updateRole(role, request);
+
+        return roleMapper.toRoleResponse(role);
     }
 
     public void deleteById(String name) {

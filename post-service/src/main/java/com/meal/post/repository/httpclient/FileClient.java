@@ -13,7 +13,6 @@ import java.io.IOException;
 
 @FeignClient(
         name = "file-service",
-        url = "${app.config.file-url}",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface FileClient {

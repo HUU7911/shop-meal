@@ -2,6 +2,7 @@ package com.meal.identity.controller;
 
 import com.meal.identity.dto.ApiResponse;
 import com.meal.identity.dto.request.RoleRequest;
+import com.meal.identity.dto.request.RoleUpdateRequest;
 import com.meal.identity.dto.response.RoleResponse;
 import com.meal.identity.service.RoleService;
 import lombok.AccessLevel;
@@ -38,6 +39,13 @@ public class RoleController {
         roleService.deleteById(name);
         return ApiResponse.<Void>builder()
                 .message("role deleted successfully")
+                .build();
+    }
+
+    @PutMapping("/update/{name}")
+    ApiResponse<RoleResponse> update(@PathVariable String name, @RequestBody RoleUpdateRequest request) throws  Exception {
+        return ApiResponse.<RoleResponse>builder()
+                .results(roleService.updateRole(name, request))
                 .build();
     }
 }

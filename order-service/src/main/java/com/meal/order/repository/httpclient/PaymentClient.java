@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
         name = "payment-service",
-        url = "${app.services.payment-url}",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface PaymentClient {

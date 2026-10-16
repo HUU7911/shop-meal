@@ -66,7 +66,6 @@ public class AuthenticationController {
     public ApiResponse<Void> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
         passwordResetService.forgotPassword(request);
         return ApiResponse.<Void>builder()
-                .code(1000)
                 .message("If the email exists, an OTP has been sent")
                 .build();
     }
@@ -75,7 +74,6 @@ public class AuthenticationController {
     public ApiResponse<ResetPasswordResponse> verifyOtp(@RequestBody @Valid VerifyOtpRequest request) {
         String resetToken = passwordResetService.verifyOtp(request);
         return ApiResponse.<ResetPasswordResponse>builder()
-                .code(1000)
                 .results(ResetPasswordResponse.builder()
                         .resetToken(resetToken)
                         .build())
@@ -86,7 +84,6 @@ public class AuthenticationController {
     public ApiResponse<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         passwordResetService.resetPassword(request);
         return ApiResponse.<Void>builder()
-                .code(1000)
                 .message("Password reset successfully")
                 .build();
     }

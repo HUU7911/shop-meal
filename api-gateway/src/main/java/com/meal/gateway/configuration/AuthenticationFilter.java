@@ -41,11 +41,16 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/users/create",
             "/identity/auth/login",
             "/identity/auth/introspect",
+            "/identity/auth/forgot-password",
+            "/identity/auth/reset-password",
+            "/identity/auth/verify-otp",
             "/notification/email/send",
             "/search/product",
             "/product/food",
+            "/product/category",
             "/identity/auth/outbound/identity",
             "/file/media/download",
+            "/post/banner/getAll"
     };
 
     @Value("${app.api-prefix}")
@@ -64,7 +69,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeaders.getFirst().replace("Bearer ", "");
-        log.info("token:{}", token);
 
         return identityService.introspect(token).flatMap(introspectResponse -> {
             if (introspectResponse.getResults().isValid()) {

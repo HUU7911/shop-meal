@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
         name = "profile-service",
-        url = "${app.config.profile-url}",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface ProfileClient {

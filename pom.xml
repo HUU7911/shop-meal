@@ -21,5 +21,6 @@
         <module>search-service</module>
         <module>file-service</module>
         <module>post-service</module>
+        <module>order-service</module>
     </modules>
 </project>

@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(INTERNAL_ENDPOINTS).hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers(HttpMethod.GET, "/food").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/food", "/category").permitAll()
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2

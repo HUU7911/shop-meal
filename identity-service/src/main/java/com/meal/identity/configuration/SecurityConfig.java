@@ -28,6 +28,13 @@ public class SecurityConfig{
             "/auth/outbound/identity"
     };
 
+    @NonFinal
+    private final String[] PUBLIC_RESET_PASSWORD = {
+            "/forgot-password",
+            "/reset-password",
+            "/verify-otp"
+    };
+
     @Autowired
     private CustomJwtDecoder jwtDecoder;
 
@@ -39,7 +46,8 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(RoleDefine.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/users/delete/{id}").hasRole(RoleDefine.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/internal/users/create").hasRole(RoleDefine.ADMIN.name())
-                        .requestMatchers("/users").hasAuthority("GET_ALL_USER")
+                        .requestMatchers(HttpMethod.PUT, "/roles/update").hasRole(RoleDefine.ADMIN.name())
+                        .requestMatchers(PUBLIC_RESET_PASSWORD).permitAll()
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth ->

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
         name = "product-service",
-        url = "${app.services.product-url}",
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface ProductClient {

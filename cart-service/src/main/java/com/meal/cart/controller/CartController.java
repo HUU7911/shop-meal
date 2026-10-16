@@ -56,4 +56,12 @@ public class CartController {
                 .results(cartService.removeItem(itemId))
                 .build();
     }
+
+    @DeleteMapping("/clear-my-cart")
+    ApiResponse<Void> clearMyCart() {
+        cartService.deleteAllCart();
+        return ApiResponse.<Void>builder()
+                .message("Cart cleared")
+                .build();
+    }
 }

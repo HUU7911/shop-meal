@@ -22,3 +22,4 @@ app:
   config:
     file-url: http://localhost:8088
     profile-url: http://localhost:8081
+    product-url: http://localhost:8083

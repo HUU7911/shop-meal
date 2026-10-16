@@ -1,6 +1,5 @@
 package com.meal.identity.service;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.meal.event.dto.PasswordResetOtpEvent;
 import com.meal.identity.dto.request.ForgotPasswordRequest;
 import com.meal.identity.dto.request.ResetPasswordRequest;
@@ -12,36 +11,38 @@ import com.meal.identity.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PasswordResetService {
 
-    @NonFinal
-    String OTP_PREFIX = "password-reset:otp:";
+    private static final String OTP_PREFIX = "password-reset:otp:";
+    private static final String ATTEMPT_PREFIX = "password-reset:attempt:";
+    private static final String COOLDOWN_PREFIX = "password-reset:cooldown:";
+    private static final String TOKEN_PREFIX = "password-reset:token:";
+    private static final String USER_TOKEN_PREFIX = "password-reset:user-token:";
 
-    @NonFinal
-    String TOKEN_PREFIX = "password-reset:token:";
+    private static final Duration OTP_TTL = Duration.ofMinutes(5);
+    private static final Duration RESET_TOKEN_TTL = Duration.ofMinutes(10);
+    private static final Duration REQUEST_COOLDOWN = Duration.ofSeconds(60);
+    private static final int MAX_OTP_ATTEMPTS = 5;
 
-    @NonFinal
-    String VERIFIED_PREFIX = "password-reset:verified:";
-
-    @NonFinal
-    static long OTP_EXPIRE_MINUTES = 5;
-
-    @NonFinal
-    static long RESET_TOKEN_EXPIRE_MINUTES = 10;
+    private static final String OTP_TOPIC = "password-reset-otp";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
@@ -49,97 +50,124 @@ public class PasswordResetService {
     KafkaTemplate<String, PasswordResetOtpEvent> kafkaTemplate;
 
     public void forgotPassword(ForgotPasswordRequest request) {
+        String email = normalizeEmail(request.getEmail());
 
-        String email = request.getEmail().trim().toLowerCase();
+        Boolean acquired = redisTemplate.opsForValue()
+                .setIfAbsent(COOLDOWN_PREFIX + email, "1", REQUEST_COOLDOWN);
+        if (!Boolean.TRUE.equals(acquired)) {
+            return;
+        }
 
         User user = userRepository.findByEmail(email).orElse(null);
-
-        if (Objects.isNull(user)) {
+        if (user == null) {
             return;
         }
 
         String otp = generateOtp();
+        String otpKey = OTP_PREFIX + email;
 
-        String otpHash = passwordEncoder.encode(otp);
+        redisTemplate.opsForValue().set(otpKey, passwordEncoder.encode(otp), OTP_TTL);
 
-        String key = OTP_PREFIX + email;
-
-        redisTemplate.opsForValue().set(key, otpHash, Duration.ofMinutes(OTP_EXPIRE_MINUTES));
-
-        redisTemplate.delete(VERIFIED_PREFIX + email);
+        redisTemplate.delete(ATTEMPT_PREFIX + email);
+        revokeExistingResetToken(user.getId());
 
         PasswordResetOtpEvent event = PasswordResetOtpEvent.builder()
                 .email(email)
                 .otp(otp)
                 .build();
 
-        kafkaTemplate.send("password-reset-otp", event);
+        kafkaTemplate.send(OTP_TOPIC, email, event).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("Failed to publish password reset OTP event for user {}", user.getId(), ex);
+                redisTemplate.delete(otpKey);
+            }
+        });
     }
 
     public String verifyOtp(VerifyOtpRequest request) {
+        String email = normalizeEmail(request.getEmail());
+        String otpKey = OTP_PREFIX + email;
+        String attemptKey = ATTEMPT_PREFIX + email;
 
-        String email = request.getEmail().trim().toLowerCase();
-
-        String key = OTP_PREFIX + email;
-
-        String otpHash = redisTemplate.opsForValue().get(key);
-
-        if (StringUtil.isNullOrEmpty(otpHash)) {
+        String otpHash = redisTemplate.opsForValue().get(otpKey);
+        if (!StringUtils.hasText(otpHash)) {
             throw new AppException(ErrorCode.OTP_EXPIRED);
         }
 
-        boolean valid = passwordEncoder.matches(request.getOtp(), otpHash);
+        Long attempts = redisTemplate.opsForValue().increment(attemptKey);
+        if (attempts != null && attempts == 1) {
+            redisTemplate.expire(attemptKey, OTP_TTL);
+        }
+        if (attempts != null && attempts > MAX_OTP_ATTEMPTS) {
+            redisTemplate.delete(otpKey);
+            redisTemplate.delete(attemptKey);
+            throw new AppException(ErrorCode.TOO_MANY_ATTEMPTS);
+        }
 
-        if (!valid) {
+        if (!passwordEncoder.matches(request.getOtp(), otpHash)) {
             throw new AppException(ErrorCode.INVALID_OTP);
         }
 
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_EXIST));
+        Boolean consumed = redisTemplate.delete(otpKey);
+        if (!Boolean.TRUE.equals(consumed)) {
+            throw new AppException(ErrorCode.OTP_EXPIRED);
+        }
+        redisTemplate.delete(attemptKey);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        revokeExistingResetToken(user.getId());
 
         String resetToken = UUID.randomUUID().toString();
 
-        String tokenKey = TOKEN_PREFIX + resetToken;
-
-        redisTemplate.opsForValue().set(tokenKey, user.getId(),
-                Duration.ofMinutes(RESET_TOKEN_EXPIRE_MINUTES)
-        );
-
-        redisTemplate.delete(key);
-
-        redisTemplate.opsForValue().set(
-                VERIFIED_PREFIX + email,
-                "true",
-                Duration.ofMinutes(RESET_TOKEN_EXPIRE_MINUTES)
-        );
+        redisTemplate.opsForValue().set(TOKEN_PREFIX + resetToken, user.getId(), RESET_TOKEN_TTL);
+        redisTemplate.opsForValue().set(USER_TOKEN_PREFIX + user.getId(), resetToken, RESET_TOKEN_TTL);
 
         return resetToken;
     }
 
+    @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-
-        String tokenKey = TOKEN_PREFIX + request.getResetToken();
-
-        String userId = redisTemplate.opsForValue().get(tokenKey);
-
-        if (StringUtil.isNullOrEmpty(userId)) {
+        String resetToken = request.getResetToken();
+        if (!StringUtils.hasText(resetToken)) {
             throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
         }
 
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_EXIST));
+        String userId = redisTemplate.opsForValue().getAndDelete(TOKEN_PREFIX + resetToken);
+        if (!StringUtils.hasText(userId)) {
+            throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
+        }
+
+        redisTemplate.delete(USER_TOKEN_PREFIX + userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-
         userRepository.save(user);
 
-        redisTemplate.delete(tokenKey);
+        revokeUserSessions(user);
+    }
+
+    private void revokeExistingResetToken(String userId) {
+        String userTokenKey = USER_TOKEN_PREFIX + userId;
+        String oldToken = redisTemplate.opsForValue().get(userTokenKey);
+        if (StringUtils.hasText(oldToken)) {
+            redisTemplate.delete(TOKEN_PREFIX + oldToken);
+        }
+        redisTemplate.delete(userTokenKey);
+    }
+
+    private void revokeUserSessions(User user) {
+        log.info("Password reset for user {} - revoke sessions here", user.getId());
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 
     private String generateOtp() {
-        SecureRandom secureRandom = new SecureRandom();
-        int otp = 100000 + secureRandom.nextInt(900000);
-
-        return String.valueOf(otp);
+        return String.valueOf(100000 + SECURE_RANDOM.nextInt(900000));
     }
 }
