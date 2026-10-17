@@ -38,7 +38,7 @@ public class KafkaConsumer {
         }
 
         switch (event.getEventType().toUpperCase(Locale.ROOT)) {
-            case "CREATED", "UPDATED" -> productSearchRepository.save(toDocument(event));
+            case "CREATED", "UPDATED", "UPDATE_PRODUCT" -> productSearchRepository.save(toDocument(event));
             case "DELETED" -> productSearchRepository.deleteById(event.getId());
             default -> log.warn("Bỏ qua eventType không hỗ trợ: {} (productId={})",
                     event.getEventType(), event.getId());

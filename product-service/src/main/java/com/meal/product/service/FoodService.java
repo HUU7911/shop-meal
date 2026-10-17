@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -86,6 +87,21 @@ public class FoodService {
         food.setImages(List.of(response.getResults().getUrl()));
 
         food = foodRepository.save(food);
+
+        ProductEvent productEvent = ProductEvent.builder()
+                .eventType("UPDATE_PRODUCT")
+                .id(food.getId())
+                .name(food.getName())
+                .price(food.getPrice())
+                .timeWork(food.getTimeWork())
+                .description(food.getDescription())
+                .images(food.getImages())
+                .position(food.getPosition())
+                .type(food.getType())
+                .categories(food.getCategories())
+                .build();
+
+        publishProductEvent(productEvent);
 
         return foodMapper.toFoodResponse(food);
     }
