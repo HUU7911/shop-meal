@@ -167,6 +167,6 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String id) {
         userRepository.deleteById(id);
-        profileClient.delete();
+        profileClient.delete(id);
     }
 }

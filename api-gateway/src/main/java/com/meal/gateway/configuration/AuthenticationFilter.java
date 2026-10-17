@@ -51,7 +51,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/outbound/identity",
             "/file/media/download",
             "/post/banner/getAll",
-            "/payment/paid/payos-webhook"
+            "/payment/paid/payos-webhook",
+            "/file/media/download/.*"
     };
 
     @Value("${app.api-prefix}")
@@ -70,6 +71,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeaders.getFirst().replace("Bearer ", "");
+        log.debug("token:{}", token);
 
         return identityService.introspect(token).flatMap(introspectResponse -> {
             if (introspectResponse.getResults().isValid()) {

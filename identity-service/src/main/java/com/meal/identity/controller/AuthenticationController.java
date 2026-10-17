@@ -58,7 +58,7 @@ public class AuthenticationController {
     @PostMapping("/outbound/identity")
     ApiResponse<AuthenticationResponse> outboundIdentityClient(@RequestParam("code") String code){
         return ApiResponse.<AuthenticationResponse>builder()
-                .results(authenticationService.outboundIdentityClient(code))
+                .results(authenticationService.outboundAuthenticate(code))
                 .build();
     }
 

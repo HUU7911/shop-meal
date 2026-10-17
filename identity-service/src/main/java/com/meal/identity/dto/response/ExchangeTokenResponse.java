@@ -1,7 +1,6 @@
 package com.meal.identity.dto.response;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,11 +9,22 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ExchangeTokenResponse {
+    @JsonProperty("access_token")
     String accessToken;
+
+    @JsonProperty("expires_in")
     Long expiresIn;
+
+    @JsonProperty("refresh_token")
     String refreshToken;
+
+    @JsonProperty("scope")
     String scope;
+
+    @JsonProperty("token_type")
     String tokenType;
+
+    @JsonProperty("id_token")
+    String idToken;
 }

@@ -1,7 +1,6 @@
 package com.meal.identity.dto.request;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,11 +9,18 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ExchangeTokenRequest {
     String code;
+
+    @JsonProperty("client_id")
     String clientId;
+
+    @JsonProperty("client_secret")
     String clientSecret;
+
+    @JsonProperty("redirect_uri")
     String redirectUri;
+
+    @JsonProperty("grant_type")
     String grantType;
 }

@@ -20,7 +20,7 @@ public class SecurityConfig {
 
     @NonFinal
     private final String[] PUBLIC_MATCHERS = {
-            "/media/download",
+            "/media/download/**",
     };
 
     @Autowired

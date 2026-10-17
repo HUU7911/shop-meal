@@ -6,9 +6,7 @@ import com.meal.identity.dto.request.ProfileCreationRequest;
 import com.meal.identity.dto.response.ProfileResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
         name = "profile-service",
@@ -18,6 +16,6 @@ public interface ProfileClient {
     @PostMapping(value = "/profile/create", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<ProfileResponse> create(@RequestBody ProfileCreationRequest request);
 
-    @DeleteMapping(value = "/profile/delete", produces = MediaType.APPLICATION_JSON_VALUE)
-    ApiResponse<Void> delete();
+    @DeleteMapping(value = "/profile/delete/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ApiResponse<Void> delete(@PathVariable String userId);
 }

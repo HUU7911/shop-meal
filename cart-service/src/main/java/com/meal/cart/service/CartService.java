@@ -50,11 +50,11 @@ public class CartService {
                         .build());
 
         CartItem existing = cart.getItems().stream()
-                .filter(i -> i.getProductId().equals(productId))
+                .filter(i -> Objects.equals(i.getProductId(), productId))
                 .findFirst()
                 .orElse(null);
 
-        if (Objects.isNull(existing)) {
+        if (Objects.nonNull(existing)) {
             existing.setQuantity(existing.getQuantity() + 1);
         } else {
             CartItem cartItem = CartItem.builder()

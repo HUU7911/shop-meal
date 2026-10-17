@@ -85,8 +85,8 @@ public class ProfileService {
         return profileMapper.toProfileResponse(profileRepository.save(profile));
     }
 
-    public void deleteProfile() {
-        var userId = SecurityContextHolder.getContext().getAuthentication().getName();
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteProfile(String userId) {
         profileRepository.deleteByUserId(userId);
     }
 }

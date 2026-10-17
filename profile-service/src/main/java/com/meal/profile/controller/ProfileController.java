@@ -36,7 +36,7 @@ public class ProfileController {
                 .build();
     }
 
-    @GetMapping("/users/{Id}")
+    @GetMapping("/users/{id}")
     ApiResponse<ProfileResponse> getProfile(@PathVariable String id) {
         return ApiResponse.<ProfileResponse>builder()
                 .results(profileService.getProfile(id))
@@ -57,9 +57,9 @@ public class ProfileController {
                 .build();
     }
 
-    @DeleteMapping("/delete")
-    ApiResponse<Void> delete() {
-        profileService.deleteProfile();
+    @DeleteMapping("/delete/{userId}")
+    ApiResponse<Void> delete(@PathVariable String userId) {
+        profileService.deleteProfile(userId);
 
         return ApiResponse.<Void>builder()
                 .message("delete profile success")

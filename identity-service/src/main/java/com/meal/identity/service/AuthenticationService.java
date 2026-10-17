@@ -1,26 +1,34 @@
 package com.meal.identity.service;
 
+import com.meal.identity.constant.RoleDefine;
 import com.meal.identity.dto.request.*;
 import com.meal.identity.dto.response.AuthenticationResponse;
 import com.meal.identity.dto.response.IntrospectResponse;
+import com.meal.identity.dto.response.OutboundUserResponse;
 import com.meal.identity.entity.InvalidateToken;
+import com.meal.identity.entity.Role;
 import com.meal.identity.entity.User;
 import com.meal.identity.exception.AppException;
 import com.meal.identity.exception.ErrorCode;
 import com.meal.identity.repository.InvalidateTokenRepository;
+import com.meal.identity.repository.RoleRepository;
 import com.meal.identity.repository.UserRepository;
 import com.meal.identity.repository.httpclient.OutboundIdentityClient;
+import com.meal.identity.repository.httpclient.OutboundUserClient;
+import com.meal.identity.repository.httpclient.ProfileClient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,9 +36,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +63,15 @@ public class AuthenticationService {
     private String REDIRECT_URI;
 
     @NonFinal
-    private final String GRANT_TYPE = "authorization_code";
+    private static final String GRANT_TYPE = "authorization_code";
 
     final PasswordEncoder passwordEncoder;
     final UserRepository userRepository;
     final InvalidateTokenRepository invalidateTokenRepository;
     final OutboundIdentityClient outboundIdentityClient;
+    final OutboundUserClient outboundUserClient;
+    final ProfileClient profileClient;
+    final RoleRepository roleRepository;
 
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
@@ -79,26 +88,66 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse outboundIdentityClient(String code) {
+    public AuthenticationResponse outboundAuthenticate(String code) {
         var response = outboundIdentityClient.token(ExchangeTokenRequest.builder()
-                        .code(code)
-                        .clientId(CLIENT_ID)
-                        .clientSecret(CLIENT_SECRET)
-                        .redirectUri(REDIRECT_URI)
-                        .grantType(GRANT_TYPE)
+                .code(code)
+                .clientId(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .redirectUri(REDIRECT_URI)
+                .grantType(GRANT_TYPE)
                 .build());
-        log.info("outbound identity client response: {}", response);
+
+        var userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
+
+        User user = userRepository.findByEmail(userInfo.getEmail())
+                .orElse(null);
+
+        if (Objects.isNull(user)) {
+            user = createUser(userInfo);
+
+            profileClient.create(ProfileCreationRequest.builder()
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .email(user.getEmail())
+                    .dob(user.getBirthday())
+                    .avatar(userInfo.getPicture())
+                    .build());
+        }
+
+        String token = generateToken(user);
 
         return AuthenticationResponse.builder()
-                .token(response.getAccessToken())
+                .token(token)
                 .authenticated(true)
                 .build();
     }
 
+    private User createUser(OutboundUserResponse userInfo) {
+        Role userRole = roleRepository.findById(RoleDefine.USER.name())
+                .orElseGet(() -> roleRepository.save(
+                        Role.builder().name(RoleDefine.USER.name()).build()));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
+
+        return userRepository.save(User.builder()
+                .username(userInfo.getEmail())
+                .email(userInfo.getEmail())
+                .firstName(userInfo.getGivenName())
+                .lastName(userInfo.getFamilyName())
+                .roles(roles)
+                .build());
+    }
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_FOUND)
-        );
+
+        var user = (request.getUsername().contains("@"))
+                ? userRepository.findByEmail(request.getUsername()).orElseThrow(
+                        () -> new AppException(ErrorCode.USER_NOT_FOUND))
+                : userRepository.findByUsername(request.getUsername()).orElseThrow(
+                        () -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
