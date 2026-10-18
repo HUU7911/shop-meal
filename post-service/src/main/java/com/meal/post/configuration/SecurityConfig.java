@@ -26,7 +26,6 @@ public class SecurityConfig {
             "/banner/create",
             "/banner/delete",
             "/create",
-            "/my-posts",
             "/product/create"
     };
 
@@ -35,7 +34,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(AUTH_ENDPOINT).hasAnyRole("STAFF", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/banner/getAll").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/banner/getAll", "/my-posts").permitAll()
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 ->

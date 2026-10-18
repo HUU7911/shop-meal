@@ -5,6 +5,7 @@ import com.meal.post.dto.request.PostRequest;
 import com.meal.post.dto.response.FoodInfoResponse;
 import com.meal.post.dto.response.PostForProductResponse;
 import com.meal.post.dto.response.PostResponse;
+import com.meal.post.dto.response.ProfileResponse;
 import com.meal.post.entity.Post;
 import com.meal.post.entity.PostForProduct;
 import com.meal.post.exception.AppException;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -46,24 +46,29 @@ public class PostService {
     DateTimeFormater dateTimeFormater;
 
     public PostResponse createPost(PostRequest request) {
-        Instant now = Instant.now();
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Post post = postMapper.toPostResponse(request);
-        post.setUserId(currentUserId());
-        post.setUserName(fetchUsername(currentUserId()));
-        post.setCreatedDate(now);
-        post.setModifiedDate(now);
+        Post post = Post.builder()
+                .postTitle(request.getPostTitle())
+                .postContent(request.getPostContent())
+                .userId(userId)
+                .createdDate(Instant.now())
+                .modifiedDate(Instant.now())
+                .build();
 
-        return postMapper.toPostResponse(postRepository.save(post));
+        post = postRepository.save(post);
+
+        return postMapper.toPostResponse(post);
     }
 
     public PostForProductResponse createPostForProduct(PostRequest request, String productId) {
         FoodInfoResponse food = fetchFood(productId);
         Instant now = Instant.now();
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         PostForProduct saved = postForProductRepository.save(
                 PostForProduct.builder()
-                        .userId(currentUserId())
+                        .userId(userId)
                         .productId(productId)
                         .productName(food.name())
                         .postTitle(request.getPostTitle())
@@ -87,14 +92,21 @@ public class PostService {
     public PageResponse<PostResponse> getMyPost(int page, int size) {
         int pageNumber = Math.max(page, 1);
         int pageSize = Math.clamp(size, 1, MAX_PAGE_SIZE);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        String userId = currentUserId();
+        ProfileResponse userProfile = null;
+
+        try {
+            userProfile = profileClient.getProfile(userId).getResults();
+        }catch (FeignException fe) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+
         Pageable pageable = PageRequest.of(
                 pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         Page<Post> result = postRepository.findAllByUserId(userId, pageable);
-
-        String username = result.isEmpty() ? null : fetchUsername(userId);
+        String username = userProfile != null ? userProfile.getUsername() : null;
 
         List<PostResponse> data = result.getContent().stream().map(post -> {
                     var response = postMapper.toPostResponse(post);
@@ -122,21 +134,5 @@ public class PostService {
         } catch (FeignException.NotFound e) {
             throw new AppException(ErrorCode.NOT_FOUND);
         }
-    }
-
-    private String fetchUsername(String userId) {
-        try {
-            var response = profileClient.getProfile(userId);
-            return (response != null && response.getResults() != null)
-                    ? response.getResults().getUsername()
-                    : null;
-        } catch (Exception e) {
-            log.warn("Can't get profile for user: {}: {}", userId, e.getMessage());
-            return null;
-        }
-    }
-
-    private String currentUserId() {
-        return Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
     }
 }

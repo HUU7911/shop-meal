@@ -17,6 +17,7 @@ public class PostForProduct {
 
     @MongoId
     String id;
+
     String userId;
     String productId;
     String productName;

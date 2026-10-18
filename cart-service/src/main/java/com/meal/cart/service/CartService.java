@@ -118,6 +118,7 @@ public class CartService {
         return saveAndMap(cart);
     }
 
+    @Transactional
     public void deleteAllCart() {
         var userId = Objects.requireNonNull(
                 SecurityContextHolder.getContext().getAuthentication()).getName();
@@ -126,7 +127,8 @@ public class CartService {
                 () -> new AppException(ErrorCode.CART_NOT_FOUND)
         );
 
-        cartItemRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+        cart.setTotalPrice(BigDecimal.ZERO);
     }
 
     private Cart getCurrentUserCart() {

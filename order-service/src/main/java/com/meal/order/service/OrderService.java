@@ -1,5 +1,8 @@
 package com.meal.order.service;
 
+import com.corundumstudio.socketio.SocketIOServer;
+import com.meal.event.dto.OrderCreatedEvent;
+import com.meal.event.dto.OrderStatusChangedEvent;
 import com.meal.order.constants.OrderStatus;
 import com.meal.order.constants.PaymentMethod;
 import com.meal.order.constants.PaymentStatus;
@@ -31,6 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -49,6 +53,7 @@ public class OrderService {
     ProfileClient profileClient;
     PaymentClient paymentClient;
     OrderNotificationPublisher notificationPublisher;
+    ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
@@ -99,6 +104,7 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
 
         Order savedOrder = orderRepository.save(order);
+
         PaymentResponse payment = null;
 
         if (request.paymentMethod() == PaymentMethod.PAYOS) {
@@ -107,6 +113,9 @@ public class OrderService {
 
         clearCartQuietly();
         notifyQuietly(savedOrder);
+
+        eventPublisher.publishEvent(
+                new OrderCreatedEvent(savedOrder.getId(), savedOrder.getOrderCode()));
 
         return toResponse(savedOrder, payment);
     }
@@ -160,6 +169,7 @@ public class OrderService {
         }
 
         order.setStatus(OrderStatus.CANCELLED);
+        publishStatusChanged(order);
         return toResponse(order);
     }
 
@@ -192,6 +202,7 @@ public class OrderService {
             order.setPaymentStatus(PaymentStatus.PAID);
         }
 
+        publishStatusChanged(order);
         return toResponse(order);
     }
 
@@ -212,6 +223,7 @@ public class OrderService {
             order.setStatus(OrderStatus.CONFIRMED);
         }
 
+        publishStatusChanged(order);
         return toResponse(order);
     }
 
@@ -279,6 +291,11 @@ public class OrderService {
         }
 
         return authentication.getName();
+    }
+
+    private void publishStatusChanged(Order order) {
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(
+                order.getId(), order.getOrderCode(), order.getUserId(), order.getStatus()));
     }
 
     private String generateOrderCode() {
