@@ -1,6 +1,5 @@
 package com.meal.order.service;
 
-import com.corundumstudio.socketio.SocketIOServer;
 import com.meal.event.dto.OrderCreatedEvent;
 import com.meal.event.dto.OrderStatusChangedEvent;
 import com.meal.order.constants.OrderStatus;

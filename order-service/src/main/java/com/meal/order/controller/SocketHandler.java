@@ -57,12 +57,10 @@ public class SocketHandler {
         }
 
         try {
-            // Token đã được identity-service xác thực ở trên, nên chỉ cần đọc claims để biết userId và role.
             JWTClaimsSet claims = SignedJWT.parse(token).getJWTClaimsSet();
             String userId = claims.getSubject();
             String scope = claims.getStringClaim("scope");
 
-            // joinRoom idempotent: @OnConnect bị gọi 2 lần/kết nối cũng không sao
             client.joinRoom(userRoom(userId));
 
             boolean isStaff = scope != null && Arrays.stream(scope.split("[\\s,]+"))
