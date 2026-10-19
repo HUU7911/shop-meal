@@ -169,6 +169,15 @@ public class PostService {
                 .build();
     }
 
+    public void deletePostForProduct(String productId) {
+        postForProductRepository.deleteByProductId(productId);
+    }
+
+    public void deleteMyPost() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        postRepository.deleteById(userId);
+    }
+
     private FoodInfoResponse fetchFood(String productId) {
         try {
             var response = productClient.getFoodInfo(productId);

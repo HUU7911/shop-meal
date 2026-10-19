@@ -26,7 +26,8 @@ public class SecurityConfig {
             "/banner/create",
             "/banner/delete",
             "/create",
-            "/product/create"
+            "/product/create",
+            "/delete/product/{productId}",
     };
 
     @Bean

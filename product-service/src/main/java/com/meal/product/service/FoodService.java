@@ -14,6 +14,7 @@ import com.meal.product.mapper.FoodMapper;
 import com.meal.product.repository.CategoryRepository;
 import com.meal.product.repository.FoodRepository;
 import com.meal.product.repository.httpclient.FileClient;
+import com.meal.product.repository.httpclient.PostClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,6 +41,7 @@ public class FoodService {
     CategoryRepository categoryRepository;
     FoodRepository foodRepository;
     FileClient fileClient;
+    PostClient postClient;
     KafkaTemplate<String, ProductEvent> kafkaTemplate;
 
     public FoodResponse createFood(FoodRequest request, MultipartFile file) {
@@ -165,6 +167,8 @@ public class FoodService {
                 .eventType("DELETED")
                 .id(id)
                 .build();
+
+        postClient.deleteProduct(id);
 
         publishProductEvent(productEvent);
     }

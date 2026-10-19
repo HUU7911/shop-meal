@@ -68,4 +68,20 @@ public class PostController {
                 .results(postService.getAllPostForProduct())
                 .build();
     }
+
+    @DeleteMapping("/delete/myPost")
+    ApiResponse<Void> deleteMyPost() {
+        postService.deleteMyPost();
+        return ApiResponse.<Void>builder()
+                .message("delete my post success")
+                .build();
+    }
+
+    @DeleteMapping("delete/product/{productId}")
+    ApiResponse<Void> deleteProduct(@PathVariable String productId) {
+        postService.deletePostForProduct(productId);
+        return ApiResponse.<Void>builder()
+                .message("delete product success")
+                .build();
+    }
 }
