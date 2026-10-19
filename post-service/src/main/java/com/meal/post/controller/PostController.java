@@ -10,6 +10,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping
@@ -20,9 +24,12 @@ public class PostController {
     PostService postService;
 
     @PostMapping("/create")
-    ApiResponse<PostResponse> createPost(@RequestBody PostRequest postRequest) {
+    ApiResponse<PostResponse> createPost(
+            @RequestPart("request") PostRequest request,
+            @RequestPart("file")MultipartFile file
+    ) throws IOException {
         return ApiResponse.<PostResponse>builder()
-                .results(postService.createPost(postRequest))
+                .results(postService.createPost(request, file))
                 .build();
     }
 
@@ -52,6 +59,13 @@ public class PostController {
     ) {
         return ApiResponse.<PostForProductResponse>builder()
                 .results(postService.createPostForProduct(postRequest, Id))
+                .build();
+    }
+
+    @GetMapping("/getPostForProduct")
+    ApiResponse<List<PostForProductResponse>> getPostForProduct() {
+        return ApiResponse.<List<PostForProductResponse>>builder()
+                .results(postService.getAllPostForProduct())
                 .build();
     }
 }

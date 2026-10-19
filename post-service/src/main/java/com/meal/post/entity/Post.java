@@ -21,6 +21,7 @@ public class Post {
     String userId;
     String postTitle;
     String postContent;
+    String imageUrl;
     Instant createdDate;
     Instant modifiedDate;
 }

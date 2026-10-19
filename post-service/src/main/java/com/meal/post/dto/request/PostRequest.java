@@ -15,4 +15,5 @@ import java.time.Instant;
 public class PostRequest {
     String postTitle;
     String postContent;
+    String imageUrl;
 }

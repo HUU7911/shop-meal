@@ -13,6 +13,7 @@ import com.meal.post.exception.ErrorCode;
 import com.meal.post.mapper.PostMapper;
 import com.meal.post.repository.PostForProductRepository;
 import com.meal.post.repository.PostRepository;
+import com.meal.post.repository.httpclient.FileClient;
 import com.meal.post.repository.httpclient.ProductClient;
 import com.meal.post.repository.httpclient.ProfileClient;
 import feign.FeignException;
@@ -26,7 +27,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -44,9 +47,12 @@ public class PostService {
     ProductClient productClient;
     PostForProductRepository postForProductRepository;
     DateTimeFormater dateTimeFormater;
+    FileClient fileClient;
 
-    public PostResponse createPost(PostRequest request) {
+    public PostResponse createPost(PostRequest request, MultipartFile file) throws IOException {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        var image = fileClient.uploadMedia(file).getResults();
 
         Post post = Post.builder()
                 .postTitle(request.getPostTitle())
@@ -54,6 +60,7 @@ public class PostService {
                 .userId(userId)
                 .createdDate(Instant.now())
                 .modifiedDate(Instant.now())
+                .imageUrl(image.getUrl())
                 .build();
 
         post = postRepository.save(post);
@@ -87,6 +94,23 @@ public class PostService {
                 .createdDate(saved.getCreatedDate())
                 .modifiedDate(saved.getModifiedDate())
                 .build();
+    }
+
+    public List<PostForProductResponse> getAllPostForProduct() {
+        return postForProductRepository.findAll().stream().map(postForProduct -> {
+            var response = PostForProductResponse.builder()
+                    .id(postForProduct.getId())
+                    .userId(postForProduct.getUserId())
+                    .productId(postForProduct.getProductId())
+                    .productName(postForProduct.getProductName())
+                    .postTitle(postForProduct.getPostTitle())
+                    .postContent(postForProduct.getPostContent())
+                    .createdDate(postForProduct.getCreatedDate())
+                    .modifiedDate(postForProduct.getModifiedDate())
+                    .build();
+
+            return response;
+        }).toList();
     }
 
     public PageResponse<PostResponse> getMyPost(int page, int size) {

@@ -13,22 +13,13 @@ import java.time.LocalDate;
 public class ProfileResponse {
 
     String id;
-
     String userId;
-
     String username;
-
     String firstName;
-
     String lastName;
-
     String phoneNumber;
-
     String email;
-
     String address;
-
     String avatar;
-
     LocalDate dob;
 }
