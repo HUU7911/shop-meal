@@ -35,6 +35,16 @@ public class PostController {
                 .build();
     }
 
+    @GetMapping("/getAllPost")
+    ApiResponse<PageResponse<PostResponse>> getAllPost(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size
+    ){
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .results(postService.getPostsForUsers(page, size))
+                .build();
+    }
+
     @PostMapping("/product/create")
     ApiResponse<PostForProductResponse> createPostForProduct(
             @RequestBody PostRequest postRequest,

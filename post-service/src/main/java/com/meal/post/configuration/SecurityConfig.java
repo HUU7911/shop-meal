@@ -34,7 +34,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(AUTH_ENDPOINT).hasAnyRole("STAFF", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/banner/getAll", "/my-posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/banner/getAll", "/getAllPost").permitAll()
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 ->

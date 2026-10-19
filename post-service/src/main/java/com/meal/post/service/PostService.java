@@ -124,6 +124,27 @@ public class PostService {
                 .build();
     }
 
+    public PageResponse<PostResponse> getPostsForUsers(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        Pageable pageable = PageRequest.of(page-1, size, sort);
+
+        var response = postRepository.findAll(pageable);
+
+        List<PostResponse> data = response.getContent().stream().map(post -> {
+            var dataResponse = postMapper.toPostResponse(post);
+            dataResponse.setCreated(dateTimeFormater.format(post.getCreatedDate()));
+            return dataResponse;
+        }).toList();
+
+        return PageResponse.<PostResponse>builder()
+                .currentPage(page)
+                .pageSize(response.getSize())
+                .totalPage(response.getTotalPages())
+                .totalElements(response.getTotalElements())
+                .data(data)
+                .build();
+    }
+
     private FoodInfoResponse fetchFood(String productId) {
         try {
             var response = productClient.getFoodInfo(productId);

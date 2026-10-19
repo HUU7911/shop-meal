@@ -53,7 +53,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/post/banner/getAll",
             "/payment/paid/payos-webhook",
             "/file/media/download/.*",
-            "/post/my-posts"
+            "/post/getAllPost"
     };
 
     @Value("${app.api-prefix}")
