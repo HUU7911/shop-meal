@@ -3,6 +3,7 @@ package com.meal.post.controller;
 import com.meal.post.dto.ApiResponse;
 import com.meal.post.dto.PageResponse;
 import com.meal.post.dto.request.PostRequest;
+import com.meal.post.dto.request.PostUpdateRequest;
 import com.meal.post.dto.response.PostForProductResponse;
 import com.meal.post.dto.response.PostResponse;
 import com.meal.post.service.PostService;
@@ -82,6 +83,13 @@ public class PostController {
         postService.deletePostForProduct(productId);
         return ApiResponse.<Void>builder()
                 .message("delete product success")
+                .build();
+    }
+
+    @PutMapping("/update/my-post/{id}")
+    ApiResponse<PostResponse> updateMyPost(@PathVariable String id, @RequestBody PostUpdateRequest request) {
+        return ApiResponse.<PostResponse>builder()
+                .results(postService.updatePost(id, request))
                 .build();
     }
 }

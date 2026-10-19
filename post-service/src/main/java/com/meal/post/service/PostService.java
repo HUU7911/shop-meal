@@ -2,6 +2,7 @@ package com.meal.post.service;
 
 import com.meal.post.dto.PageResponse;
 import com.meal.post.dto.request.PostRequest;
+import com.meal.post.dto.request.PostUpdateRequest;
 import com.meal.post.dto.response.FoodInfoResponse;
 import com.meal.post.dto.response.PostForProductResponse;
 import com.meal.post.dto.response.PostResponse;
@@ -176,6 +177,16 @@ public class PostService {
     public void deleteMyPost() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         postRepository.deleteById(userId);
+    }
+
+    public PostResponse updatePost(String id, PostUpdateRequest request) {
+        var post = postRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.NOT_FOUND)
+        );
+
+        postMapper.updatePost(post, request);
+
+        return postMapper.toPostResponse(post);
     }
 
     private FoodInfoResponse fetchFood(String productId) {
