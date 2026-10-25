@@ -40,8 +40,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostService {
 
-    private static final int MAX_PAGE_SIZE = 50;
-
     PostMapper postMapper;
     PostRepository postRepository;
     ProfileClient profileClient;
@@ -115,8 +113,6 @@ public class PostService {
     }
 
     public PageResponse<PostResponse> getMyPost(int page, int size) {
-        int pageNumber = Math.max(page, 1);
-        int pageSize = Math.clamp(size, 1, MAX_PAGE_SIZE);
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         ProfileResponse userProfile = null;
@@ -127,8 +123,8 @@ public class PostService {
             throw new AppException(ErrorCode.NOT_FOUND);
         }
 
-        Pageable pageable = PageRequest.of(
-                pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
 
         Page<Post> result = postRepository.findAllByUserId(userId, pageable);
         String username = userProfile != null ? userProfile.getUsername() : null;
@@ -141,7 +137,7 @@ public class PostService {
                 }).toList();
 
         return PageResponse.<PostResponse>builder()
-                .currentPage(pageNumber)
+                .currentPage(page)
                 .pageSize(result.getSize())
                 .totalPage(result.getTotalPages())
                 .totalElements(result.getTotalElements())

@@ -31,9 +31,7 @@ import java.util.Objects;
 public class ProductSearchService {
 
     static final int MAX_PAGE_SIZE = 50;
-
     ElasticsearchOperations elasticsearchOperations;
-
     public enum SortOption { RELEVANCE, PRICE_ASC, PRICE_DESC }
 
     public PageResponse<ProductDocument> searchProduct(

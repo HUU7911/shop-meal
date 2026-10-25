@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface ProfileClient {
-    @GetMapping(value = "/profile/users/{Id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/profile/users/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<ProfileResponse> getProfile(@PathVariable String id);
 }
