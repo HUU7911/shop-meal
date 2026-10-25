@@ -755,12 +755,6 @@ public class Application {
 
 # 🌐 Frontend
 
-Clone repository frontend
-
-```bash
-git clone https://github.com/HUU7911/web-app.git
-```
-
 Change directory folder:
 
 ```bash
