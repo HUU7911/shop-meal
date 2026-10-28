@@ -3,6 +3,8 @@ server:
 
 app:
   api-prefix: /api/v1
+  rate-limit:
+    trusted-proxies: 1
 
 spring:
   application:
@@ -16,6 +18,13 @@ spring:
     gateway:
       server:
         webflux:
+          default-filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@globalIpKeyResolver}"
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 40
+                redis-rate-limiter.requestedTokens: 1
           routes:
             - id: identity-service
               uri: lb://identity-service
@@ -36,6 +45,22 @@ spring:
               uri: lb://identity-service
               predicates:
                 - Path=${app.api-prefix}/identity/auth/login
+                - Method=POST
+              filters:
+                - StripPrefix=2
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 60
+                    redis-rate-limiter.requestedTokens: 3
+
+            # Cac endpoint public con lai cua identity-service
+            - id: identity-sensitive
+              order: -9
+              uri: lb://identity-service
+              predicates:
+                - Path=${app.api-prefix}/identity/auth/verify-otp,${app.api-prefix}/identity/auth/forgot-password,${app.api-prefix}/identity/auth/reset-password,${app.api-prefix}/identity/users/create
                 - Method=POST
               filters:
                 - StripPrefix=2

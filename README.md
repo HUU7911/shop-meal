@@ -713,6 +713,15 @@ mvn spring-boot:run
     <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
 </dependency>
 ```
+
+```xml
+<dependency>
+    <groupId>io.github.resilience4j</groupId>
+    <artifactId>resilience4j-spring-boot4</artifactId>
+    <version>2.4.0</version>
+</dependency>
+```
+
  2. SocketIO
 
 ```xml
@@ -750,7 +759,6 @@ public class Application {
     }
 }
 ```
-
 ---
 
 # 🌐 Frontend
