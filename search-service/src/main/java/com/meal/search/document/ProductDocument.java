@@ -35,8 +35,11 @@ public class ProductDocument {
     @Field(type = FieldType.Text, analyzer = "vi_folded")
     String description;
 
+    @Field(type = FieldType.Text)
+    List<String> size;
+
     @Field(type = FieldType.Double)
-    BigDecimal price;
+    List<BigDecimal> price;
 
     @Field(type = FieldType.Keyword, index = false)
     List<String> images;

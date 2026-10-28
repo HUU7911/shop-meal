@@ -78,7 +78,7 @@ public class PostController {
                 .build();
     }
 
-    @DeleteMapping("delete/product/{productId}")
+    @DeleteMapping("/delete/product/{productId}")
     ApiResponse<Void> deleteProduct(@PathVariable String productId) {
         postService.deletePostForProduct(productId);
         return ApiResponse.<Void>builder()
