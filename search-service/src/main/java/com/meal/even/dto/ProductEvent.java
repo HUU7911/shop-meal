@@ -21,7 +21,8 @@ public class ProductEvent {
     String position;
     String timeWork;
     String description;
-    BigDecimal price;
+    List<String> size;
+    List<BigDecimal> price;
     List<String> images;
     Type type;
     List<CategoryEvent> categories;

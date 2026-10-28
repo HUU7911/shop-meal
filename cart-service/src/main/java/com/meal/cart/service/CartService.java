@@ -1,14 +1,12 @@
 package com.meal.cart.service;
 
-import com.meal.cart.dto.ApiResponse;
+import com.meal.cart.dto.request.AddProductToCartRequest;
 import com.meal.cart.dto.response.CartResponse;
-import com.meal.cart.dto.response.FoodSnapshotResponse;
 import com.meal.cart.entity.Cart;
 import com.meal.cart.entity.CartItem;
 import com.meal.cart.exception.AppException;
 import com.meal.cart.exception.ErrorCode;
 import com.meal.cart.mapper.CartMapper;
-import com.meal.cart.repository.CartItemRepository;
 import com.meal.cart.repository.CartRepository;
 import com.meal.cart.repository.httpclient.ProductItemClient;
 import lombok.AccessLevel;
@@ -30,17 +28,16 @@ public class CartService {
     CartRepository cartRepository;
     CartMapper cartMapper;
     ProductItemClient productItemClient;
-    CartItemRepository cartItemRepository;
 
     @Transactional
-    public CartResponse addProductToCart(String productId) {
+    public CartResponse addProductToCart(AddProductToCartRequest request) {
         String userId = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
-        ApiResponse<FoodSnapshotResponse> product = productItemClient.getFoodById(productId);
+        var product = productItemClient.getFoodById(request.productId());
         if (Objects.isNull(product) || Objects.isNull(product.getResults())) {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
-        FoodSnapshotResponse food = product.getResults();
+        var food = product.getResults();
 
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> Cart.builder()
@@ -50,7 +47,7 @@ public class CartService {
                         .build());
 
         CartItem existing = cart.getItems().stream()
-                .filter(i -> Objects.equals(i.getProductId(), productId))
+                .filter(i -> Objects.equals(i.getProductId(), request.productId()))
                 .findFirst()
                 .orElse(null);
 
@@ -59,10 +56,10 @@ public class CartService {
         } else {
             CartItem cartItem = CartItem.builder()
                     .cart(cart)
-                    .productId(productId)
+                    .productId(request.productId())
                     .productName(food.name())
                     .image(food.image())
-                    .price(food.price())
+                    .price(request.price())
                     .quantity(1)
                     .build();
             cart.addItem(cartItem);

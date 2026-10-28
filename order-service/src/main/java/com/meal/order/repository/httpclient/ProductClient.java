@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
         configuration = {AuthenticationRequestInterceptor.class}
 )
 public interface ProductClient {
-
     @GetMapping(value = "/product/food/snapshot/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<FoodSnapshotResponse> getFoodSnapshot(@PathVariable("id") String id);
 }

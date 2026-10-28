@@ -67,8 +67,7 @@ public class PaymentService {
     public PaymentResponse createPayment(CreatePaymentRequest request) {
         Payment payment = paymentRepository.findByOrderIdForUpdate(request.orderId()).orElse(null);
 
-        if (payment != null
-                && REUSABLE.getOrDefault(payment.getStatus(), p -> false).test(payment)) {
+        if (payment != null && REUSABLE.getOrDefault(payment.getStatus(), p -> false).test(payment)) {
             return toResponse(payment);
         }
 

@@ -56,8 +56,8 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
-        String userId = currentUserId();
-        CartResponse cart = fetchCart();
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        CartResponse cart = cartClient.getMyCart().getResults();
 
         if (Objects.isNull(cart) || Objects.isNull(cart.items()) || cart.items().isEmpty()) {
             throw new AppException(ErrorCode.CART_EMPTY);
@@ -83,16 +83,16 @@ public class OrderService {
                 throw new AppException(ErrorCode.INVALID_QUANTITY);
             }
 
-            FoodSnapshotResponse food = fetchFood(cartItem.productId());
+//            FoodSnapshotResponse food = fetchFood(cartItem.productId());
 
-            BigDecimal itemTotal = food.price().multiply(BigDecimal.valueOf(cartItem.quantity()));
+            BigDecimal itemTotal = cartItem.price().multiply(BigDecimal.valueOf(cartItem.quantity()));
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .productId(cartItem.productId())
-                    .productName(food.name())
-                    .image(food.image())
-                    .unitPrice(food.price())
+                    .productName(cartItem.productName())
+                    .image(cartItem.image())
+                    .unitPrice(cartItem.price())
                     .quantity(cartItem.quantity())
                     .build();
 
@@ -141,7 +141,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public PageResponse<OrderResponse> getMyOrders(int page, int size) {
-        String userId = currentUserId();
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -226,16 +226,6 @@ public class OrderService {
         return toResponse(order);
     }
 
-    private CartResponse fetchCart() {
-        try {
-            ApiResponse<CartResponse> response = cartClient.getMyCart();
-            return Objects.isNull(response) ? null : response.getResults();
-        } catch (FeignException e) {
-            log.error("Cart service error. status={}", e.status(), e);
-            throw new AppException(ErrorCode.CART_SERVICE_ERROR);
-        }
-    }
-
     private FoodSnapshotResponse fetchFood(String productId) {
         try {
             ApiResponse<FoodSnapshotResponse> response = productClient.getFoodSnapshot(productId);
@@ -278,18 +268,9 @@ public class OrderService {
     }
 
     private Order findOwnedOrder(String id) {
-        return orderRepository.findByIdAndUserId(id, currentUserId()).orElseThrow(
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return orderRepository.findByIdAndUserId(id, userId).orElseThrow(
                 () -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-    }
-
-    private String currentUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (Objects.isNull(authentication) || !authentication.isAuthenticated()) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        return authentication.getName();
     }
 
     private void publishStatusChanged(Order order) {

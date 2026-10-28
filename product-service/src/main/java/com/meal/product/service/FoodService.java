@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -139,7 +138,6 @@ public class FoodService {
                 .name(food.getName())
                 .price(food.getPrice())
                 .image(food.getImages().getFirst())
-                .price(food.getPrice())
                 .build();
     }
 

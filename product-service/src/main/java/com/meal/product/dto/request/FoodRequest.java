@@ -8,5 +8,6 @@ import java.util.Set;
 
 public record FoodRequest(
         String id, String name, String position, String timeWork,
-        BigDecimal price, List<String> images, Type type, Set<String> categories)
+        List<String> size, List<BigDecimal> price,
+        List<String> images, Type type, Set<String> categories)
 {}

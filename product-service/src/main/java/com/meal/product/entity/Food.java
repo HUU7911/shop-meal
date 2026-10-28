@@ -32,7 +32,9 @@ public class Food {
 
     String description;
 
-    BigDecimal price;
+    List<String> size;
+
+    List<BigDecimal> price;
 
     List<String> images;
 
