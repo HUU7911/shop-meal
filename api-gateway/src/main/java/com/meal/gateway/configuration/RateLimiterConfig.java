@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Configuration
 public class RateLimiterConfig {
 
@@ -13,7 +15,7 @@ public class RateLimiterConfig {
         return exchange -> {
             var remoteAddress = exchange.getRequest().getRemoteAddress();
 
-            if (remoteAddress == null || remoteAddress.getAddress() == null) {
+            if (Objects.isNull(remoteAddress) || Objects.isNull(remoteAddress.getAddress()) ) {
                 return Mono.just("unknown");
             }
 
