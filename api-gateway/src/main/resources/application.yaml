@@ -7,10 +7,10 @@ app:
 spring:
   application:
     name: api-gateway
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6379
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   cloud:
     gateway:
@@ -23,12 +23,28 @@ spring:
                 - Path=${app.api-prefix}/identity/**
               filters:
                 - StripPrefix=2
-#                - name: RequestRateLimiter
-#                  args:
-#                    key-resolver: "#{@userKeyResolver}"
-#                    redis-rate-limiter.replenishRate: 5
-#                    redis-rate-limiter.burstCapacity: 10
-#                    redis-rate-limiter.requestedTokens: 1
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 5
+                    redis-rate-limiter.burstCapacity: 10
+                    redis-rate-limiter.requestedTokens: 1
+
+#            rate limiting endpoint login
+            - id: identity-login
+              order: -10
+              uri: lb://identity-service
+              predicates:
+                - Path=${app.api-prefix}/identity/auth/login
+                - Method=POST
+              filters:
+                - StripPrefix=2
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 60
+                    redis-rate-limiter.requestedTokens: 12
 
             - id: profile-service
               uri: lb://profile-service

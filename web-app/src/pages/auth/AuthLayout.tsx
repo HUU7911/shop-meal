@@ -3,10 +3,6 @@ import { Box, Link, Paper, Typography } from '@mui/material';
 import { ReactNode } from 'react';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 
-/**
- * Layout riêng cho các trang xác thực (đăng nhập, đăng ký, quên mật khẩu, callback Google).
- * Không có header / banner / bài viết / footer của cửa hàng.
- */
 export default function AuthLayout() {
   return (
     <Box
@@ -30,9 +26,19 @@ export default function AuthLayout() {
         />
       </Box>
 
-      <Box sx={{ width: '100%', maxWidth: 440, flexGrow: 1 }}>
-        <Outlet />
-      </Box>
+        <Box
+            sx={{
+                width: '100%',
+                maxWidth: '1120px',
+                flexGrow: 1,
+                minWidth: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+            <Outlet />
+        </Box>
 
       <Link
         component={RouterLink}
@@ -50,7 +56,6 @@ export default function AuthLayout() {
   );
 }
 
-/** Thẻ chứa tiêu đề + form, dùng chung cho các trang xác thực. */
 export function AuthCard({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
     <Paper variant="outlined" sx={{ p: { xs: 2.5, sm: 4 }, borderRadius: 3 }}>
