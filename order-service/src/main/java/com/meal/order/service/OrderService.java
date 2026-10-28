@@ -18,7 +18,6 @@ import com.meal.order.exception.ErrorCode;
 import com.meal.order.repository.OrderRepository;
 import com.meal.order.repository.httpclient.CartClient;
 import com.meal.order.repository.httpclient.PaymentClient;
-import com.meal.order.repository.httpclient.ProductClient;
 import com.meal.order.repository.httpclient.ProfileClient;
 import feign.FeignException;
 import lombok.AccessLevel;
@@ -48,7 +47,6 @@ public class OrderService {
 
     OrderRepository orderRepository;
     CartClient cartClient;
-    ProductClient productClient;
     ProfileClient profileClient;
     PaymentClient paymentClient;
     OrderNotificationPublisher notificationPublisher;
@@ -82,8 +80,6 @@ public class OrderService {
             if (cartItem.quantity() <= 0) {
                 throw new AppException(ErrorCode.INVALID_QUANTITY);
             }
-
-//            FoodSnapshotResponse food = fetchFood(cartItem.productId());
 
             BigDecimal itemTotal = cartItem.price().multiply(BigDecimal.valueOf(cartItem.quantity()));
 
@@ -224,26 +220,6 @@ public class OrderService {
 
         publishStatusChanged(order);
         return toResponse(order);
-    }
-
-    private FoodSnapshotResponse fetchFood(String productId) {
-        try {
-            ApiResponse<FoodSnapshotResponse> response = productClient.getFoodSnapshot(productId);
-
-            if (Objects.isNull(response)
-                    || Objects.isNull(response.getResults())
-                    || Objects.isNull(response.getResults().price())) {
-                throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-            }
-
-            return response.getResults();
-        } catch (FeignException e) {
-            log.error("Product service error. productId={}, status={}", productId, e.status(), e);
-            throw new AppException(e.status() > 0
-                            ? ErrorCode.PRODUCT_NOT_FOUND
-                            : ErrorCode.PRODUCT_SERVICE_ERROR
-            );
-        }
     }
 
     private void clearCartQuietly() {
