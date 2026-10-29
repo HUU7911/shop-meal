@@ -2,8 +2,6 @@ package com.meal.gateway.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
-import org.springframework.cloud.gateway.route.Route;
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.cloud.gateway.support.ipresolver.XForwardedRemoteAddressResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,16 +25,12 @@ public class RateLimiterConfig {
     @Bean
     @Primary
     public KeyResolver ipKeyResolver() {
-        return exchange -> {
-            Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
-            String routeId = route != null ? route.getId() : "unknown-route";
-            return Mono.just(routeId + ":" + clientIp(exchange));
-        };
+        return exchange -> Mono.just(clientIp(exchange));
     }
 
     @Bean
-    public KeyResolver globalIpKeyResolver() {
-        return exchange -> Mono.just("global:" + clientIp(exchange));
+    public KeyResolver baselineKeyResolver() {
+        return exchange -> Mono.just("baseline:" + clientIp(exchange));
     }
 
     private String clientIp(ServerWebExchange exchange) {

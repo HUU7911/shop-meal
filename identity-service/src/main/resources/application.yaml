@@ -53,3 +53,9 @@ outbound:
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}
     redirect-uri: ${REDIRECT_URL}
+
+security:
+   login:
+   max-attempts: 5
+   window-minutes: 15
+   lock-minutes: 15

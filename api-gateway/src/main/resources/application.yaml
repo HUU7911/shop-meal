@@ -3,8 +3,10 @@ server:
 
 app:
   api-prefix: /api/v1
-  rate-limit:
-    trusted-proxies: 1
+  pre-auth:
+    limit: 20            # tối đa 600 request mỗi cửa sổ cho mỗi IP, mọi route cộng lại
+    window-seconds: 60
+    blocked-paths: /notification/email/send   # nhiều đường dẫn thì cách nhau bằng dấu phẩy
 
 spring:
   application:
@@ -21,7 +23,7 @@ spring:
           default-filters:
             - name: RequestRateLimiter
               args:
-                key-resolver: "#{@globalIpKeyResolver}"
+                key-resolver: "#{@baselineKeyResolver}"
                 redis-rate-limiter.replenishRate: 20
                 redis-rate-limiter.burstCapacity: 40
                 redis-rate-limiter.requestedTokens: 1

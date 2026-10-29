@@ -70,6 +70,7 @@ public class AuthenticationService {
     final OutboundUserClient outboundUserClient;
     final ProfileClient profileClient;
     final RoleRepository roleRepository;
+    final LoginAttemptService loginAttemptService;
 
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
@@ -141,18 +142,24 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
-        var user = (request.getUsername().contains("@"))
-                ? userRepository.findByEmail(request.getUsername()).orElseThrow(
-                        () -> new AppException(ErrorCode.USER_NOT_FOUND))
-                : userRepository.findByUsername(request.getUsername()).orElseThrow(
-                        () -> new AppException(ErrorCode.USER_NOT_FOUND));
+        long locked = loginAttemptService.getLockRemainingSeconds(request.getUsername());
+        if (locked > 0) {
+            throw new AppException(ErrorCode.TOO_MANY_ATTEMPTS);
+        }
 
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        var user = request.getUsername().contains("@")
+                ? userRepository.findByEmail(request.getUsername()).orElse(null)
+                : userRepository.findByUsername(request.getUsername()).orElse(null);
+
+        boolean authenticated = user != null
+                && passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated) {
+            loginAttemptService.recordFailure(request.getUsername());
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
+        loginAttemptService.recordSuccess(request.getUsername());
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()

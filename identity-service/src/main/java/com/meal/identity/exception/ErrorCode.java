@@ -23,7 +23,7 @@ public enum ErrorCode {
     OTP_EXPIRED(10010, "OTP expired", HttpStatus.BAD_REQUEST),
     INVALID_OTP(10011, "Invalid OTP", HttpStatus.BAD_REQUEST),
     INVALID_RESET_TOKEN(10012, "Invalid reset token", HttpStatus.BAD_REQUEST),
-    TOO_MANY_ATTEMPTS(10013, "Too many attempts", HttpStatus.BAD_REQUEST),
+    TOO_MANY_ATTEMPTS(429, "Too many attempts", HttpStatus.BAD_GATEWAY),
     ;
 
     int code;
