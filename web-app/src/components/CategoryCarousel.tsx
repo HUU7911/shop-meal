@@ -4,26 +4,17 @@ import { alpha, Box, IconButton, Typography, useMediaQuery } from '@mui/material
 import { Children, ElementType, isValidElement, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 interface Props {
-    /** Dùng cho id tiêu đề (aria-labelledby). */
     id: string;
-    /** Tên danh mục, hiện trên "thẻ" tiêu đề ở giữa phía trên. */
     title: string;
     icon?: ElementType;
-    /** Số món, hiện nhỏ cạnh tên danh mục. */
     count?: number;
-    /** Mỗi phần tử con là một slide (thường là ProductCard). */
     children: ReactNode;
 }
 
 const GAP = 16;
 
-// Chiều rộng mỗi slide để thấy n slide cùng lúc. n lẻ (vd. 1.15) chừa một phần slide kế tiếp cho thấy có thể kéo.
 const slideBasis = (n: number) => `calc((100% - ${((n - 1) * GAP).toFixed(2)}px) / ${n})`;
 
-/**
- * Khối một danh mục: khung bo tròn nền gradient, thẻ tiêu đề treo ở giữa mép trên,
- * bên trong là hàng slide card cuộn ngang (CSS scroll-snap) với nút trước/sau.
- */
 export default function CategoryCarousel({ id, title, icon: Icon, count, children }: Props) {
     const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
     const trackRef = useRef<HTMLDivElement>(null);
@@ -38,7 +29,6 @@ export default function CategoryCarousel({ id, title, icon: Icon, count, childre
         setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
     }, []);
 
-    // Tính lại trạng thái nút khi đổi kích thước hoặc số slide
     useEffect(() => {
         update();
         const el = trackRef.current;

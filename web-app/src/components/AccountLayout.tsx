@@ -35,10 +35,6 @@ interface NavItem {
   icon: ReactElement;
 }
 
-/**
- * Layout riêng cho khu vực tài khoản (hồ sơ, đơn hàng, bài viết của tôi).
- * Không có banner, danh mục, bài viết nổi bật hay footer của trang bán hàng.
- */
 export default function AccountLayout() {
   const { profile, info, isStaff, logout } = useAuth();
   const { count } = useCart();

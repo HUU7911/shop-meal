@@ -12,7 +12,6 @@ function fmtDate(v?: string) {
   return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN');
 }
 
-/** Danh sách bài viết gắn với một món, đặt bên dưới thông tin chi tiết món. Ẩn nếu chưa có bài. */
 export default function ProductPosts({ productId }: { productId: string }) {
   const { isAuthenticated } = useAuth();
   const [posts, setPosts] = useState<PostForProduct[]>([]);

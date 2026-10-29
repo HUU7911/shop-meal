@@ -70,7 +70,7 @@ export default function Footer() {
 
           <div className="footer-column footer-contact">
             <h3>Liên hệ với chúng tôi</h3>
-            <p><span>✉</span> support@shopmeal.vn</p>
+            <p><span>✉</span> trihuutran4@gmail.com</p>
             <p><span>☎</span> 1900 0000</p>
             <p><span>⌖</span> Việt Nam</p>
             <p><span>◷</span> 08:00 - 22:00</p>

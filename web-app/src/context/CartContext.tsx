@@ -14,13 +14,11 @@ interface CartValue {
 	increase: (itemId: string) => Promise<void>;
 	decrease: (itemId: string) => Promise<void>;
 	remove: (itemId: string) => Promise<void>;
-	/** Làm mới giỏ sau khi đặt hàng và xoá nốt các món còn sót (xem ghi chú ở CartContext). */
 	clearAfterOrder: () => Promise<void>;
 }
 
 const CartContext = createContext<CartValue | null>(null);
 
-// Set<CartItem> ở backend không có thứ tự ổn định -> sắp xếp theo tên để giao diện không nhảy
 const normalize = (cart: Cart): Cart => ({
 	...cart,
 	items: [...(cart.items ?? [])].sort((a, b) => a.productName.localeCompare(b.productName, 'vi')),
@@ -43,7 +41,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		try {
 			setCart(normalize(await cartApi.get()));
 		} catch (e) {
-			// Người dùng chưa có giỏ hàng = giỏ trống
 			if (getErrorCode(e) === CART_NOT_FOUND) setCart(null);
 		} finally {
 			setLoading(false);
@@ -67,9 +64,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		[notify],
 	);
 
-	// order-service gọi DELETE /cart/clear-my-cart sau khi tạo đơn. Nếu cart-service lỗi (lỗi bị order-service nuốt)
-	// thì giỏ vẫn còn món, nên ở đây xoá nốt từng món để đơn không bị đặt lặp lại.
-	// Khi backend đã tự xoá giỏ, danh sách còn lại rỗng và không có request thừa nào.
 	const clearAfterOrder = useCallback(async () => {
 		if (!isAuthenticated) return;
 		try {
@@ -77,8 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 			for (const item of current.items) {
 				try {
 					current = normalize(await cartApi.remove(item.id));
-				} catch {
-					/* món đã bị xoá hoặc lỗi mạng: bỏ qua */
+				} catch (Error) {
 				}
 			}
 			setCart(current.items.length ? current : null);

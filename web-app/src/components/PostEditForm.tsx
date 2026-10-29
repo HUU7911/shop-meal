@@ -16,7 +16,6 @@ interface Props {
   onCancel: () => void;
 }
 
-/** Form sửa bài viết của chính mình (PUT /post/update/my-post/{id}). */
 export default function PostEditForm({ post, onSaved, onCancel }: Props) {
   const notify = useNotify();
   const [title, setTitle] = useState(post.postTitle ?? '');
@@ -33,7 +32,6 @@ export default function PostEditForm({ post, onSaved, onCancel }: Props) {
     setBusy(true);
     setError('');
     try {
-      // Endpoint chỉ nhận JSON nên không đổi được ảnh; gửi lại imageUrl hiện tại để giữ nguyên ảnh.
       const saved = await postApi.update(post.id, { postTitle: t, postContent: c, imageUrl: post.imageUrl });
       notify('Đã cập nhật bài viết.');
       onSaved({

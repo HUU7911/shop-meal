@@ -1,7 +1,6 @@
 import { Box, SxProps, Theme } from '@mui/material';
 import { ReactNode } from 'react';
 
-/** Khối "hoá đơn": giấy trắng, viền nét đứt và mép răng cưa ở đáy. Dùng cho giỏ hàng, thanh toán, chi tiết đơn. */
 export default function Receipt({ children, sx }: { children: ReactNode; sx?: SxProps<Theme> }) {
   return (
     <Box
