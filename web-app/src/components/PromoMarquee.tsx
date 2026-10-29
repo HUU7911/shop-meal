@@ -2,7 +2,6 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import { Box } from '@mui/material';
 import { keyframes } from '@mui/material/styles';
 
-// Sửa nội dung quảng cáo ở đây (các con số bên dưới chỉ là ví dụ)
 const MESSAGES = [
     'Giao hàng nhanh trong 30 phút',
     'Miễn phí giao hàng cho đơn từ 150.000đ',
@@ -14,9 +13,7 @@ const scroll = keyframes`
   to { transform: translateX(-50%); }
 `;
 
-/** Dòng chữ chạy ngang trên đầu trang để quảng cáo giao hàng. Chạy liên tục, không dừng khi rê chuột. */
 export default function PromoMarquee() {
-    // Lặp lại để mỗi nhóm luôn dài hơn bề rộng màn hình, tránh bị hở khi chạy
     const group = [...MESSAGES, ...MESSAGES, ...MESSAGES];
 
     const renderGroup = (hidden: boolean) => (
