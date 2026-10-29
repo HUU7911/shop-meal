@@ -39,6 +39,9 @@ export default function App() {
       {/* Giỏ hàng: page riêng, layout riêng (không banner / bài viết / footer) */}
       <Route element={<CartLayout />}>
         <Route path="cart" element={<CartPage />} />
+          <Route element={<RequireAuth />}>
+              <Route path="checkout" element={<CheckoutPage />} />
+          </Route>
       </Route>
 
       <Route element={<AppLayout />}>
@@ -46,9 +49,6 @@ export default function App() {
         <Route path="payment/success" element={<PaymentResultPage success />} />
         <Route path="payment/cancel" element={<PaymentResultPage success={false} />} />
 
-        <Route element={<RequireAuth />}>
-          <Route path="checkout" element={<CheckoutPage />} />
-        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 

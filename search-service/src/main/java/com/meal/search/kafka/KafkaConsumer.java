@@ -52,6 +52,7 @@ public class KafkaConsumer {
                 .timeWork(event.getTimeWork())
                 .position(event.getPosition())
                 .description(event.getDescription())
+                .size(event.getSize())
                 .price(event.getPrice())
                 .images(event.getImages())
                 .type(event.getType())

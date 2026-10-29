@@ -43,11 +43,9 @@ import { categoryLabel } from '../utils/format';
 import AuthImage from './AuthImage';
 import Footer from './Footer';
 import PostLayout from './PostLayout'
+import PromoMarquee from './PromoMarquee';
 
-/* ------------------------------------------------------------------ */
-/* Icon cho các danh mục mà product-service tạo sẵn khi khởi động      */
-/* (CAFE, NOODLE, RICE, MILK_TEA). Danh mục khác dùng icon mặc định.     */
-/* ------------------------------------------------------------------ */
+const CARD_SHADOW = '0 1px 2px rgba(20,60,45,.06), 0 8px 24px rgba(20,60,45,.12)';
 
 const CATEGORY_ICON: Record<string, ElementType> = {
 	CAFE: LocalCafeIcon,
@@ -56,12 +54,7 @@ const CATEGORY_ICON: Record<string, ElementType> = {
 	MILK_TEA: EmojiFoodBeverageIcon,
 };
 
-// GET /product/category yêu cầu đăng nhập; khách xem danh mục mặc định của hệ thống.
 const DEFAULT_CATEGORIES = ['CAFE', 'NOODLE', 'RICE', 'MILK_TEA'];
-
-/* ------------------------------------------------------------------ */
-/* Thanh tìm kiếm                                                      */
-/* ------------------------------------------------------------------ */
 
 function SearchBox() {
 	const navigate = useNavigate();
@@ -125,10 +118,6 @@ function SearchBox() {
 	);
 }
 
-/* ------------------------------------------------------------------ */
-/* Danh mục: sidebar bên trái slide (desktop)                          */
-/* ------------------------------------------------------------------ */
-
 function CategorySidebar() {
 	const navigate = useNavigate();
 	const [params] = useSearchParams();
@@ -156,6 +145,7 @@ function CategorySidebar() {
 				flexDirection: 'column',
 				justifyContent: 'flex-start',
 				borderRadius: 2,
+				boxShadow: CARD_SHADOW,
 				py: 1,
 				px: 0.5,
 				overflowY: 'auto',
@@ -195,10 +185,6 @@ function CategorySidebar() {
 		</Paper>
 	);
 }
-
-/* ------------------------------------------------------------------ */
-/* Slide banner lấy từ post-service (GET /post/banner/getAll)           */
-/* ------------------------------------------------------------------ */
 
 const slideHeight = { xs: 170, sm: 240, md: 320 };
 
@@ -249,7 +235,7 @@ function PromoSlider() {
 			aria-label="Banner"
 			onMouseEnter={() => setPaused(true)}
 			onMouseLeave={() => setPaused(false)}
-			sx={{ position: 'relative', overflow: 'hidden', borderRadius: 2, height: slideHeight }}
+			sx={{ position: 'relative', overflow: 'hidden', borderRadius: 2, height: slideHeight, boxShadow: CARD_SHADOW }}
 		>
 			<Box
 				sx={{
@@ -343,6 +329,7 @@ export default function AppLayout() {
 
 	return (
 		<Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
+			<PromoMarquee />
 			<AppBar
 				position="sticky"
 				color="inherit"
@@ -516,7 +503,7 @@ export default function AppLayout() {
 			<Container component="main" maxWidth="lg" sx={{ py: 3, flexGrow: 1 }}>
 				<Outlet />
 			</Container>
-			<PostLayout/>			
+			<PostLayout/>
 			<Footer />
 		</Box>
 	);

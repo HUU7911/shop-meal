@@ -1,15 +1,18 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
   Alert,
   Box,
+  Button,
   Pagination,
   Skeleton,
   Stack,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { productApi, searchApi } from '../api/services';
 import type { Product, SizeOption } from '../api/types';
+import CategoryCarousel from '../components/CategoryCarousel';
 import EmptyState from '../components/EmptyState';
 import ProductCard from '../components/ProductCard';
 import ProductDialog from '../components/ProductDialog';
@@ -17,12 +20,37 @@ import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useNotify } from '../context/NotifyContext';
 import { getErrorMessage } from '../api/client';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { categoryLabel } from '../utils/format';
 
+// Chế độ tìm kiếm (?q=): danh sách phẳng, có phân trang
 const PAGE_SIZE = 12;
+// Chế độ danh mục: tải toàn bộ thực đơn từ product-service rồi nhóm theo danh mục (mỗi danh mục một slide)
+const CATALOG_PAGE_SIZE = 100;
+const CATALOG_MAX_PAGES = 10;
+const UNCATEGORIZED = '__OTHER__';
+// Thứ tự hiển thị mặc định khi chưa đăng nhập (GET /product/category yêu cầu đăng nhập)
+const DEFAULT_CATEGORIES = ['CAFE', 'NOODLE', 'RICE', 'MILK_TEA'];
+
+// 4 card / hàng trên màn hình rộng, 2 card trên tablet, 1 card trên điện thoại
+const gridSx = {
+  display: 'grid',
+  gap: 2,
+  gridTemplateColumns: {
+    xs: 'minmax(0, 1fr)',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    md: 'repeat(4, minmax(0, 1fr))',
+  },
+} as const;
 
 const fold = (s: string) =>
-  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase();
+    s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase();
+
+interface Section {
+  name: string;
+  label: string;
+  products: Product[];
+}
 
 export default function MenuPage() {
   const { isAuthenticated } = useAuth();
@@ -31,9 +59,10 @@ export default function MenuPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
 
-  // Từ khoá do thanh tìm kiếm / danh mục ở AppLayout đặt qua ?q=
+  // Từ khoá do thanh tìm kiếm đặt qua ?q=
   const q = params.get('q') ?? '';
-  // Danh mục (tên chính xác, vd. CAFE) do thanh danh mục đặt qua ?category=; search-service lọc theo categories.name.
+  const searching = q.trim() !== '';
+  // Danh mục (tên chính xác, vd. CAFE) do thanh danh mục đặt qua ?category=
   const category = params.get('category') ?? '';
   const page = Math.max(1, Number(params.get('page') ?? 1));
 
@@ -54,17 +83,84 @@ export default function MenuPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, category]);
 
-  const [items, setItems] = useState<Product[]>([]);
-  const [totalPage, setTotalPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [fallback, setFallback] = useState(false);
   const [selected, setSelected] = useState<Product | null>(null);
+
+  /* ------------------------------------------------------------------ */
+  /* Chế độ danh mục: tải cả thực đơn từ product-service (MySQL)           */
+  /* ------------------------------------------------------------------ */
+  const [catalog, setCatalog] = useState<Product[]>([]);
+  const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError(null);
+    setCatalogLoading(true);
+    setCatalogError(null);
+    (async () => {
+      try {
+        const all: Product[] = [];
+        for (let p = 1; p <= CATALOG_MAX_PAGES; p++) {
+          const res = await productApi.list(p, CATALOG_PAGE_SIZE);
+          all.push(...res.data);
+          if (p >= res.totalPage) break;
+        }
+        // Thứ tự danh mục theo quản trị; khách chưa đăng nhập không gọi được nên dùng thứ tự mặc định
+        const names = isAuthenticated
+            ? await productApi.categories().then((l) => l.map((c) => c.name)).catch(() => [] as string[])
+            : [];
+        if (!active) return;
+        setCatalog(all);
+        setCategoryOrder(names);
+      } catch (e) {
+        if (active) setCatalogError(getErrorMessage(e));
+      } finally {
+        if (active) setCatalogLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated]);
+
+  // Nhóm sản phẩm theo danh mục (món thuộc nhiều danh mục sẽ xuất hiện ở từng danh mục)
+  const sections = useMemo<Section[]>(() => {
+    const map = new Map<string, Product[]>();
+    for (const p of catalog) {
+      const names = p.categories?.length ? [...new Set(p.categories.map((c) => c.name))] : [UNCATEGORIZED];
+      for (const n of names) {
+        const list = map.get(n);
+        if (list) list.push(p);
+        else map.set(n, [p]);
+      }
+    }
+    const base = categoryOrder.length ? categoryOrder : DEFAULT_CATEGORIES;
+    const extra = [...map.keys()].filter((k) => !base.includes(k) && k !== UNCATEGORIZED);
+    return [...base, ...extra, UNCATEGORIZED]
+        .filter((n) => map.has(n))
+        .map((n) => ({
+          name: n,
+          label: n === UNCATEGORIZED ? 'Khác' : categoryLabel(n),
+          products: map.get(n) as Product[],
+        }));
+  }, [catalog, categoryOrder]);
+
+  const visibleSections = category ? sections.filter((s) => s.name === category) : sections;
+
+  /* ------------------------------------------------------------------ */
+  /* Chế độ tìm kiếm: search-service (đã đăng nhập) hoặc lọc trên trang    */
+  /* ------------------------------------------------------------------ */
+  const [items, setItems] = useState<Product[]>([]);
+  const [totalPage, setTotalPage] = useState(1);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [fallback, setFallback] = useState(false);
+
+  useEffect(() => {
+    if (!searching) return;
+    let active = true;
+    setSearchLoading(true);
+    setSearchError(null);
 
     const loadList = async () => {
       // Danh sách công khai: chỉ lọc được trên trang hiện tại.
@@ -102,16 +198,16 @@ export default function MenuPage() {
         setItems(res.data);
         setTotalPage(Math.max(1, res.totalPage));
       } catch (e) {
-        if (active) setError(getErrorMessage(e));
+        if (active) setSearchError(getErrorMessage(e));
       } finally {
-        if (active) setLoading(false);
+        if (active) setSearchLoading(false);
       }
     })();
 
     return () => {
       active = false;
     };
-  }, [isAuthenticated, q, category, page]);
+  }, [searching, isAuthenticated, q, category, page]);
 
   const handleAdd = async (p: Product, option: SizeOption) => {
     if (!isAuthenticated) {
@@ -128,46 +224,97 @@ export default function MenuPage() {
     if (ok) notify(`Đã thêm "${p.name}"${option.size ? ` (${option.size})` : ''} vào giỏ hàng.`);
   };
 
-  return (
-    <Box>
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        {q ? `Kết quả cho “${q}”` : category ? categoryLabel(category) : 'Thực đơn hôm nay'}
-      </Typography>
+  const skeletons = (
+      <Box sx={gridSx}>
+        {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} variant="rounded" height={340} />
+        ))}
+      </Box>
+  );
 
-      {fallback && (q || category) && !isAuthenticated && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Tìm kiếm đang áp dụng cho trang hiện tại. Đăng nhập để tìm kiếm trên toàn bộ thực đơn.
-        </Alert>
-      )}
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+  const renderGrid = (list: Product[]) => (
+      <Box sx={gridSx}>
+        {list.map((p) => (
+            <ProductCard key={p.id} product={p} onOpen={setSelected} onAdd={handleAdd} />
+        ))}
+      </Box>
+  );
 
-      {loading ? (
-        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} variant="rounded" height={290} />
-          ))}
-        </Box>
-      ) : items.length === 0 ? (
-        <EmptyState
-          title="Chưa có món phù hợp"
-          description={q || category ? 'Thử đổi từ khoá hoặc danh mục khác.' : 'Thực đơn đang được cập nhật.'}
-        />
-      ) : (
+  const renderSearch = () => {
+    if (searchLoading) return skeletons;
+    if (items.length === 0) {
+      return <EmptyState title="Chưa có món phù hợp" description="Thử đổi từ khoá hoặc danh mục khác." />;
+    }
+    return (
         <>
-          <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
-            {items.map((p) => (
-              <ProductCard key={p.id} product={p} onOpen={setSelected} onAdd={handleAdd} />
-            ))}
-          </Box>
+          {renderGrid(items)}
           {totalPage > 1 && (
-            <Stack alignItems="center" sx={{ mt: 4 }}>
-              <Pagination count={totalPage} page={page} color="primary" onChange={(_, v) => changePage(v)} />
-            </Stack>
+              <Stack alignItems="center" sx={{ mt: 4 }}>
+                <Pagination count={totalPage} page={page} color="primary" onChange={(_, v) => changePage(v)} />
+              </Stack>
           )}
         </>
-      )}
+    );
+  };
 
-      <ProductDialog product={selected} onClose={() => setSelected(null)} onAdd={handleAdd} />
-    </Box>
+  const renderCatalog = () => {
+    if (catalogLoading) return skeletons;
+    if (visibleSections.length === 0) {
+      return (
+          <EmptyState
+              title="Chưa có món phù hợp"
+              description={category ? 'Danh mục này chưa có món nào.' : 'Thực đơn đang được cập nhật.'}
+          />
+      );
+    }
+    // Đang xem một danh mục: tiêu đề trang đã là tên danh mục nên chỉ cần lưới sản phẩm
+    if (category) return renderGrid(visibleSections[0].products);
+
+    // Trang chủ: mỗi danh mục là một khối, bên trong là hàng card dạng slide
+    return (
+        <Stack spacing={4}>
+          {visibleSections.map((s) => (
+              <CategoryCarousel
+                  key={s.name}
+                  id={`cat-${s.name}`}
+                  title={s.label}
+                  icon={getCategoryIcon(s.name)}
+                  count={s.products.length}
+              >
+                {s.products.map((p) => (
+                    <ProductCard key={p.id} product={p} onOpen={setSelected} onAdd={handleAdd} />
+                ))}
+              </CategoryCarousel>
+          ))}
+        </Stack>
+    );
+  };
+
+  const error = searching ? searchError : catalogError;
+
+  return (
+      <Box>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+          {!searching && category && (
+              <Button size="small" startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
+                Tất cả danh mục
+              </Button>
+          )}
+          <Typography variant="h4">
+            {searching ? `Kết quả cho “${q}”` : category ? categoryLabel(category) : 'Thực đơn hôm nay'}
+          </Typography>
+        </Stack>
+
+        {searching && fallback && !isAuthenticated && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Tìm kiếm đang áp dụng cho trang hiện tại. Đăng nhập để tìm kiếm trên toàn bộ thực đơn.
+            </Alert>
+        )}
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+        {searching ? renderSearch() : renderCatalog()}
+
+        <ProductDialog product={selected} onClose={() => setSelected(null)} onAdd={handleAdd} />
+      </Box>
   );
 }

@@ -1,23 +1,26 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { AppBar, Avatar, Box, Button, Container, IconButton, Toolbar, Typography } from '@mui/material';
-import { Link as RouterLink, Outlet } from 'react-router-dom';
+import { Link as RouterLink, Outlet, useLocation} from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import AuthImage from './AuthImage';
 
-/**
- * Layout riêng cho trang giỏ hàng.
- * Không có banner, danh mục, bài viết hay footer của trang bán hàng.
- */
 export default function CartLayout() {
   const { isAuthenticated, profile } = useAuth();
   const displayName = profile?.firstName || profile?.username || 'Tài khoản';
+  const { pathname } = useLocation();
+  const isCheckout = pathname.startsWith('/checkout');
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Container maxWidth="lg" disableGutters sx={{ px: { xs: 1.5, sm: 3 } }}>
           <Toolbar disableGutters sx={{ gap: 1.5, minHeight: { xs: 56, md: 64 } }}>
-            <IconButton component={RouterLink} to="/" aria-label="Quay lại cửa hàng" edge="start">
+            <IconButton
+                component={RouterLink}
+                to={isCheckout ? '/cart' : '/'}
+                aria-label={isCheckout ? 'Quay lại giỏ hàng' : 'Quay lại cửa hàng'}
+                edge="start"
+            >
               <ArrowBackIcon />
             </IconButton>
             <Box component={RouterLink} to="/" aria-label="Shop Meal - Trang chủ" sx={{ display: 'flex', flexShrink: 0 }}>
