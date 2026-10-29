@@ -21,20 +21,12 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Chạy TRƯỚC AuthenticationFilter (order 0). Làm hai việc:
- *  1) Chặn các đường dẫn chỉ dành cho nội bộ (trả 404, kể cả khi đã đăng nhập).
- *  2) Giới hạn tổng số request theo IP (mọi route cộng lại), tính cả request sai token.
- *
- * Lưu ý: GlobalFilter chỉ chạy với request đã khớp một route.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
 
-    // INCR + EXPIRE nguyên tử: chỉ đặt TTL ở lần đếm đầu tiên của mỗi cửa sổ
     static final DefaultRedisScript<Long> COUNTER_SCRIPT = new DefaultRedisScript<>(
             "local c = redis.call('INCR', KEYS[1]) "
                     + "if c == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end "
@@ -42,7 +34,7 @@ public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
             Long.class);
 
     ReactiveStringRedisTemplate redis;
-    KeyResolver ipKeyResolver; // bean @Primary trong RateLimiterConfig (đã xử lý X-Forwarded-For)
+    KeyResolver ipKeyResolver;
 
     @NonFinal
     @Value("${app.api-prefix}")
@@ -78,7 +70,7 @@ public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -2; // nhỏ hơn AuthenticationFilter (0) nên chạy trước
+        return -2;
     }
 
     private boolean isBlocked(String path) {
@@ -96,7 +88,6 @@ public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
                 .next()
                 .map(count -> count <= limit)
                 .onErrorResume(e -> {
-                    // Redis lỗi: cho request đi qua (fail-open) nhưng phải để lại dấu vết
                     log.warn("Pre-auth limiter unavailable, allowing request: {}", e.getMessage());
                     return Mono.just(true);
                 })
