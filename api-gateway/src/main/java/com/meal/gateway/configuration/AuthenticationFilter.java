@@ -21,9 +21,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.exc.JsonNodeException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +45,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/forgot-password",
             "/identity/auth/reset-password",
             "/identity/auth/verify-otp",
-//            "/notification/email/send",
             "/search/product",
             "/product/food",
             "/product/category",
@@ -99,19 +99,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .message("Unauthenticated")
                 .build();
 
-        String body = null;
+        String body = " ";
         try {
             body = objectMapper.writeValueAsString(apiResponse);
-        } catch (JsonNodeException e){
-            e.printStackTrace();
-            apiResponse.setMessage(e.getMessage());
+        } catch (JacksonException e){
+            apiResponse.setMessage(String.valueOf(e.fillInStackTrace()));
         }
 
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         return response.writeWith(
-          Mono.just(response.bufferFactory().wrap(body.getBytes()))
+          Mono.just(response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8)))
         );
     }
 }
