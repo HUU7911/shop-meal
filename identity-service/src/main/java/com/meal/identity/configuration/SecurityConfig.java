@@ -35,6 +35,14 @@ public class SecurityConfig{
             "/auth/verify-otp"
     };
 
+    @NonFinal
+    private final String[] PRIVATE_MATCHERS = {
+            "/users",
+            "/users/delete/{id}",
+            "/internal/users/create",
+            "/roles/update"
+    };
+
     @Autowired
     private CustomJwtDecoder jwtDecoder;
 
@@ -43,10 +51,7 @@ public class SecurityConfig{
 
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests.requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users").hasRole(RoleDefine.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/users/delete/{id}").hasRole(RoleDefine.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/internal/users/create").hasRole(RoleDefine.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/roles/update").hasRole(RoleDefine.ADMIN.name())
+                        .requestMatchers(PRIVATE_MATCHERS).hasRole(RoleDefine.ADMIN.name())
                         .requestMatchers(PUBLIC_RESET_PASSWORD).permitAll()
                         .anyRequest().authenticated());
 
@@ -68,7 +73,6 @@ public class SecurityConfig{
         jwtGrantedAuthoritiesConverter.setAuthoritiesClaimDelimiter("\\s*,\\s*");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
         return jwtAuthenticationConverter;
