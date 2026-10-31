@@ -5,10 +5,13 @@ import type { AddToCartRequest, Cart } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { useNotify } from './NotifyContext';
 
-interface CartValue {
+interface CartState {
 	cart: Cart | null;
 	loading: boolean;
 	count: number;
+}
+
+interface CartActions {
 	refresh: () => Promise<void>;
 	add: (request: AddToCartRequest) => Promise<boolean>;
 	increase: (itemId: string) => Promise<void>;
@@ -17,7 +20,12 @@ interface CartValue {
 	clearAfterOrder: () => Promise<void>;
 }
 
-const CartContext = createContext<CartValue | null>(null);
+type CartValue = CartState & CartActions;
+
+// Tách state và actions thành 2 context: component chỉ cần gọi hành động (vd. danh sách món)
+// sẽ không bị render lại mỗi khi giỏ hàng thay đổi.
+const CartStateContext = createContext<CartState | null>(null);
+const CartActionsContext = createContext<CartActions | null>(null);
 
 const normalize = (cart: Cart): Cart => ({
 	...cart,
@@ -67,39 +75,66 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	const clearAfterOrder = useCallback(async () => {
 		if (!isAuthenticated) return;
 		try {
-			let current = normalize(await cartApi.get());
-			for (const item of current.items) {
+			let current = await cartApi.get();
+			// Xoá tuần tự để tránh ghi đè lẫn nhau trên cùng một giỏ.
+			// TODO: thay bằng endpoint "xoá toàn bộ giỏ" ở cart-service để chỉ cần 1 request.
+			for (const item of current.items ?? []) {
 				try {
-					current = normalize(await cartApi.remove(item.id));
-				} catch (Error) {
+					current = await cartApi.remove(item.id);
+				} catch {
+					/* bỏ qua món lỗi, tiếp tục xoá các món còn lại */
 				}
 			}
-			setCart(current.items.length ? current : null);
+			const normalized = normalize(current);
+			setCart(normalized.items.length ? normalized : null);
 		} catch (e) {
 			if (getErrorCode(e) === CART_NOT_FOUND) setCart(null);
 		}
 	}, [isAuthenticated]);
 
-	const value = useMemo<CartValue>(
+	const add = useCallback((request: AddToCartRequest) => run(() => cartApi.add(request)), [run]);
+	const increase = useCallback(async (id: string) => void (await run(() => cartApi.increase(id))), [run]);
+	const decrease = useCallback(async (id: string) => void (await run(() => cartApi.decrease(id))), [run]);
+	const remove = useCallback(async (id: string) => void (await run(() => cartApi.remove(id))), [run]);
+
+	const actions = useMemo<CartActions>(
+		() => ({ refresh, add, increase, decrease, remove, clearAfterOrder }),
+		[refresh, add, increase, decrease, remove, clearAfterOrder],
+	);
+
+	const state = useMemo<CartState>(
 		() => ({
 			cart,
 			loading,
 			count: cart?.items?.reduce((sum, i) => sum + i.quantity, 0) ?? 0,
-			refresh,
-			add: (request) => run(() => cartApi.add(request)),
-			increase: async (id) => void (await run(() => cartApi.increase(id))),
-			decrease: async (id) => void (await run(() => cartApi.decrease(id))),
-			remove: async (id) => void (await run(() => cartApi.remove(id))),
-			clearAfterOrder,
 		}),
-		[cart, loading, refresh, run, clearAfterOrder],
+		[cart, loading],
 	);
 
-	return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+	return (
+		<CartActionsContext.Provider value={actions}>
+			<CartStateContext.Provider value={state}>{children}</CartStateContext.Provider>
+		</CartActionsContext.Provider>
+	);
 }
 
-export function useCart(): CartValue {
-	const ctx = useContext(CartContext);
-	if (!ctx) throw new Error('useCart must be used inside CartProvider');
+/** Chỉ lấy các hành động (ổn định, không gây render lại khi giỏ hàng đổi). */
+export function useCartActions(): CartActions {
+	const ctx = useContext(CartActionsContext);
+	if (!ctx) throw new Error('useCartActions must be used inside CartProvider');
 	return ctx;
+}
+
+/** Chỉ lấy state của giỏ hàng. */
+export function useCartState(): CartState {
+	const ctx = useContext(CartStateContext);
+	if (!ctx) throw new Error('useCartState must be used inside CartProvider');
+	return ctx;
+}
+
+/** Tương thích ngược: state + actions. Dùng useCartActions/useCartState khi chỉ cần một phần. */
+export function useCart(): CartValue {
+	const state = useCartState();
+	const actions = useCartActions();
+	return useMemo(() => ({ ...state, ...actions }), [state, actions]);
 }

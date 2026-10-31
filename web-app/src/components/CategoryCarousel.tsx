@@ -72,6 +72,9 @@ export default function CategoryCarousel({ id, title, icon: Icon, count, childre
                 )} 50%, ${alpha(t.palette.primary.main, 0.2)} 100%)`,
                 pb: 0.5,
                 px: { xs: 1.5, sm: 2.5 },
+                // Bỏ qua layout/paint cho khối nằm ngoài màn hình; trình duyệt tự render khi cuộn gần tới
+                contentVisibility: 'auto',
+                containIntrinsicSize: 'auto 520px',
             })}
         >
             {/* Thẻ tiêu đề treo ở mép trên, nằm giữa */}

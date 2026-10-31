@@ -1,7 +1,7 @@
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Button, Card, CardActionArea, CardActions, CardContent, Chip, CircularProgress, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import type { Product, SizeOption } from '../api/types';
 import { categoryLabel, formatPrice, getSizeOptions } from '../utils/format';
 import AuthImage from './AuthImage';
@@ -17,7 +17,86 @@ const TYPE_LABEL: Record<string, string> = {
 	DRINK: 'Đồ uống',
 };
 
-export default function ProductCard({ product, onOpen, onAdd }: Props) {
+// Các object sx tĩnh được khai báo một lần ngoài component để emotion không phải
+// serialize lại style cho mỗi card ở mỗi lần render.
+const cardSx = {
+	display: 'flex',
+	flexDirection: 'column',
+	height: '100%',
+	borderRadius: 2,
+	overflow: 'hidden',
+	transition: 'transform .25s, box-shadow .25s, border-color .25s',
+	'&:hover': {
+		transform: 'translateY(-4px)',
+		boxShadow: '0 12px 28px rgba(0,0,0,.12)',
+		borderColor: 'primary.light',
+	},
+	// phóng nhẹ ảnh khi rê chuột
+	'&:hover .card-media > *': { transform: 'scale(1.06)' },
+} as const;
+
+const actionAreaSx = { flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' } as const;
+
+const mediaSx = {
+	position: 'relative',
+	width: '100%',
+	aspectRatio: '4 / 3',
+	overflow: 'hidden',
+	bgcolor: 'action.hover',
+	'& > *': { transition: 'transform .5s ease' },
+} as const;
+
+const imageSx = { width: '100%', height: '100%', objectFit: 'cover' } as const;
+
+const typeBadgeSx = {
+	position: 'absolute',
+	top: 10,
+	left: 10,
+	px: 1.25,
+	py: 0.25,
+	borderRadius: 4,
+	bgcolor: 'rgba(255,255,255,.92)',
+	color: 'primary.main',
+	fontSize: '.72rem',
+	fontWeight: 700,
+	// giữ nhãn đứng yên khi ảnh phóng to
+	transform: 'none !important',
+} as const;
+
+// Không dùng backdrop-filter ở đây: hàng trăm lớp blur làm giật khi cuộn trên máy yếu.
+const timeBadgeSx = {
+	position: 'absolute',
+	bottom: 10,
+	left: 10,
+	display: 'flex',
+	alignItems: 'center',
+	gap: 0.5,
+	px: 1,
+	py: 0.25,
+	borderRadius: 4,
+	bgcolor: 'rgba(0,0,0,.68)',
+	color: '#fff',
+	transform: 'none !important',
+} as const;
+
+const nameSx = {
+	fontSize: '1.02rem',
+	fontWeight: 700,
+	lineHeight: 1.3,
+	// tối đa 2 dòng, giữ chiều cao đồng đều giữa các card
+	display: '-webkit-box',
+	WebkitLineClamp: 2,
+	WebkitBoxOrient: 'vertical',
+	overflow: 'hidden',
+	minHeight: '2.6em',
+} as const;
+
+const sizeRowSx = { px: 2, pb: 1, minHeight: 36, display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' } as const;
+const actionsSx = { justifyContent: 'space-between', px: 2, pb: 2, pt: 0.5 } as const;
+const priceSx = { fontWeight: 800, fontSize: '1.15rem', color: 'primary.main', fontVariantNumeric: 'tabular-nums' } as const;
+const addBtnSx = { borderRadius: 6, px: 2, fontWeight: 700 } as const;
+
+function ProductCard({ product, onOpen, onAdd }: Props) {
 	const [busy, setBusy] = useState(false);
 	const options = useMemo(() => getSizeOptions(product), [product]);
 	const [selectedIdx, setSelectedIdx] = useState(0);
@@ -27,78 +106,20 @@ export default function ProductCard({ product, onOpen, onAdd }: Props) {
 	const typeLabel = TYPE_LABEL[product.type as string];
 
 	return (
-		<Card
-			variant="outlined"
-			sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				height: '100%',
-				borderRadius: 2,
-				overflow: 'hidden',
-				transition: 'transform .25s, box-shadow .25s, border-color .25s',
-				'&:hover': {
-					transform: 'translateY(-4px)',
-					boxShadow: '0 12px 28px rgba(0,0,0,.12)',
-					borderColor: 'primary.light',
-				},
-				// phóng nhẹ ảnh khi rê chuột
-				'&:hover .card-media > *': { transform: 'scale(1.06)' },
-			}}
-		>
-			<CardActionArea onClick={() => onOpen(product)} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+		<Card variant="outlined" sx={cardSx}>
+			<CardActionArea onClick={() => onOpen(product)} sx={actionAreaSx}>
 				{/* Ảnh + nhãn nổi */}
-				<Box
-					className="card-media"
-					sx={{
-						position: 'relative',
-						width: '100%',
-						aspectRatio: '4 / 3',
-						overflow: 'hidden',
-						bgcolor: 'action.hover',
-						'& > *': { transition: 'transform .5s ease' },
-					}}
-				>
-					<AuthImage src={product.images?.[0]} alt={product.name} sx={{ width: '100%', height: '100%', objectFit: 'cover'}} />
+				<Box className="card-media" sx={mediaSx}>
+					<AuthImage src={product.images?.[0]} alt={product.name} sx={imageSx} />
 
 					{typeLabel && (
-						<Box
-							sx={{
-								position: 'absolute',
-								top: 10,
-								left: 10,
-								px: 1.25,
-								py: 0.25,
-								borderRadius: 4,
-								bgcolor: 'rgba(255,255,255,.92)',
-								color: 'primary.main',
-								fontSize: '.72rem',
-								fontWeight: 700,
-								// giữ nhãn đứng yên khi ảnh phóng to
-								transform: 'none !important',
-							}}
-						>
+						<Box sx={typeBadgeSx}>
 							{typeLabel}
 						</Box>
 					)}
 
 					{product.timeWork && (
-						<Box
-							sx={{
-								position: 'absolute',
-								bottom: 10,
-								left: 10,
-								display: 'flex',
-								alignItems: 'center',
-								gap: 0.5,
-								px: 1,
-								py: 0.25,
-								borderRadius: 4,
-								bgcolor: 'rgba(0,0,0,.6)',
-								color: '#fff',
-								backdropFilter: 'blur(4px)',
-								transform: 'none !important',
-							}}
-						>
+						<Box sx={timeBadgeSx}>
 							<ScheduleIcon sx={{ fontSize: 14 }} />
 							<Typography variant="caption" sx={{ lineHeight: 1.4, fontWeight: 600 }}>
 								{product.timeWork}
@@ -108,20 +129,7 @@ export default function ProductCard({ product, onOpen, onAdd }: Props) {
 				</Box>
 
 				<CardContent sx={{ pb: 1 }}>
-					<Typography
-						variant="h6"
-						sx={{
-							fontSize: '1.02rem',
-							fontWeight: 700,
-							lineHeight: 1.3,
-							// tối đa 2 dòng, giữ chiều cao đồng đều giữa các card
-							display: '-webkit-box',
-							WebkitLineClamp: 2,
-							WebkitBoxOrient: 'vertical',
-							overflow: 'hidden',
-							minHeight: '2.6em',
-						}}
-					>
+					<Typography variant="h6" sx={nameSx}>
 						{product.name}
 					</Typography>
 					<Typography variant="body2" color="text.secondary" noWrap sx={{ mt: 0.5, minHeight: '1.43em' }}>
@@ -131,7 +139,7 @@ export default function ProductCard({ product, onOpen, onAdd }: Props) {
 			</CardActionArea>
 
 			{/* Chọn size: nằm ngoài CardActionArea để bấm chip không mở dialog chi tiết */}
-			<Box sx={{ px: 2, pb: 1, minHeight: 36, display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}>
+			<Box sx={sizeRowSx}>
 				{hasSizes &&
 					options.map((o, i) => (
 						<Chip
@@ -147,10 +155,8 @@ export default function ProductCard({ product, onOpen, onAdd }: Props) {
 					))}
 			</Box>
 
-			<CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2, pt: 0.5 }}>
-				<Typography
-					sx={{ fontWeight: 800, fontSize: '1.15rem', color: 'primary.main', fontVariantNumeric: 'tabular-nums' }}
-				>
+			<CardActions sx={actionsSx}>
+				<Typography sx={priceSx}>
 					{formatPrice(selected?.price)}
 				</Typography>
 				<Button
@@ -160,7 +166,7 @@ export default function ProductCard({ product, onOpen, onAdd }: Props) {
 					aria-label={`Thêm ${product.name} vào giỏ hàng`}
 					startIcon={busy ? <CircularProgress size={14} color="inherit" /> : <AddShoppingCartIcon />}
 					disabled={busy || !selected}
-					sx={{ borderRadius: 6, px: 2, fontWeight: 700 }}
+					sx={addBtnSx}
 					onClick={async () => {
 						setBusy(true);
 						try {
@@ -176,3 +182,6 @@ export default function ProductCard({ product, onOpen, onAdd }: Props) {
 		</Card>
 	);
 }
+
+// memo: card chỉ render lại khi product hoặc callback thật sự đổi
+export default memo(ProductCard);

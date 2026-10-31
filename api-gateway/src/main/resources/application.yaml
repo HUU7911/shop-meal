@@ -4,9 +4,10 @@ server:
 app:
   api-prefix: /api/v1
   pre-auth:
-    limit: 20            # tối đa 600 request mỗi cửa sổ cho mỗi IP, mọi route cộng lại
+    limit: 600            # tối đa 600 request mỗi cửa sổ cho mỗi IP, mọi route cộng lại
     window-seconds: 60
-    blocked-paths: /notification/email/send   # nhiều đường dẫn thì cách nhau bằng dấu phẩy
+    blocked-paths: /notification/email/send
+    skip-paths: /file/media/download
 
 spring:
   application:

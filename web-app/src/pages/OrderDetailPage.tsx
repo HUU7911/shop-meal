@@ -50,7 +50,9 @@ export default function OrderDetailPage() {
 	);
 
 	// Hook phải được gọi trước mọi lệnh return sớm bên dưới
-	useOrderSocket(handleStatusChanged);
+	useOrderSocket({
+		onStatusChanged: handleStatusChanged,
+	});
 
 	const cancel = async () => {
 		setBusy(true);

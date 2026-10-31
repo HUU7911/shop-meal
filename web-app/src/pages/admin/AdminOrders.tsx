@@ -1,3 +1,4 @@
+
 import {
 	Alert,
 	Box,
@@ -21,13 +22,21 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
+
 import { useCallback, useEffect, useState } from 'react';
+
 import { getErrorMessage } from '../../api/client';
 import { orderApi } from '../../api/services';
-import type { Order, OrderStatus, PageResponse } from '../../api/types';
+import type {
+	Order,
+	OrderStatus,
+	PageResponse,
+} from '../../api/types';
+
 import OrderStatusChip from '../../components/OrderStatusChip';
 import { dashed, ReceiptRow } from '../../components/Receipt';
 import { useNotify } from '../../context/NotifyContext';
+
 import {
 	formatDateTime,
 	formatPrice,
@@ -35,20 +44,34 @@ import {
 	ORDER_STATUS_LABEL,
 	PAYMENT_METHOD_LABEL,
 } from '../../utils/format';
-import { socket } from '../../socket/socket';
+
+import {
+	useOrderSocket,
+	type OrderStatusEvent,
+	type OrderCreatedEvent,
+} from '../../hooks/useOrderSocket';
 
 export default function AdminOrders() {
 	const notify = useNotify();
+
 	const [status, setStatus] = useState<OrderStatus | ''>('');
 	const [page, setPage] = useState(1);
 	const [data, setData] = useState<PageResponse<Order> | null>(null);
 	const [error, setError] = useState('');
 	const [detail, setDetail] = useState<Order | null>(null);
 
+	// Tải danh sách đơn hàng
 	const load = useCallback(async () => {
 		try {
 			setError('');
-			setData(await orderApi.adminList(page, 10, status || undefined));
+
+			const result = await orderApi.adminList(
+				page,
+				10,
+				status || undefined,
+			);
+
+			setData(result);
 		} catch (e) {
 			setError(getErrorMessage(e));
 		}
@@ -58,19 +81,34 @@ export default function AdminOrders() {
 		void load();
 	}, [load]);
 
-	const act = async (fn: () => Promise<Order>, okMsg: string) => {
-		try {
-			const updated = await fn();
-			notify(okMsg);
-			setDetail(updated);
-			await load();
-		} catch (e) {
-			notify(getErrorMessage(e), 'error');
-		}
-	};
+	// Xử lý khi trạng thái đơn hàng thay đổi
+	const handleStatusChanged = useCallback(
+		(event: OrderStatusEvent) => {
+			setData((current) => {
+				if (!current) return current;
 
-	useEffect(() => {
-		const handleOrderCreated = (event: { orderCode?: string }) => {
+				return {
+					...current,
+					data: current.data.map((order) =>
+						order.id === event.orderId
+							? {
+								...order,
+								status: event.status,
+							}
+							: order,
+					),
+				};
+			});
+
+			// Đồng bộ lại danh sách từ server
+			void load();
+		},
+		[load],
+	);
+
+	// Xử lý khi có đơn hàng mới
+	const handleOrderCreated = useCallback(
+		(event: OrderCreatedEvent) => {
 			notify(
 				event.orderCode
 					? `Có đơn hàng mới: ${event.orderCode}`
@@ -79,26 +117,52 @@ export default function AdminOrders() {
 			);
 
 			void load();
-		};
+		},
+		[load, notify],
+	);
 
-		socket.on('order:created', handleOrderCreated);
+	// Đăng ký Socket.IO listener
+	useOrderSocket({
+		enabled: true,
+		onStatusChanged: handleStatusChanged,
+		onOrderCreated: handleOrderCreated,
+	});
 
-		const handleStatusChanged = () => void load();
-		socket.on('order:status_changed', handleStatusChanged);
-		// trong cleanup:
-		socket.off('order:status_changed', handleStatusChanged);
+	// Xử lý xác nhận thanh toán và cập nhật trạng thái
+	const act = async (
+		fn: () => Promise<Order>,
+		okMsg: string,
+	) => {
+		try {
+			const updated = await fn();
 
-		return () => {
-			socket.off('order:created', handleOrderCreated);
-		};
-	}, [load, notify]);
+			notify(okMsg);
+
+			setDetail(updated);
+
+			await load();
+		} catch (e) {
+			notify(getErrorMessage(e), 'error');
+		}
+	};
 
 	return (
 		<Box>
-			<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-				<Typography variant="h5">Đơn hàng</Typography>
+			<Stack
+				direction="row"
+				justifyContent="space-between"
+				alignItems="center"
+				sx={{ mb: 2 }}
+			>
+				<Typography variant="h5">
+					Đơn hàng
+				</Typography>
+
 				<FormControl sx={{ minWidth: 200 }} size="small">
-					<InputLabel id="st">Trạng thái</InputLabel>
+					<InputLabel id="st">
+						Trạng thái
+					</InputLabel>
+
 					<Select
 						labelId="st"
 						label="Trạng thái"
@@ -108,14 +172,26 @@ export default function AdminOrders() {
 							setPage(1);
 						}}
 					>
-						<MenuItem value="">Tất cả</MenuItem>
-						{(Object.keys(ORDER_STATUS_LABEL) as OrderStatus[]).map((s) => (
-							<MenuItem key={s} value={s}>{ORDER_STATUS_LABEL[s]}</MenuItem>
-						))}
+						<MenuItem value="">
+							Tất cả
+						</MenuItem>
+
+						{(Object.keys(ORDER_STATUS_LABEL) as OrderStatus[]).map(
+							(s) => (
+								<MenuItem key={s} value={s}>
+									{ORDER_STATUS_LABEL[s]}
+								</MenuItem>
+							),
+						)}
 					</Select>
 				</FormControl>
 			</Stack>
-			{error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+			{error && (
+				<Alert severity="error" sx={{ mb: 2 }}>
+					{error}
+				</Alert>
+			)}
 
 			<TableContainer component={Paper} variant="outlined">
 				<Table size="small">
@@ -124,73 +200,202 @@ export default function AdminOrders() {
 							<TableCell>Mã đơn</TableCell>
 							<TableCell>Thời gian</TableCell>
 							<TableCell>Người nhận</TableCell>
-							<TableCell align="right">Tổng tiền</TableCell>
+							<TableCell align="right">
+								Tổng tiền
+							</TableCell>
 							<TableCell>Thanh toán</TableCell>
 							<TableCell>Trạng thái</TableCell>
 							<TableCell />
 						</TableRow>
 					</TableHead>
+
 					<TableBody>
 						{data?.data.map((o) => (
 							<TableRow key={o.id} hover>
-								<TableCell>#{o.orderCode}</TableCell>
-								<TableCell>{formatDateTime(o.createdAt)}</TableCell>
-								<TableCell>{o.receiverName}<br /><Typography variant="caption" color="text.secondary">{o.phone}</Typography></TableCell>
-								<TableCell align="right">{formatPrice(o.totalAmount)}</TableCell>
-								<TableCell>{o.paymentMethod} · {o.paymentStatus === 'PAID' ? 'Đã trả' : 'Chưa trả'}</TableCell>
-								<TableCell><OrderStatusChip status={o.status} /></TableCell>
-								<TableCell align="right"><Button size="small" onClick={() => setDetail(o)}>Chi tiết</Button></TableCell>
+								<TableCell>
+									#{o.orderCode}
+								</TableCell>
+
+								<TableCell>
+									{formatDateTime(o.createdAt)}
+								</TableCell>
+
+								<TableCell>
+									{o.receiverName}
+									<br />
+									<Typography
+										variant="caption"
+										color="text.secondary"
+									>
+										{o.phone}
+									</Typography>
+								</TableCell>
+
+								<TableCell align="right">
+									{formatPrice(o.totalAmount)}
+								</TableCell>
+
+								<TableCell>
+									{o.paymentMethod} ·{' '}
+									{o.paymentStatus === 'PAID'
+										? 'Đã trả'
+										: 'Chưa trả'}
+								</TableCell>
+
+								<TableCell>
+									<OrderStatusChip status={o.status} />
+								</TableCell>
+
+								<TableCell align="right">
+									<Button
+										size="small"
+										onClick={() => setDetail(o)}
+									>
+										Chi tiết
+									</Button>
+								</TableCell>
 							</TableRow>
 						))}
+
 						{data && data.data.length === 0 && (
-							<TableRow><TableCell colSpan={7} align="center">Không có đơn hàng.</TableCell></TableRow>
+							<TableRow>
+								<TableCell colSpan={7} align="center">
+									Không có đơn hàng.
+								</TableCell>
+							</TableRow>
 						)}
 					</TableBody>
 				</Table>
 			</TableContainer>
+
 			{data && data.totalPage > 1 && (
 				<Stack alignItems="center" sx={{ mt: 2 }}>
-					<Pagination count={data.totalPage} page={page} color="primary" onChange={(_, v) => setPage(v)} />
+					<Pagination
+						count={data.totalPage}
+						page={page}
+						color="primary"
+						onChange={(_, value) => setPage(value)}
+					/>
 				</Stack>
 			)}
 
-			<Dialog open={!!detail} onClose={() => setDetail(null)} maxWidth="sm" fullWidth>
+			<Dialog
+				open={!!detail}
+				onClose={() => setDetail(null)}
+				maxWidth="sm"
+				fullWidth
+			>
 				{detail && (
 					<>
 						<DialogTitle>
-							Đơn #{detail.orderCode} <OrderStatusChip status={detail.status} />
+							Đơn #{detail.orderCode}{' '}
+							<OrderStatusChip status={detail.status} />
 						</DialogTitle>
+
 						<DialogContent>
-							{detail.items.map((i) => (
-								<ReceiptRow key={i.id} label={`${i.quantity} × ${i.productName}`} value={formatPrice(i.subTotal)} />
+							{detail.items.map((item) => (
+								<ReceiptRow
+									key={item.id}
+									label={`${item.quantity} × ${item.productName}`}
+									value={formatPrice(item.subTotal)}
+								/>
 							))}
+
 							<Box sx={dashed} />
-							<ReceiptRow label="Tổng cộng" value={formatPrice(detail.totalAmount)} bold />
+
+							<ReceiptRow
+								label="Tổng cộng"
+								value={formatPrice(detail.totalAmount)}
+								bold
+							/>
+
 							<Box sx={dashed} />
-							<Typography fontWeight={600}>{detail.receiverName} · {detail.phone}</Typography>
-							<Typography variant="body2">{detail.address}</Typography>
-							{detail.note && <Typography variant="body2" color="text.secondary">Ghi chú: {detail.note}</Typography>}
+
+							<Typography fontWeight={600}>
+								{detail.receiverName} · {detail.phone}
+							</Typography>
+
+							<Typography variant="body2">
+								{detail.address}
+							</Typography>
+
+							{detail.note && (
+								<Typography
+									variant="body2"
+									color="text.secondary"
+								>
+									Ghi chú: {detail.note}
+								</Typography>
+							)}
+
 							<Typography variant="body2" sx={{ mt: 1 }}>
-								{PAYMENT_METHOD_LABEL[detail.paymentMethod]} — {detail.paymentStatus === 'PAID' ? 'đã thanh toán' : 'chưa thanh toán'}
+								{PAYMENT_METHOD_LABEL[detail.paymentMethod]}
+								{' — '}
+								{detail.paymentStatus === 'PAID'
+									? 'đã thanh toán'
+									: 'chưa thanh toán'}
 							</Typography>
 						</DialogContent>
-						<DialogActions sx={{ flexWrap: 'wrap', gap: 1, px: 3, pb: 2 }}>
-							{detail.paymentMethod === 'PAYOS' && detail.paymentStatus === 'UNPAID' && detail.status !== 'CANCELLED' && (
-								<Button onClick={() => act(() => orderApi.adminConfirmPayment(detail.id), 'Đã xác nhận thanh toán.')}>
-									Xác nhận đã thanh toán
-								</Button>
-							)}
+
+						<DialogActions
+							sx={{
+								flexWrap: 'wrap',
+								gap: 1,
+								px: 3,
+								pb: 2,
+							}}
+						>
+							{detail.paymentMethod === 'PAYOS' &&
+								detail.paymentStatus === 'UNPAID' &&
+								detail.status !== 'CANCELLED' && (
+									<Button
+										onClick={() =>
+											act(
+												() =>
+													orderApi.adminConfirmPayment(
+														detail.id,
+													),
+												'Đã xác nhận thanh toán.',
+											)
+										}
+									>
+										Xác nhận đã thanh toán
+									</Button>
+								)}
+
 							{NEXT_STATUSES[detail.status].map((next) => (
 								<Button
 									key={next}
-									variant={next === 'CANCELLED' ? 'outlined' : 'contained'}
-									color={next === 'CANCELLED' ? 'error' : 'primary'}
-									onClick={() => act(() => orderApi.adminUpdateStatus(detail.id, next), `Đã chuyển sang “${ORDER_STATUS_LABEL[next]}”.`)}
+									variant={
+										next === 'CANCELLED'
+											? 'outlined'
+											: 'contained'
+									}
+									color={
+										next === 'CANCELLED'
+											? 'error'
+											: 'primary'
+									}
+									onClick={() =>
+										act(
+											() =>
+												orderApi.adminUpdateStatus(
+													detail.id,
+													next,
+												),
+											`Đã chuyển sang “${ORDER_STATUS_LABEL[next]}”.`,
+										)
+									}
 								>
-									{next === 'CANCELLED' ? 'Huỷ đơn' : `Chuyển: ${ORDER_STATUS_LABEL[next]}`}
+									{next === 'CANCELLED'
+										? 'Huỷ đơn'
+										: `Chuyển: ${ORDER_STATUS_LABEL[next]}`}
 								</Button>
 							))}
-							<Button onClick={() => setDetail(null)}>Đóng</Button>
+
+							<Button onClick={() => setDetail(null)}>
+								Đóng
+							</Button>
 						</DialogActions>
 					</>
 				)}

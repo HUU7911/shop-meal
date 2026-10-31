@@ -62,12 +62,35 @@ export interface FoodPayload {
   categories: string[];
 }
 
+// Danh mục ít thay đổi và được nhiều component cùng cần (sidebar, trang chủ):
+// dùng chung một request đang chạy + cache ngắn hạn để tránh gọi trùng.
+const CATEGORIES_TTL_MS = 60_000;
+let categoriesCache: { at: number; promise: Promise<Category[]> } | null = null;
+
+const fetchCategories = (): Promise<Category[]> => {
+  const now = Date.now();
+  if (categoriesCache && now - categoriesCache.at < CATEGORIES_TTL_MS) return categoriesCache.promise;
+  const entry = { at: now, promise: unwrap<Category[]>(api.get('/product/category')) };
+  categoriesCache = entry;
+  // Lỗi (ví dụ khách chưa đăng nhập bị 401) không được giữ lại trong cache
+  entry.promise.catch(() => {
+    if (categoriesCache === entry) categoriesCache = null;
+  });
+  return entry.promise;
+};
+
+export const invalidateCategories = () => {
+  categoriesCache = null;
+};
+
 export const productApi = {
   list: (page: number, size: number) =>
     unwrap<PageResponse<Product>>(api.get('/product/food', { params: { page, size } })),
-  categories: () => unwrap<Category[]>(api.get('/product/category')),
-  createCategory: (body: Category) => unwrap<Category>(api.post('/product/category/create', body)),
-  deleteCategory: (name: string) => api.delete(`/product/category/delete/${encodeURIComponent(name)}`),
+  categories: fetchCategories,
+  createCategory: (body: Category) =>
+    unwrap<Category>(api.post('/product/category/create', body)).finally(invalidateCategories),
+  deleteCategory: (name: string) =>
+    api.delete(`/product/category/delete/${encodeURIComponent(name)}`).finally(invalidateCategories),
   /**
    * Gửi multipart gồm 2 phần: `food` (JSON) và `file` (ảnh).
    * Backend cần nhận bằng @RequestPart("food") FoodRequest + @RequestPart("file") MultipartFile.

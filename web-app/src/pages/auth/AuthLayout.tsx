@@ -20,7 +20,7 @@ export default function AuthLayout() {
       <Box component={RouterLink} to="/" aria-label="Shop Meal - Trang chủ" sx={{ mb: 3, display: 'block' }}>
         <Box
           component="img"
-          src="/shop-meal-logo.png"
+          src="/shop-meal-logo.webp"
           alt="Shop Meal"
           sx={{ display: 'block', width: { xs: 130, sm: 160 }, height: 56, objectFit: 'contain' }}
         />

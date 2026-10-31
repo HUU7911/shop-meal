@@ -1,5 +1,6 @@
-import { connectSocket, disconnectSocket } from '../socket/socket';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { connectSocket, disconnectSocket, updateSocketToken } from '../socket/socket';
+import { clearImageCache } from '../utils/authImageCache';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AUTH_LOGOUT_EVENT, AUTH_TOKEN_EVENT, tokenStore } from '../api/client';
 import { authApi, profileApi } from '../api/services';
 import type { Profile } from '../api/types';
@@ -34,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	const clear = useCallback(() => {
 		tokenStore.clear();
+		clearImageCache();
 		setToken(null);
 		setProfile(null);
 	}, []);
@@ -63,17 +65,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		if (userId) void reloadProfile();
 	}, [userId, reloadProfile]);
 
+	// Kết nối/ngắt socket theo trạng thái đăng nhập, không theo giá trị token:
+	// refresh token chỉ cập nhật token cho lần reconnect sau, không làm đứt kết nối.
+	const hasToken = !!token;
+	const tokenRef = useRef(token);
+	tokenRef.current = token;
+
 	useEffect(() => {
-		if (!token) {
-			disconnectSocket();
+		if (!hasToken) {
+			void disconnectSocket();
 			return;
 		}
 
-		connectSocket(token);
+		void connectSocket(tokenRef.current ?? '').catch((error) => {
+			console.error('Socket connection failed:', error);
+		});
 
 		return () => {
-			disconnectSocket();
+			void disconnectSocket();
 		};
+	}, [hasToken]);
+
+	useEffect(() => {
+		if (token) void updateSocketToken(token);
 	}, [token]);
 
 	const login = useCallback(
@@ -96,19 +110,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		clear();
 	}, [clear]);
 
-	const value: AuthValue = {
-		token,
-		info,
-		profile,
-		isAuthenticated: !!token && !!info,
-		isAdmin: !!info?.roles.includes('ADMIN'),
-		isStaff: !!info && (info.roles.includes('ADMIN') || info.roles.includes('STAFF')),
-		login,
-		loginWithToken: applyToken,
-		logout,
-		reloadProfile,
-		setProfile,
-	};
+	const value = useMemo<AuthValue>(
+		() => ({
+			token,
+			info,
+			profile,
+			isAuthenticated: !!token && !!info,
+			isAdmin: !!info?.roles.includes('ADMIN'),
+			isStaff: !!info && (info.roles.includes('ADMIN') || info.roles.includes('STAFF')),
+			login,
+			loginWithToken: applyToken,
+			logout,
+			reloadProfile,
+			setProfile,
+		}),
+		[token, info, profile, login, applyToken, logout, reloadProfile],
+	);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

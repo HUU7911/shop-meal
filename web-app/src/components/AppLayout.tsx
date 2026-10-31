@@ -33,7 +33,7 @@ import {
 	Typography,
 	useMediaQuery,
 } from '@mui/material';
-import { ElementType, FormEvent, useEffect, useState } from 'react';
+import { ElementType, FormEvent, lazy, Suspense, useEffect, useState } from 'react';
 import { Link as RouterLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { bannerApi, productApi } from '../api/services';
 import type { Banner } from '../api/types';
@@ -42,8 +42,11 @@ import { useCart } from '../context/CartContext';
 import { categoryLabel } from '../utils/format';
 import AuthImage from './AuthImage';
 import Footer from './Footer';
-import PostLayout from './PostLayout'
+import LazyOnVisible from './LazyOnVisible';
 import PromoMarquee from './PromoMarquee';
+
+// Danh sách bài viết nằm cuối trang chủ: tách chunk riêng và chỉ tải khi cuộn gần tới
+const PostLayout = lazy(() => import('./PostLayout'));
 
 const CARD_SHADOW = '0 1px 2px rgba(20,60,45,.06), 0 8px 24px rgba(20,60,45,.12)';
 
@@ -195,14 +198,21 @@ function PromoSlider() {
 	const [paused, setPaused] = useState(false);
 	const total = banners.length;
 
-	// Gateway yêu cầu token cho /post/** nên chỉ tải banner khi đã đăng nhập.
 	useEffect(() => {
-		setIndex(0);
 		let live = true;
+
 		bannerApi
 			.list()
-			.then((list) => live && setBanners(list))
-			.catch(() => live && setBanners([]));
+			.then((list) => {
+				if (!live) return;
+				setBanners(list);
+				setIndex(0);
+			})
+			.catch((error) => {
+				console.error('Không thể tải banner:', error);
+				if (live) setBanners([]);
+			});
+
 		return () => {
 			live = false;
 		};
@@ -210,12 +220,21 @@ function PromoSlider() {
 
 	useEffect(() => {
 		if (paused || reduceMotion || total < 2) return;
-		const id = setInterval(() => setIndex((i) => (i + 1) % total), 5000);
-		return () => clearInterval(id);
+
+		const id = window.setInterval(() => {
+			setIndex((current) => (current + 1) % total);
+		}, 5000);
+
+		return () => window.clearInterval(id);
 	}, [paused, reduceMotion, total]);
 
-	const prev = () => setIndex((i) => (i - 1 + total) % total);
-	const next = () => setIndex((i) => (i + 1) % total);
+	const prev = () => {
+		setIndex((current) => (current - 1 + total) % total);
+	};
+
+	const next = () => {
+		setIndex((current) => (current + 1) % total);
+	};
 
 	const arrowSx = {
 		position: 'absolute',
@@ -235,35 +254,84 @@ function PromoSlider() {
 			aria-label="Banner"
 			onMouseEnter={() => setPaused(true)}
 			onMouseLeave={() => setPaused(false)}
-			sx={{ position: 'relative', overflow: 'hidden', borderRadius: 2, height: slideHeight, boxShadow: CARD_SHADOW }}
+			sx={{
+				position: 'relative',
+				overflow: 'hidden',
+				borderRadius: 2,
+				height: slideHeight,
+				boxShadow: CARD_SHADOW,
+			}}
 		>
 			<Box
 				sx={{
 					display: 'flex',
 					height: '100%',
 					transform: `translateX(-${index * 100}%)`,
-					transition: reduceMotion ? 'none' : 'transform .6s cubic-bezier(.4,0,.2,1)',
+					transition: reduceMotion
+						? 'none'
+						: 'transform .6s cubic-bezier(.4,0,.2,1)',
 				}}
 			>
-				{banners.map((b, i) => (
-					<Box key={b.id} aria-hidden={i !== index} sx={{ flex: '0 0 100%', height: '100%' }}>
-						<AuthImage src={b.url} alt={`Banner ${i + 1}`} sx={{ width: '100%', height: '100%' }} />
+				{banners.map((banner, i) => (
+					<Box
+						key={banner.id}
+						aria-hidden={i !== index}
+						sx={{
+							flex: '0 0 100%',
+							height: '100%',
+							minWidth: 0,
+						}}
+					>
+						{i === index && (
+							<AuthImage
+								src={banner.url}
+								alt={`Banner ${i + 1}`}
+								priority={i === 0}
+								width="100%"
+								height="100%"
+								sx={{
+									objectFit: 'cover',
+								}}
+							/>
+						)}
 					</Box>
 				))}
 			</Box>
 
 			{total > 1 && (
 				<>
-					<IconButton size="small" aria-label="Slide trước" onClick={prev} sx={{ ...arrowSx, left: 12 }}>
+					<IconButton
+						size="small"
+						aria-label="Slide trước"
+						onClick={prev}
+						sx={{ ...arrowSx, left: 12 }}
+					>
 						<ChevronLeftIcon />
 					</IconButton>
-					<IconButton size="small" aria-label="Slide sau" onClick={next} sx={{ ...arrowSx, right: 12 }}>
+
+					<IconButton
+						size="small"
+						aria-label="Slide sau"
+						onClick={next}
+						sx={{ ...arrowSx, right: 12 }}
+					>
 						<ChevronRightIcon />
 					</IconButton>
-					<Box sx={{ display: 'flex', position: 'absolute', bottom: 10, left: 0, right: 0, justifyContent: 'center', gap: 1 }}>
-						{banners.map((b, i) => (
+
+					<Box
+						sx={{
+							display: 'flex',
+							position: 'absolute',
+							bottom: 10,
+							left: 0,
+							right: 0,
+							justifyContent: 'center',
+							gap: 1,
+						}}
+					>
+						{banners.map((banner, i) => (
 							<Box
-								key={b.id}
+								key={banner.id}
 								component="button"
 								type="button"
 								aria-label={`Chuyển tới slide ${i + 1}`}
@@ -276,7 +344,9 @@ function PromoSlider() {
 									height: 8,
 									width: i === index ? 26 : 8,
 									borderRadius: 4,
-									bgcolor: i === index ? '#fff' : 'rgba(255,255,255,.5)',
+									bgcolor: i === index
+										? '#fff'
+										: 'rgba(255,255,255,.5)',
 									transition: 'width .3s, background-color .3s',
 								}}
 							/>
@@ -309,10 +379,6 @@ function HomeHero() {
 	);
 }
 
-/* ------------------------------------------------------------------ */
-/* Layout chính                                                        */
-/* ------------------------------------------------------------------ */
-
 export default function AppLayout() {
 	const { isAuthenticated, isStaff, profile, info, logout } = useAuth();
 	const { count } = useCart();
@@ -327,6 +393,7 @@ export default function AppLayout() {
 		navigate(path);
 	};
 
+	// @ts-ignore
 	return (
 		<Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
 			<PromoMarquee />
@@ -358,8 +425,10 @@ export default function AppLayout() {
 						>
 							<Box
 								component="img"
-								src="/shop-meal-logo.png"
+								src="/shop-meal-logo.webp"
 								alt="Shop Meal"
+								// React 18 chưa hỗ trợ prop `fetchPriority`, phải truyền thuộc tính HTML viết thường
+								{...({ fetchpriority: 'high' } as object)}
 								sx={{
 									display: 'block',
 									width: { xs: 112, sm: 135, md: 155 },
@@ -436,7 +505,7 @@ export default function AppLayout() {
 										<Box sx={{ minWidth: 0 }}>
 											<Typography fontWeight={600} noWrap>{displayName}</Typography>
 											<Typography variant="caption" color="text.secondary" noWrap>
-												{info?.roles.join(', ')}
+												{info?.roles?.join(', ') ?? ''}
 											</Typography>
 										</Box>
 									</Box>
@@ -503,7 +572,13 @@ export default function AppLayout() {
 			<Container component="main" maxWidth="lg" sx={{ py: 3, flexGrow: 1 }}>
 				<Outlet />
 			</Container>
-			<PostLayout/>
+			{isHome && (
+				<LazyOnVisible>
+					<Suspense fallback={null}>
+						<PostLayout />
+					</Suspense>
+				</LazyOnVisible>
+			)}
 			<Footer />
 		</Box>
 	);

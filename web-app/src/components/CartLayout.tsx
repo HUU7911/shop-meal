@@ -26,7 +26,7 @@ export default function CartLayout() {
             <Box component={RouterLink} to="/" aria-label="Shop Meal - Trang chủ" sx={{ display: 'flex', flexShrink: 0 }}>
               <Box
                 component="img"
-                src="/shop-meal-logo.png"
+                src="/shop-meal-logo.webp"
                 alt="Shop Meal"
                 sx={{ display: 'block', width: { xs: 100, md: 140 }, height: 44, objectFit: 'contain', objectPosition: 'left center' }}
               />

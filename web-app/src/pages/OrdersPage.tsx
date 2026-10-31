@@ -29,7 +29,9 @@ export default function OrdersPage() {
 		[page],
 	);
 
-	useOrderSocket(handleStatusChanged);
+	useOrderSocket({
+		onStatusChanged: handleStatusChanged,
+	});
 
 	return (
 		<Box sx={{ maxWidth: 720, mx: 'auto' }}>

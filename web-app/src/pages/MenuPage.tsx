@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { productApi, searchApi } from '../api/services';
 import type { Product, SizeOption } from '../api/types';
@@ -17,7 +17,7 @@ import EmptyState from '../components/EmptyState';
 import ProductCard from '../components/ProductCard';
 import ProductDialog from '../components/ProductDialog';
 import { useAuth } from '../auth/AuthContext';
-import { useCart } from '../context/CartContext';
+import { useCartActions } from '../context/CartContext';
 import { useNotify } from '../context/NotifyContext';
 import { getErrorMessage } from '../api/client';
 import { getCategoryIcon } from '../utils/categoryIcons';
@@ -54,7 +54,7 @@ interface Section {
 
 export default function MenuPage() {
   const { isAuthenticated } = useAuth();
-  const { add } = useCart();
+  const { add } = useCartActions();
   const notify = useNotify();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -97,27 +97,37 @@ export default function MenuPage() {
     let active = true;
     setCatalogLoading(true);
     setCatalogError(null);
+
+    // Thứ tự danh mục theo quản trị; khách chưa đăng nhập không gọi được nên dùng thứ tự mặc định.
+    // Gọi song song với trang đầu tiên thay vì chờ nhau.
+    const namesPromise: Promise<string[]> = isAuthenticated
+        ? productApi.categories().then((l) => l.map((c) => c.name)).catch(() => [] as string[])
+        : Promise.resolve([]);
+
     (async () => {
       try {
-        const all: Product[] = [];
-        for (let p = 1; p <= CATALOG_MAX_PAGES; p++) {
-          const res = await productApi.list(p, CATALOG_PAGE_SIZE);
-          all.push(...res.data);
-          if (p >= res.totalPage) break;
-        }
-        // Thứ tự danh mục theo quản trị; khách chưa đăng nhập không gọi được nên dùng thứ tự mặc định
-        const names = isAuthenticated
-            ? await productApi.categories().then((l) => l.map((c) => c.name)).catch(() => [] as string[])
-            : [];
+        const [first, names] = await Promise.all([productApi.list(1, CATALOG_PAGE_SIZE), namesPromise]);
         if (!active) return;
-        setCatalog(all);
+        // Hiển thị ngay khi có trang đầu, các trang còn lại sẽ được nối thêm sau
+        setCatalog(first.data);
         setCategoryOrder(names);
+        setCatalogLoading(false);
+
+        const lastPage = Math.min(first.totalPage, CATALOG_MAX_PAGES);
+        if (lastPage > 1) {
+          const rest = await Promise.all(
+              Array.from({ length: lastPage - 1 }, (_, i) => productApi.list(i + 2, CATALOG_PAGE_SIZE)),
+          );
+          if (!active) return;
+          setCatalog([...first.data, ...rest.flatMap((r) => r.data)]);
+        }
       } catch (e) {
-        if (active) setCatalogError(getErrorMessage(e));
-      } finally {
-        if (active) setCatalogLoading(false);
+        if (!active) return;
+        setCatalogError(getErrorMessage(e));
+        setCatalogLoading(false);
       }
     })();
+
     return () => {
       active = false;
     };
@@ -209,20 +219,24 @@ export default function MenuPage() {
     };
   }, [searching, isAuthenticated, q, category, page]);
 
-  const handleAdd = async (p: Product, option: SizeOption) => {
-    if (!isAuthenticated) {
-      notify('Hãy đăng nhập để thêm món vào giỏ hàng.', 'info');
-      navigate('/login', { state: { from: '/' } });
-      return;
-    }
-    const ok = await add({
-      productId: p.id,
-      size: option.size,
-      price: option.price,
-      images: p.images?.[0],
-    });
-    if (ok) notify(`Đã thêm "${p.name}"${option.size ? ` (${option.size})` : ''} vào giỏ hàng.`);
-  };
+  // Ổn định identity để ProductCard (memo) không bị render lại khi MenuPage render
+  const handleAdd = useCallback(
+    async (p: Product, option: SizeOption) => {
+      if (!isAuthenticated) {
+        notify('Hãy đăng nhập để thêm món vào giỏ hàng.', 'info');
+        navigate('/login', { state: { from: '/' } });
+        return;
+      }
+      const ok = await add({
+        productId: p.id,
+        size: option.size,
+        price: option.price,
+        images: p.images?.[0],
+      });
+      if (ok) notify(`Đã thêm "${p.name}"${option.size ? ` (${option.size})` : ''} vào giỏ hàng.`);
+    },
+    [isAuthenticated, add, notify, navigate],
+  );
 
   const skeletons = (
       <Box sx={gridSx}>
