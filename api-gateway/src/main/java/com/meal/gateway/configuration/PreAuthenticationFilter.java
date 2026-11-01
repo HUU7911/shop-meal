@@ -26,7 +26,7 @@ import java.util.Locale;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
+public class PreAuthenticationFilter implements GlobalFilter, Ordered {
 
     static final DefaultRedisScript<Long> COUNTER_SCRIPT = new DefaultRedisScript<>(
             "local c = redis.call('INCR', KEYS[1]) "
