@@ -151,7 +151,7 @@ public class AuthenticationService {
                 ? userRepository.findByEmail(request.getUsername()).orElse(null)
                 : userRepository.findByUsername(request.getUsername()).orElse(null);
 
-        boolean authenticated = user != null
+        boolean authenticated = Objects.nonNull(user)
                 && passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated) {
