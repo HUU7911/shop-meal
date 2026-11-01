@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -59,11 +60,10 @@ public class PasswordResetService {
         }
 
         User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) {
+        if (Objects.isNull(user))
             return;
-        }
 
-        String otp = generateOtp();
+        String otp = String.valueOf(100000 + SECURE_RANDOM.nextInt(900000));
         String otpKey = OTP_PREFIX + email;
 
         redisTemplate.opsForValue().set(otpKey, passwordEncoder.encode(otp), OTP_TTL);
@@ -78,16 +78,16 @@ public class PasswordResetService {
                 .body("Otp: " + otp)
                 .build();
 
-        kafkaTemplate.send(OTP_TOPIC, email, event).whenComplete((result, ex) -> {
-            if (ex != null) {
-                log.error("Failed to publish password reset OTP event for user {}", user.getId(), ex);
+        kafkaTemplate.send(OTP_TOPIC, email, event).whenComplete((result, e) -> {
+            if (!Objects.isNull(e)) {
+                log.error("Failed to publish password reset OTP event for user {}", user.getId(), e);
                 redisTemplate.delete(otpKey);
             }
         });
     }
 
     public String verifyOtp(VerifyOtpRequest request) {
-        String email = normalizeEmail(request.getEmail());
+        String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
         String otpKey = OTP_PREFIX + email;
         String attemptKey = ATTEMPT_PREFIX + email;
 
@@ -97,10 +97,11 @@ public class PasswordResetService {
         }
 
         Long attempts = redisTemplate.opsForValue().increment(attemptKey);
-        if (attempts != null && attempts == 1) {
+        if (Objects.nonNull(attempts) && attempts == 1) {
             redisTemplate.expire(attemptKey, OTP_TTL);
         }
-        if (attempts != null && attempts > MAX_OTP_ATTEMPTS) {
+
+        if (Objects.nonNull(attempts) && attempts > MAX_OTP_ATTEMPTS) {
             redisTemplate.delete(otpKey);
             redisTemplate.delete(attemptKey);
             throw new AppException(ErrorCode.TOO_MANY_ATTEMPTS);
@@ -149,7 +150,7 @@ public class PasswordResetService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
-        revokeUserSessions(user);
+        log.info("Password reset for user {} - revoke sessions here", user.getId());
     }
 
     private void revokeExistingResetToken(String userId) {
@@ -159,17 +160,5 @@ public class PasswordResetService {
             redisTemplate.delete(TOKEN_PREFIX + oldToken);
         }
         redisTemplate.delete(userTokenKey);
-    }
-
-    private void revokeUserSessions(User user) {
-        log.info("Password reset for user {} - revoke sessions here", user.getId());
-    }
-
-    private String normalizeEmail(String email) {
-        return email.trim().toLowerCase(Locale.ROOT);
-    }
-
-    private String generateOtp() {
-        return String.valueOf(100000 + SECURE_RANDOM.nextInt(900000));
     }
 }
