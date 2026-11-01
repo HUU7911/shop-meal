@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -155,7 +156,7 @@ public class UserService {
     }
 
     public UserResponse getMyInfor() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
         var user = userRepository.findByUsername(username).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
