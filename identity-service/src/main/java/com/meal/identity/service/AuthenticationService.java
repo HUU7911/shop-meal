@@ -181,9 +181,9 @@ public class AuthenticationService {
 
         invalidateTokenRepository.save(invalidateToken);
 
-        String username = signedJWT.getJWTClaimsSet().getSubject();
+        String userId = signedJWT.getJWTClaimsSet().getSubject();
 
-        var user = userRepository.findByUsername(username).orElseThrow(
+        var user = userRepository.findById(userId).orElseThrow(
                 () -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         String token = generateToken(user);
