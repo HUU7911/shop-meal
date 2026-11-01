@@ -35,12 +35,20 @@ public class ApplicationInitConfig{
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
         return args -> {
-              if (userRepository.findByUsername(ADMIN_USERNAME).isEmpty()) {
+              if (userRepository.findByUsername(ADMIN_USERNAME).isEmpty()
+                      || roleRepository.findById(RoleDefine.STAFF.name()).isEmpty()
+                      || roleRepository.findById(RoleDefine.ADMIN.name()).isEmpty()
+              ) {
                   roleRepository.save(Role.builder()
                           .name(RoleDefine.USER.name())
                           .description("has role user")
                           .build()
                   );
+
+                  roleRepository.save(Role.builder()
+                                  .name(RoleDefine.STAFF.name())
+                                  .description("has role staff")
+                          .build());
 
                   var roleAdmin = roleRepository.save(Role.builder()
                           .name(RoleDefine.ADMIN.name())
