@@ -75,8 +75,6 @@ public class PreAuthenticationFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange original, GatewayFilterChain chain) {
         ServerWebExchange exchange = withJsonTooManyRequests(original);
 
-        exchange.getResponse().getHeaders().set("X-Debug-Filter", "pre-auth-v2");
-
         String path = exchange.getRequest().getURI().getPath().toLowerCase(Locale.ROOT);
 
         if (isBlocked(path)) {
@@ -147,14 +145,15 @@ public class PreAuthenticationFilter implements GlobalFilter, Ordered {
                 if (getStatusCode() != null && getStatusCode().value() == 429 && !isCommitted()) {
                     HttpHeaders headers = getHeaders();
                     long retryAfter = resolveRetryAfter(headers);
-                    log.info("Writing JSON body for 429 response, retryAfter={}s", retryAfter);
+                    log.debug("Writing JSON body for 429 response, retryAfter={}s", retryAfter);
 
                     headers.set(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfter));
                     headers.set(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8");
 
                     String json = "{\"code\":" + TOO_MANY_REQUESTS_CODE
                             + ",\"message\":\"Quá nhiều yêu cầu, vui lòng thử lại sau "
-                            + retryAfter + " giây\"}";
+                            + retryAfter + " giây\""
+                            + ",\"results\":{\"retryAfterSeconds\":" + retryAfter + "}}";
 
                     return writeWith(Mono.just(bufferFactory().wrap(json.getBytes(StandardCharsets.UTF_8))));
                 }

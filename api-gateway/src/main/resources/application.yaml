@@ -35,7 +35,6 @@ spring:
                     redis-rate-limiter.burstCapacity: 10
                     redis-rate-limiter.requestedTokens: 1
 
-#            rate limiting endpoint login
             - id: identity-login
               order: -10
               uri: lb://identity-service
@@ -51,7 +50,6 @@ spring:
                     redis-rate-limiter.burstCapacity: 60
                     redis-rate-limiter.requestedTokens: 3
 
-            # Cac endpoint public con lai cua identity-service
             - id: identity-sensitive
               order: -9
               uri: lb://identity-service
