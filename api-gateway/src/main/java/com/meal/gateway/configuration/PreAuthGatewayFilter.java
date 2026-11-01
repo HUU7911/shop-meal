@@ -72,7 +72,7 @@ public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
         }
 
         if (matchesAny(path, skipPaths)) {
-            return chain.filter(exchange); // không đếm, đi thẳng
+            return chain.filter(exchange);
         }
 
         return ipKeyResolver.resolve(exchange)
@@ -89,7 +89,7 @@ public class PreAuthGatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -2;
+        return -1;
     }
 
     private boolean isBlocked(String path) {
