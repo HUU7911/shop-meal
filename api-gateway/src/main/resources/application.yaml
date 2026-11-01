@@ -21,13 +21,6 @@ spring:
     gateway:
       server:
         webflux:
-          default-filters:
-            - name: RequestRateLimiter
-              args:
-                key-resolver: "#{@baselineKeyResolver}"
-                redis-rate-limiter.replenishRate: 20
-                redis-rate-limiter.burstCapacity: 40
-                redis-rate-limiter.requestedTokens: 1
           routes:
             - id: identity-service
               uri: lb://identity-service

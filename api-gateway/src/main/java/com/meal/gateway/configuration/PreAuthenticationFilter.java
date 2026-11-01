@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -13,20 +14,26 @@ import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.core.Ordered;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PreAuthenticationFilter implements GlobalFilter, Ordered {
+
+    static final int TOO_MANY_REQUESTS_CODE = 1429;
 
     static final DefaultRedisScript<Long> COUNTER_SCRIPT = new DefaultRedisScript<>(
             "local c = redis.call('INCR', KEYS[1]) "
@@ -63,8 +70,13 @@ public class PreAuthenticationFilter implements GlobalFilter, Ordered {
                 limit, windowSeconds, String.join(",", skipPaths), String.join(",", blockedPaths));
     }
 
+    @NullMarked
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange original, GatewayFilterChain chain) {
+        ServerWebExchange exchange = withJsonTooManyRequests(original);
+
+        exchange.getResponse().getHeaders().set("X-Debug-Filter", "pre-auth-v2");
+
         String path = exchange.getRequest().getURI().getPath().toLowerCase(Locale.ROOT);
 
         if (isBlocked(path)) {
@@ -89,7 +101,7 @@ public class PreAuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -1;
+        return -2;
     }
 
     private boolean isBlocked(String path) {
@@ -124,5 +136,51 @@ public class PreAuthenticationFilter implements GlobalFilter, Ordered {
             response.getHeaders().set("Retry-After", String.valueOf(retryAfterSeconds));
         }
         return response.setComplete();
+    }
+
+    private ServerWebExchange withJsonTooManyRequests(ServerWebExchange exchange) {
+        ServerHttpResponse decorated = new ServerHttpResponseDecorator(exchange.getResponse()) {
+
+            @NullMarked
+            @Override
+            public Mono<Void> setComplete() {
+                if (getStatusCode() != null && getStatusCode().value() == 429 && !isCommitted()) {
+                    HttpHeaders headers = getHeaders();
+                    long retryAfter = resolveRetryAfter(headers);
+                    log.info("Writing JSON body for 429 response, retryAfter={}s", retryAfter);
+
+                    headers.set(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfter));
+                    headers.set(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8");
+
+                    String json = "{\"code\":" + TOO_MANY_REQUESTS_CODE
+                            + ",\"message\":\"Quá nhiều yêu cầu, vui lòng thử lại sau "
+                            + retryAfter + " giây\"}";
+
+                    return writeWith(Mono.just(bufferFactory().wrap(json.getBytes(StandardCharsets.UTF_8))));
+                }
+                return super.setComplete();
+            }
+        };
+        return exchange.mutate().response(decorated).build();
+    }
+
+    static long resolveRetryAfter(HttpHeaders headers) {
+        String existing = headers.getFirst(HttpHeaders.RETRY_AFTER);
+        if (existing != null) {
+            try {
+                return Math.max(1, Long.parseLong(existing));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        try {
+            long remaining = Long.parseLong(Objects.requireNonNull(headers.getFirst("X-RateLimit-Remaining")));
+            long requested = Long.parseLong(Objects.requireNonNull(headers.getFirst("X-RateLimit-Requested-Tokens")));
+            long rate = Long.parseLong(Objects.requireNonNull(headers.getFirst("X-RateLimit-Replenish-Rate")));
+            if (rate > 0) {
+                return Math.max(1, (long) Math.ceil((requested - remaining) / (double) rate));
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return 1;
     }
 }
