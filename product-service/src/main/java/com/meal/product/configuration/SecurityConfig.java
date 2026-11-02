@@ -33,6 +33,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(INTERNAL_ENDPOINTS).hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/food/update").hasAnyAuthority("UPDATE_FOOD")
                         .requestMatchers(HttpMethod.GET, "/food", "/category").permitAll()
                         .anyRequest().authenticated());
 

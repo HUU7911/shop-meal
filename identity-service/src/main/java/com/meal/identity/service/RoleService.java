@@ -3,6 +3,7 @@ package com.meal.identity.service;
 import com.meal.identity.dto.request.RoleRequest;
 import com.meal.identity.dto.request.RoleUpdateRequest;
 import com.meal.identity.dto.response.RoleResponse;
+import com.meal.identity.entity.Permission;
 import com.meal.identity.exception.AppException;
 import com.meal.identity.exception.ErrorCode;
 import com.meal.identity.mapper.RoleMapper;
@@ -47,7 +48,11 @@ public class RoleService {
                 () -> new AppException(ErrorCode.UNAUTHENTICATED)
         );
 
+        var permission = permissionRepository.findAllById(request.getPermissions());
+        role.setPermissions(new HashSet<>(permission));
         roleMapper.updateRole(role, request);
+
+        role = roleRepository.save(role);
 
         return roleMapper.toRoleResponse(role);
     }

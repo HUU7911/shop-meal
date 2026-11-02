@@ -203,15 +203,7 @@ Build production: `npm run build`, xem thử: `npm run preview`.
 | Gateway trả 503 / không tìm thấy service | Service chưa đăng ký Eureka | Mở http://localhost:8761 kiểm tra, chạy lại service |
 | Frontend gọi API lỗi CORS | Chạy khác cổng 5173 / 3000 | Dùng cổng 5173 hoặc cập nhật CORS ở gateway |
 
-## 12. Các lỗi backend đã biết
-
-Theo `web-app/README.md`, một số điểm backend cần chỉnh để frontend hoạt động đầy đủ:
-
-1. Quên mật khẩu: gateway (`PUBLIC_ENDPOINT`) và `identity-service/SecurityConfig` chưa mở `/auth/forgot-password`, `/auth/verify-otp`, `/auth/reset-password`.
-2. Refresh token: `refreshToken()` tìm user bằng `findByUsername(sub)` trong khi `sub` là userId, cần dùng `findById`.
-3. Đăng nhập Google: `outboundIdentityClient` trả `access_token` của Google thay vì JWT của hệ thống.
-
-## 13. Bảo mật
+## 12. Bảo mật
 
 - Không commit `.env`, `certs/http_ca.crt` và mật khẩu lên Git công khai (`.gitignore` hiện đã loại `.env` và `target/`).
 - Mật khẩu `123456` trong compose chỉ dùng cho môi trường dev local.
