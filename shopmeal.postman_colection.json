@@ -16,7 +16,7 @@
     },
     {
       "key": "email",
-      "value": "test@gmail.com"
+      "value": "trihuutran4@gmail.com"
     },
     {
       "key": "password",
@@ -24,7 +24,7 @@
     },
     {
       "key": "username",
-      "value": "test@gmail.com"
+      "value": "huumod"
     },
     {
       "key": "accessToken",
@@ -51,16 +51,16 @@
           }
         ],
         "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+          "mode": "json",
+          "json": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
           "options": {
-            "raw": {
+            "json": {
               "language": "json"
             }
           }
         },
         "url": {
-          "raw": "{{baseUrl}}{{identityPath}}/users/create",
+          "json": "{{baseUrl}}{{identityPath}}/users/create",
           "host": [
             "{{baseUrl}}"
           ],
