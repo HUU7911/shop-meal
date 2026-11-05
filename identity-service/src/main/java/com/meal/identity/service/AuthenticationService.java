@@ -4,7 +4,6 @@ import com.meal.identity.constant.RoleDefine;
 import com.meal.identity.dto.request.*;
 import com.meal.identity.dto.response.AuthenticationResponse;
 import com.meal.identity.dto.response.IntrospectResponse;
-import com.meal.identity.dto.response.OutboundUserResponse;
 import com.meal.identity.entity.InvalidateToken;
 import com.meal.identity.entity.Role;
 import com.meal.identity.entity.User;
@@ -25,7 +24,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,6 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationService {
 
@@ -98,11 +95,20 @@ public class AuthenticationService {
 
         var userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
 
-        User user = userRepository.findByEmail(userInfo.getEmail())
+        var user = userRepository.findByEmail(userInfo.getEmail())
                 .orElse(null);
 
         if (Objects.isNull(user)) {
-            user = createUser(userInfo);
+            Set<Role> roles = new HashSet<>();
+            roleRepository.findById(RoleDefine.USER.name()).ifPresent(roles::add);
+            user = userRepository.save(User.builder()
+                            .username(userInfo.getName())
+                            .password(passwordEncoder.encode(userInfo.getFamilyName()))
+                            .firstName(userInfo.getFamilyName())
+                            .lastName(userInfo.getGivenName())
+                            .email(userInfo.getEmail())
+                            .roles(roles)
+                    .build());
 
             profileClient.create(ProfileCreationRequest.builder()
                     .userId(user.getId())
@@ -121,23 +127,6 @@ public class AuthenticationService {
                 .token(token)
                 .authenticated(true)
                 .build();
-    }
-
-    private User createUser(OutboundUserResponse userInfo) {
-        Role userRole = roleRepository.findById(RoleDefine.USER.name())
-                .orElseGet(() -> roleRepository.save(
-                        Role.builder().name(RoleDefine.USER.name()).build()));
-
-        Set<Role> roles = new HashSet<>();
-        roles.add(userRole);
-
-        return userRepository.save(User.builder()
-                .username(userInfo.getEmail())
-                .email(userInfo.getEmail())
-                .firstName(userInfo.getGivenName())
-                .lastName(userInfo.getFamilyName())
-                .roles(roles)
-                .build());
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
