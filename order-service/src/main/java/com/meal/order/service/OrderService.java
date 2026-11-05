@@ -125,7 +125,7 @@ public class OrderService {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         var product = productClient.getProduct(foodRequest.productId());
-        if (product == null || product.getResults() == null) {
+        if (Objects.isNull(product) || Objects.isNull(product.getResults())) {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
         var food = product.getResults();

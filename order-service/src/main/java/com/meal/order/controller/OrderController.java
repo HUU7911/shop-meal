@@ -27,8 +27,8 @@ public class OrderController {
                 .build();
     }
 
-    @PostMapping("/fromCard/create")
-    ApiResponse<OrderResponse> createOrderFromCard(
+    @PostMapping("/buyNow/create")
+    ApiResponse<OrderResponse> buyNow(
             @RequestBody CreateOrderRequest request,
             @RequestBody FoodOrderRequest foodOrderRequest
     ) {
