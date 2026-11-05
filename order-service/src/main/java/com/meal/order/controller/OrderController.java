@@ -33,7 +33,7 @@ public class OrderController {
             @RequestBody FoodOrderRequest foodOrderRequest
     ) {
         return ApiResponse.<OrderResponse>builder()
-                .results(orderService.createOrderFromCard(request, foodOrderRequest))
+                .results(orderService.buyNow(request, foodOrderRequest))
                 .build();
     }
 

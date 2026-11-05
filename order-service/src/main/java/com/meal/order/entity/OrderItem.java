@@ -30,6 +30,9 @@ public class OrderItem {
     @Column(name = "product_name", nullable = false)
     String productName;
 
+    @Column(name = "size", nullable = false)
+    String size;
+
     @Column(length = 1000)
     String image;
 

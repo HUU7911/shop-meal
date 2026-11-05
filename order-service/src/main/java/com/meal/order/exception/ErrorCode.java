@@ -25,6 +25,8 @@ public enum ErrorCode {
     PRODUCT_SERVICE_ERROR(2102, "Product service is unavailable", HttpStatus.BAD_GATEWAY),
     PAYMENT_SERVICE_ERROR(2103, "Payment service is unavailable", HttpStatus.BAD_GATEWAY),
     ORDER_IS_EMPTY(2104, "Order is empty", HttpStatus.BAD_REQUEST),
+    PRICE_CHANGED(2105, "price changed", HttpStatus.CONFLICT),
+    INVALID_SIZE(2106, "invalid size", HttpStatus.BAD_REQUEST)
     ;
 
     private final int code;

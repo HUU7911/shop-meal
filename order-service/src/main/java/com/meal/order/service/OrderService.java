@@ -9,7 +9,6 @@ import com.meal.order.dto.ApiResponse;
 import com.meal.order.dto.PageResponse;
 import com.meal.order.dto.client.*;
 import com.meal.order.dto.request.CreateOrderRequest;
-import com.meal.order.dto.response.FoodOrderResponse;
 import com.meal.order.dto.response.OrderItemResponse;
 import com.meal.order.dto.response.OrderResponse;
 import com.meal.order.entity.Order;
@@ -122,26 +121,21 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse createOrderFromCard(CreateOrderRequest request, FoodOrderRequest foodRequest){
+    public OrderResponse buyNow(CreateOrderRequest request, FoodOrderRequest foodRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
         var product = productClient.getProduct(foodRequest.productId());
-        if (Objects.isNull(product)) {
+        if (product == null || product.getResults() == null) {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
+        var food = product.getResults();
 
-        BigDecimal price = (Objects.equals(product.getResults().price(), foodRequest.price()))
-                ? foodRequest.price()
-                : null;
+        if (!String.valueOf(food.size()).equals(foodRequest.size())) {
+            throw new AppException(ErrorCode.INVALID_SIZE);
+        }
 
-        FoodOrderResponse foodOrderResponse = FoodOrderResponse.builder()
-                .productId(product.getResults().id())
-                .size(String.valueOf(
-                        Objects.equals(
-                                String.valueOf(product.getResults().size()), foodRequest.size()))
-                )
-                .price(price)
-                .images(product.getResults().image())
-                .build();
+        BigDecimal unitPrice = (BigDecimal) food.price();
+        BigDecimal totalAmount = unitPrice.multiply(BigDecimal.valueOf(foodRequest.quantity()));
 
         Order order = Order.builder()
                 .orderCode(generateOrderCode())
@@ -149,34 +143,32 @@ public class OrderService {
                 .receiverName(request.receiverName().trim())
                 .phone(request.phone().trim())
                 .address(request.address().trim())
-                .note(StringUtils.hasText(request.note())
-                        ? request.note().trim()
-                        : null
-                )
+                .note(StringUtils.hasText(request.note()) ? request.note().trim() : null)
                 .status(OrderStatus.PENDING)
                 .paymentMethod(request.paymentMethod())
                 .paymentStatus(PaymentStatus.UNPAID)
-                .totalAmount(BigDecimal.ZERO)
+                .totalAmount(totalAmount)
                 .build();
 
-        BigDecimal toTolAmount = foodRequest.price().multiply(foodOrderResponse.price());
-        order.setTotalAmount(toTolAmount);
+        order.getItems().add(OrderItem.builder()
+                .order(order)
+                .productId(food.id())
+                .size(foodRequest.size())
+                .unitPrice(unitPrice)
+                .quantity(foodRequest.quantity())
+                .image(food.image())
+                .build());
 
-        var orderResponse = orderRepository.save(order);
+        Order saved = orderRepository.save(order);
 
         PaymentResponse payment = null;
-
-        if (Objects.equals(request.paymentMethod(), PaymentMethod.PAYOS)) {
-            payment = createPayOSPayment(orderResponse);
+        if (request.paymentMethod() == PaymentMethod.PAYOS) {
+            payment = createPayOSPayment(saved);
         }
 
-        clearCartQuietly();
-        notifyQuietly(orderResponse);
+        eventPublisher.publishEvent(new OrderCreatedEvent(saved.getId(), saved.getOrderCode()));
 
-        eventPublisher.publishEvent(
-                new OrderCreatedEvent(orderResponse.getId(), orderResponse.getOrderCode()));
-
-        return toResponse(orderResponse, payment);
+        return toResponse(saved, payment);
     }
 
     private PaymentResponse createPayOSPayment(Order order) {
