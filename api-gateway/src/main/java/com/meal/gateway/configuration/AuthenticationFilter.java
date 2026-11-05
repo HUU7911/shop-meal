@@ -27,6 +27,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -66,12 +67,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         if (isPubLicEndpoint(exchange.getRequest()))
             return chain.filter(exchange);
 
-        List<String> authHeaders = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (CollectionUtils.isEmpty(authHeaders)) {
+        String authHeaders = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (Objects.isNull(authHeaders)) {
             return unauthenticated(exchange.getResponse());
         }
 
-        String token = authHeaders.getFirst().replace("Bearer ", "");
+        String token = authHeaders.substring(7);
         log.debug("token:{}", token);
 
         return identityService.introspect(token).flatMap(introspectResponse -> {
