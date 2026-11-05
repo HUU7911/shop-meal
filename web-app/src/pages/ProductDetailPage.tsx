@@ -29,6 +29,7 @@ import AuthImage from '../components/AuthImage';
 import BuyNowDialog from '../components/BuyNowDialog';
 import EmptyState from '../components/EmptyState';
 import ProductPosts from '../components/ProductPosts';
+import RecommendedProducts from '../components/RecommendedProducts';
 import { useCartActions } from '../context/CartContext';
 import { useNotify } from '../context/NotifyContext';
 import { categoryLabel, formatPrice, getSizeOptions, PRODUCT_TYPE_LABEL } from '../utils/format';
@@ -318,7 +319,7 @@ export default function ProductDetailPage() {
                     </Stack>
                 </Stack>
             </Box>
-
+            <RecommendedProducts />         
             {/* Bài viết gắn với món — nằm dưới thông tin chi tiết */}
             <Box sx={{ maxWidth: 800 }}>
                 <ProductPosts productId={product.id} />
