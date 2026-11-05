@@ -142,14 +142,10 @@ public class CartService {
     }
 
     private CartResponse saveAndMap(Cart cart) {
-        cart.setTotalPrice(calculateTotal(cart));
+        cart.setTotalPrice(cart.getItems().stream()
+                .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         Cart saved = cartRepository.save(cart);
         return cartMapper.toCartResponse(saved);
-    }
-
-    private BigDecimal calculateTotal(Cart cart) {
-        return cart.getItems().stream()
-                .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
