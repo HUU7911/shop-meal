@@ -9,6 +9,7 @@ import com.meal.order.dto.ApiResponse;
 import com.meal.order.dto.PageResponse;
 import com.meal.order.dto.client.*;
 import com.meal.order.dto.request.CreateOrderRequest;
+import com.meal.order.dto.response.FoodOrderResponse;
 import com.meal.order.dto.response.OrderItemResponse;
 import com.meal.order.dto.response.OrderResponse;
 import com.meal.order.entity.Order;
@@ -18,6 +19,7 @@ import com.meal.order.exception.ErrorCode;
 import com.meal.order.repository.OrderRepository;
 import com.meal.order.repository.httpclient.CartClient;
 import com.meal.order.repository.httpclient.PaymentClient;
+import com.meal.order.repository.httpclient.ProductClient;
 import com.meal.order.repository.httpclient.ProfileClient;
 import feign.FeignException;
 import lombok.AccessLevel;
@@ -49,6 +51,7 @@ public class OrderService {
     CartClient cartClient;
     ProfileClient profileClient;
     PaymentClient paymentClient;
+    ProductClient productClient;
     OrderNotificationPublisher notificationPublisher;
     ApplicationEventPublisher eventPublisher;
 
@@ -67,7 +70,10 @@ public class OrderService {
                 .receiverName(request.receiverName().trim())
                 .phone(request.phone().trim())
                 .address(request.address().trim())
-                .note(StringUtils.hasText(request.note()) ? request.note().trim() : null)
+                .note(StringUtils.hasText(request.note())
+                        ? request.note().trim()
+                        : null
+                )
                 .status(OrderStatus.PENDING)
                 .paymentMethod(request.paymentMethod())
                 .paymentStatus(PaymentStatus.UNPAID)
@@ -113,6 +119,64 @@ public class OrderService {
                 new OrderCreatedEvent(savedOrder.getId(), savedOrder.getOrderCode()));
 
         return toResponse(savedOrder, payment);
+    }
+
+    @Transactional
+    public OrderResponse createOrderFromCard(CreateOrderRequest request, FoodOrderRequest foodRequest){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        var product = productClient.getProduct(foodRequest.productId());
+        if (Objects.isNull(product)) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        BigDecimal price = (Objects.equals(product.getResults().price(), foodRequest.price()))
+                ? foodRequest.price()
+                : null;
+
+        FoodOrderResponse foodOrderResponse = FoodOrderResponse.builder()
+                .productId(product.getResults().id())
+                .size(String.valueOf(
+                        Objects.equals(
+                                String.valueOf(product.getResults().size()), foodRequest.size()))
+                )
+                .price(price)
+                .images(product.getResults().image())
+                .build();
+
+        Order order = Order.builder()
+                .orderCode(generateOrderCode())
+                .userId(userId)
+                .receiverName(request.receiverName().trim())
+                .phone(request.phone().trim())
+                .address(request.address().trim())
+                .note(StringUtils.hasText(request.note())
+                        ? request.note().trim()
+                        : null
+                )
+                .status(OrderStatus.PENDING)
+                .paymentMethod(request.paymentMethod())
+                .paymentStatus(PaymentStatus.UNPAID)
+                .totalAmount(BigDecimal.ZERO)
+                .build();
+
+        BigDecimal toTolAmount = foodRequest.price().multiply(foodOrderResponse.price());
+        order.setTotalAmount(toTolAmount);
+
+        var orderResponse = orderRepository.save(order);
+
+        PaymentResponse payment = null;
+
+        if (Objects.equals(request.paymentMethod(), PaymentMethod.PAYOS)) {
+            payment = createPayOSPayment(orderResponse);
+        }
+
+        clearCartQuietly();
+        notifyQuietly(orderResponse);
+
+        eventPublisher.publishEvent(
+                new OrderCreatedEvent(orderResponse.getId(), orderResponse.getOrderCode()));
+
+        return toResponse(orderResponse, payment);
     }
 
     private PaymentResponse createPayOSPayment(Order order) {

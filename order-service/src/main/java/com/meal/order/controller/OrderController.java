@@ -2,6 +2,7 @@ package com.meal.order.controller;
 
 import com.meal.order.dto.ApiResponse;
 import com.meal.order.dto.PageResponse;
+import com.meal.order.dto.client.FoodOrderRequest;
 import com.meal.order.dto.request.CreateOrderRequest;
 import com.meal.order.dto.response.OrderResponse;
 import com.meal.order.service.OrderService;
@@ -23,6 +24,16 @@ public class OrderController {
     ApiResponse<OrderResponse> create(@RequestBody @Valid CreateOrderRequest request) {
         return ApiResponse.<OrderResponse>builder()
                 .results(orderService.createOrder(request))
+                .build();
+    }
+
+    @PostMapping("/fromCard/create")
+    ApiResponse<OrderResponse> createOrderFromCard(
+            @RequestBody CreateOrderRequest request,
+            @RequestBody FoodOrderRequest foodOrderRequest
+    ) {
+        return ApiResponse.<OrderResponse>builder()
+                .results(orderService.createOrderFromCard(request, foodOrderRequest))
                 .build();
     }
 
