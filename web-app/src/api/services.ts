@@ -3,6 +3,7 @@ import type {
   AddToCartRequest,
   AuthenticationResponse,
   Banner,
+  BuyNowRequest,
   Cart,
   Category,
   CreateOrderRequest,
@@ -22,15 +23,15 @@ import type {
 // ---------------- identity-service ----------------
 export const authApi = {
   login: (username: string, password: string) =>
-    unwrap<AuthenticationResponse>(api.post('/identity/auth/login', { username, password })),
+      unwrap<AuthenticationResponse>(api.post('/identity/auth/login', { username, password })),
   logout: (token: string) => api.post('/identity/auth/logout', { token }),
   googleExchange: (code: string) =>
-    unwrap<AuthenticationResponse>(api.post('/identity/auth/outbound/identity', null, { params: { code } })),
+      unwrap<AuthenticationResponse>(api.post('/identity/auth/outbound/identity', null, { params: { code } })),
   forgotPassword: (email: string) => api.post('/identity/auth/forgot-password', { email }),
   verifyOtp: (email: string, otp: string) =>
-    unwrap<{ resetToken: string }>(api.post('/identity/auth/verify-otp', { email, otp })),
+      unwrap<{ resetToken: string }>(api.post('/identity/auth/verify-otp', { email, otp })),
   resetPassword: (resetToken: string, newPassword: string) =>
-    api.post('/identity/auth/reset-password', { resetToken, newPassword }),
+      api.post('/identity/auth/reset-password', { resetToken, newPassword }),
   register: (body: UserCreationRequest) => unwrap<User>(api.post('/identity/users/create', body)),
 };
 
@@ -83,21 +84,41 @@ export const invalidateCategories = () => {
   categoriesCache = null;
 };
 
+/** Dự phòng khi không gọi được chi tiết một món: duyệt danh sách công khai để tìm theo id. */
+const findProductInCatalog = async (id: string): Promise<Product | null> => {
+  for (let page = 1; page <= 10; page++) {
+    const res = await unwrap<PageResponse<Product>>(api.get('/product/food', { params: { page, size: 100 } }));
+    const hit = res.data.find((p) => p.id === id);
+    if (hit) return hit;
+    if (page >= res.totalPage) break;
+  }
+  return null;
+};
+
 export const productApi = {
+  get: async (id: string): Promise<Product | null> => {
+    try {
+      const p = await unwrap<Product>(api.get(`/product/food/${encodeURIComponent(id)}`));
+      if (p && p.id) return p;
+    } catch {
+      /* chuyển sang tìm trong danh sách */
+    }
+    return findProductInCatalog(id);
+  },
   list: (page: number, size: number) =>
-    unwrap<PageResponse<Product>>(api.get('/product/food', { params: { page, size } })),
+      unwrap<PageResponse<Product>>(api.get('/product/food', { params: { page, size } })),
   categories: fetchCategories,
   createCategory: (body: Category) =>
-    unwrap<Category>(api.post('/product/category/create', body)).finally(invalidateCategories),
+      unwrap<Category>(api.post('/product/category/create', body)).finally(invalidateCategories),
   deleteCategory: (name: string) =>
-    api.delete(`/product/category/delete/${encodeURIComponent(name)}`).finally(invalidateCategories),
+      api.delete(`/product/category/delete/${encodeURIComponent(name)}`).finally(invalidateCategories),
   /**
    * Gửi multipart gồm 2 phần: `food` (JSON) và `file` (ảnh).
    * Backend cần nhận bằng @RequestPart("food") FoodRequest + @RequestPart("file") MultipartFile.
    */
   createFood: (
-    food: FoodPayload,
-    file: File,
+      food: FoodPayload,
+      file: File,
   ) => {
     const form = new FormData();
     form.append('food', new Blob([JSON.stringify(food)], { type: 'application/json' }));
@@ -111,9 +132,9 @@ export const productApi = {
    * và FoodUpdateRequest ghi đè mọi trường -> phải gửi đủ tên, giá, loại, vị trí, giờ bán, danh mục.
    */
   updateFood: (
-    id: string,
-    food: FoodPayload,
-    file: File,
+      id: string,
+      food: FoodPayload,
+      file: File,
   ) => {
     const form = new FormData();
     form.append('food', new Blob([JSON.stringify(food)], { type: 'application/json' }));
@@ -137,16 +158,16 @@ export interface UpdatePostRequest extends CreatePostRequest {
 export const postApi = {
   /** GET /post/my-posts — bài viết của chính người dùng đăng nhập. */
   myPosts: (page = 1, size = 5) =>
-    unwrap<PageResponse<PostArticle>>(api.get('/post/my-posts', { params: { page, size } })),
+      unwrap<PageResponse<PostArticle>>(api.get('/post/my-posts', { params: { page, size } })),
 
   /** PUT /post/update/my-post/{id} — sửa bài viết của chính mình (JSON). */
   update: (id: string, request: UpdatePostRequest) =>
-    unwrap<PostArticle>(api.put(`/post/update/my-post/${id}`, request)),
+      unwrap<PostArticle>(api.put(`/post/update/my-post/${id}`, request)),
 
   list: (page = 1, size = 9) =>
-    unwrap<PageResponse<PostArticle>>(
-      api.get('/post/getAllPost', { params: { page, size } })
-    ),
+      unwrap<PageResponse<PostArticle>>(
+          api.get('/post/getAllPost', { params: { page, size } })
+      ),
 
   /**
    * POST /post/create (multipart): phần `request` (JSON) + phần `file` (ảnh, bắt buộc).
@@ -161,7 +182,7 @@ export const postApi = {
 
   /** POST /post/product/create?Id={productId} — bài viết gắn với món ăn (JSON, không có ảnh). */
   createForProduct: (productId: string, request: CreatePostRequest) =>
-    unwrap<PostForProduct>(api.post('/post/product/create', request, { params: { Id: productId } })),
+      unwrap<PostForProduct>(api.post('/post/product/create', request, { params: { Id: productId } })),
 
   /** GET /post/getPostForProduct — backend trả về bài của mọi món, nên lọc theo productId ở client. */
   listForProduct: async (productId?: string) => {
@@ -199,7 +220,7 @@ export interface SearchParams {
 
 export const searchApi = {
   products: (params: SearchParams) =>
-    unwrap<PageResponse<Product>>(api.get('/search/product', { params })),
+      unwrap<PageResponse<Product>>(api.get('/search/product', { params })),
 };
 
 // ---------------- cart-service ----------------
@@ -214,13 +235,14 @@ export const cartApi = {
 // ---------------- order-service ----------------
 export const orderApi = {
   create: (body: CreateOrderRequest) => unwrap<Order>(api.post('/order/create', body)),
+  buyNow: (body: BuyNowRequest) => unwrap<Order>(api.post('/order/buyNow/create', body)),
   mine: (page: number, size: number) =>
-    unwrap<PageResponse<Order>>(api.get('/order/my-orders', { params: { page, size } })),
+      unwrap<PageResponse<Order>>(api.get('/order/my-orders', { params: { page, size } })),
   get: (id: string) => unwrap<Order>(api.get(`/order/${id}`)),
   cancel: (id: string) => unwrap<Order>(api.patch(`/order/${id}/cancel`)),
   adminList: (page: number, size: number, status?: OrderStatus) =>
-    unwrap<PageResponse<Order>>(api.get('/order/admin', { params: { page, size, status } })),
+      unwrap<PageResponse<Order>>(api.get('/order/admin', { params: { page, size, status } })),
   adminUpdateStatus: (id: string, status: OrderStatus) =>
-    unwrap<Order>(api.patch(`/order/admin/${id}/status`, { status })),
+      unwrap<Order>(api.patch(`/order/admin/${id}/status`, { status })),
   adminConfirmPayment: (id: string) => unwrap<Order>(api.patch(`/order/admin/${id}/confirm-payment`)),
 };

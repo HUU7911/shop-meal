@@ -32,6 +32,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const OrderDetailPage = lazy(() => import('./pages/OrderDetailPage'));
 const OrdersPage = lazy(() => import('./pages/OrdersPage'));
 const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
 function RouteFallback() {
@@ -77,6 +78,7 @@ export default function App() {
                 {/* Main application */}
                 <Route element={<AppLayout />}>
                     <Route index element={<MenuPage />} />
+                    <Route path="product/:id" element={<ProductDetailPage />} />
                     <Route
                         path="payment/success"
                         element={<PaymentResultPage success />}

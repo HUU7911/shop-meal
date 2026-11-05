@@ -15,7 +15,6 @@ import type { Product, SizeOption } from '../api/types';
 import CategoryCarousel from '../components/CategoryCarousel';
 import EmptyState from '../components/EmptyState';
 import ProductCard from '../components/ProductCard';
-import ProductDialog from '../components/ProductDialog';
 import { useAuth } from '../auth/AuthContext';
 import { useCartActions } from '../context/CartContext';
 import { useNotify } from '../context/NotifyContext';
@@ -82,8 +81,6 @@ export default function MenuPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, category]);
-
-  const [selected, setSelected] = useState<Product | null>(null);
 
   /* ------------------------------------------------------------------ */
   /* Chế độ danh mục: tải cả thực đơn từ product-service (MySQL)           */
@@ -219,23 +216,29 @@ export default function MenuPage() {
     };
   }, [searching, isAuthenticated, q, category, page]);
 
+  // Mở trang chi tiết; truyền sẵn món qua router state để trang hiện ngay, không phải tải lại
+  const openProduct = useCallback(
+      (p: Product) => navigate(`/product/${encodeURIComponent(p.id)}`, { state: { product: p } }),
+      [navigate],
+  );
+
   // Ổn định identity để ProductCard (memo) không bị render lại khi MenuPage render
   const handleAdd = useCallback(
-    async (p: Product, option: SizeOption) => {
-      if (!isAuthenticated) {
-        notify('Hãy đăng nhập để thêm món vào giỏ hàng.', 'info');
-        navigate('/login', { state: { from: '/' } });
-        return;
-      }
-      const ok = await add({
-        productId: p.id,
-        size: option.size,
-        price: option.price,
-        images: p.images?.[0],
-      });
-      if (ok) notify(`Đã thêm "${p.name}"${option.size ? ` (${option.size})` : ''} vào giỏ hàng.`);
-    },
-    [isAuthenticated, add, notify, navigate],
+      async (p: Product, option: SizeOption) => {
+        if (!isAuthenticated) {
+          notify('Hãy đăng nhập để thêm món vào giỏ hàng.', 'info');
+          navigate('/login', { state: { from: '/' } });
+          return;
+        }
+        const ok = await add({
+          productId: p.id,
+          size: option.size,
+          price: option.price,
+          images: p.images?.[0],
+        });
+        if (ok) notify(`Đã thêm "${p.name}"${option.size ? ` (${option.size})` : ''} vào giỏ hàng.`);
+      },
+      [isAuthenticated, add, notify, navigate],
   );
 
   const skeletons = (
@@ -249,7 +252,7 @@ export default function MenuPage() {
   const renderGrid = (list: Product[]) => (
       <Box sx={gridSx}>
         {list.map((p) => (
-            <ProductCard key={p.id} product={p} onOpen={setSelected} onAdd={handleAdd} />
+            <ProductCard key={p.id} product={p} onOpen={openProduct} onAdd={handleAdd} />
         ))}
       </Box>
   );
@@ -296,7 +299,7 @@ export default function MenuPage() {
                   count={s.products.length}
               >
                 {s.products.map((p) => (
-                    <ProductCard key={p.id} product={p} onOpen={setSelected} onAdd={handleAdd} />
+                    <ProductCard key={p.id} product={p} onOpen={openProduct} onAdd={handleAdd} />
                 ))}
               </CategoryCarousel>
           ))}
@@ -328,7 +331,6 @@ export default function MenuPage() {
 
         {searching ? renderSearch() : renderCatalog()}
 
-        <ProductDialog product={selected} onClose={() => setSelected(null)} onAdd={handleAdd} />
       </Box>
   );
 }
