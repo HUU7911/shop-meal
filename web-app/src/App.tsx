@@ -1,3 +1,4 @@
+
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAdmin, RequireAuth, RequireStaff } from './auth/Guards';
@@ -30,6 +31,7 @@ const MenuPage = lazy(() => import('./pages/MenuPage'));
 const MyPostsPage = lazy(() => import('./pages/MyPostsPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const OrderDetailPage = lazy(() => import('./pages/OrderDetailPage'));
+const OrderPage = lazy(() => import('./pages/OrdersPage'));
 const OrdersPage = lazy(() => import('./pages/OrdersPage'));
 const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
@@ -79,6 +81,7 @@ export default function App() {
                 <Route element={<AppLayout />}>
                     <Route index element={<MenuPage />} />
                     <Route path="product/:id" element={<ProductDetailPage />} />
+
                     <Route
                         path="payment/success"
                         element={<PaymentResultPage success />}
@@ -87,6 +90,7 @@ export default function App() {
                         path="payment/cancel"
                         element={<PaymentResultPage success={false} />}
                     />
+
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>
 
@@ -98,6 +102,9 @@ export default function App() {
                         <Route path="orders/:id" element={<OrderDetailPage />} />
                         <Route path="my-posts" element={<MyPostsPage />} />
                     </Route>
+
+                    {/* Đặt hàng ngay */}
+                    <Route path="order" element={<OrderPage />} />
                 </Route>
 
                 {/* Staff administration */}

@@ -1,259 +1,362 @@
+
 import {
-	Alert,
-	Box,
-	Button,
-	FormControl,
-	FormControlLabel,
-	FormLabel,
-	Radio,
-	RadioGroup,
-	Stack,
-	TextField,
-	Typography,
+    Alert,
+    Box,
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    Stack,
+    TextField,
+    Typography,
 } from '@mui/material';
-import { FormEvent, useEffect, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+import {
+    Link as RouterLink,
+    useLocation,
+    useNavigate,
+} from 'react-router-dom';
+
 import { getErrorMessage } from '../api/client';
 import { orderApi } from '../api/services';
-import type { PaymentMethod } from '../api/types';
+import type { PaymentMethod, Product, SizeOption } from '../api/types';
+
 import EmptyState from '../components/EmptyState';
 import Receipt, { dashed, ReceiptRow } from '../components/Receipt';
+
 import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useNotify } from '../context/NotifyContext';
+
 import { formatPrice, PAYMENT_METHOD_LABEL } from '../utils/format';
 
 const PHONE_RE = /^(0|\+84)\d{9}$/;
 
+interface CheckoutLocationState {
+    buyNow?: boolean;
+    product?: Product;
+    option?: SizeOption;
+    quantity?: number;
+}
+
 export default function CheckoutPage() {
-	const { profile } = useAuth();
-	const { cart, clearAfterOrder } = useCart();
-	const notify = useNotify();
-	const navigate = useNavigate();
+    const { profile } = useAuth();
+    const { cart, clearAfterOrder } = useCart();
+    const notify = useNotify();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-	const [form, setForm] = useState({
-		receiverName: '',
-		phone: '',
-		address: '',
-		note: '',
-	});
+    const checkoutState = location.state as CheckoutLocationState | null;
 
-	const [method, setMethod] = useState<PaymentMethod>('COD');
-	const [error, setError] = useState('');
-	const [busy, setBusy] = useState(false);
+    // Phân biệt mua ngay và thanh toán giỏ hàng
+    const isBuyNow = checkoutState?.buyNow === true;
 
-	useEffect(() => {
-		if (!profile) return;
+    const product = checkoutState?.product;
+    const option = checkoutState?.option;
+    const quantity = checkoutState?.quantity ?? 1;
 
-		setForm((f) => ({
-			...f,
-			receiverName:
-				f.receiverName ||
-				[profile.lastName, profile.firstName].filter(Boolean).join(' '),
-			phone: f.phone || profile.phoneNumber || '',
-			address: f.address || profile.address || '',
-		}));
-	}, [profile]);
+    const validBuyNow =
+        isBuyNow &&
+        !!product &&
+        !!option &&
+        Number.isInteger(quantity) &&
+        quantity >= 1;
 
-	const items = cart?.items ?? [];
+    const [form, setForm] = useState({
+        receiverName: '',
+        phone: '',
+        address: '',
+        note: '',
+    });
 
-	const set = (k: keyof typeof form) =>
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			setForm((f) => ({ ...f, [k]: e.target.value }));
-		};
+    const [method, setMethod] = useState<PaymentMethod>('COD');
+    const [error, setError] = useState('');
+    const [busy, setBusy] = useState(false);
 
-	const submit = async (e: FormEvent) => {
-		e.preventDefault();
+    useEffect(() => {
+        if (!profile) return;
 
-		if (!form.receiverName.trim()) {
-			setError('Vui lòng nhập tên người nhận.');
-			return;
-		}
+        setForm((f) => ({
+            ...f,
+            receiverName:
+                f.receiverName ||
+                [profile.lastName, profile.firstName]
+                    .filter(Boolean)
+                    .join(' '),
+            phone: f.phone || profile.phoneNumber || '',
+            address: f.address || profile.address || '',
+        }));
+    }, [profile]);
 
-		if (!PHONE_RE.test(form.phone.trim())) {
-			setError(
-				'Số điện thoại không hợp lệ (ví dụ 0901234567 hoặc +84901234567).',
-			);
-			return;
-		}
+    const items = cart?.items ?? [];
 
-		if (!form.address.trim()) {
-			setError('Vui lòng nhập địa chỉ giao hàng.');
-			return;
-		}
+    // Tổng tiền thay đổi theo luồng thanh toán
+    const totalPrice = validBuyNow
+        ? option.price * quantity
+        : cart?.totalPrice ?? 0;
 
-		setBusy(true);
-		setError('');
+    const set =
+        (key: keyof typeof form) =>
+        (e: ChangeEvent<HTMLInputElement>) => {
+            setForm((f) => ({
+                ...f,
+                [key]: e.target.value,
+            }));
+        };
 
-		try {
-			const order = await orderApi.create({
-				receiverName: form.receiverName.trim(),
-				phone: form.phone.trim(),
-				address: form.address.trim(),
-				note: form.note.trim() || undefined,
-				paymentMethod: method,
-			});
+    const submit = async (e: FormEvent) => {
+        e.preventDefault();
 
-			await clearAfterOrder();
+        if (!form.receiverName.trim()) {
+            setError('Vui lòng nhập tên người nhận.');
+            return;
+        }
 
-			if (method === 'PAYOS' && order.checkoutUrl) {
-				window.location.href = order.checkoutUrl;
-				return;
-			}
+        if (!PHONE_RE.test(form.phone.trim())) {
+            setError(
+                'Số điện thoại không hợp lệ (ví dụ 0901234567 hoặc +84901234567).',
+            );
+            return;
+        }
 
-			notify('Đặt hàng thành công!');
-			navigate(`/orders/${order.id}`, { replace: true });
-		} catch (err) {
-			setError(getErrorMessage(err));
-		} finally {
-			setBusy(false);
-		}
-	};
+        if (!form.address.trim()) {
+            setError('Vui lòng nhập địa chỉ giao hàng.');
+            return;
+        }
 
-	if (items.length === 0 && !busy) {
-		return (
-			<EmptyState
-				title="Giỏ hàng đang trống"
-				actionLabel="Xem thực đơn"
-				actionTo="/"
-			/>
-		);
-	}
+        if (isBuyNow && !validBuyNow) {
+            setError('Thông tin sản phẩm không hợp lệ. Vui lòng chọn sản phẩm lại.');
+            return;
+        }
 
-	return (
-		<Box>
-			<Typography variant="h4" gutterBottom>
-				Thanh toán
-			</Typography>
+        if (!isBuyNow && items.length === 0) {
+            setError('Giỏ hàng đang trống.');
+            return;
+        }
 
-			<Box
-				sx={{
-					display: 'grid',
-					gridTemplateColumns: {
-						xs: '1fr',
-						md: '1fr 380px',
-					},
-					gap: 4,
-					alignItems: 'start',
-				}}
-			>
-				<Stack
-					component="form"
-					id="checkout-form"
-					spacing={2}
-					onSubmit={submit}
-				>
-					{error && <Alert severity="error">{error}</Alert>}
+        setBusy(true);
+        setError('');
 
-					<TextField
-						label="Tên người nhận"
-						value={form.receiverName}
-						onChange={set('receiverName')}
-						required
-						slotProps={{
-							htmlInput: { maxLength: 100 },
-						}}
-					/>
+        try {
+            const orderInfo = {
+                receiverName: form.receiverName.trim(),
+                phone: form.phone.trim(),
+                address: form.address.trim(),
+                note: form.note.trim() || undefined,
+                paymentMethod: method,
+            };
 
-					<TextField
-						label="Số điện thoại"
-						type="tel"
-						value={form.phone}
-						onChange={set('phone')}
-						required
-						placeholder="0901234567"
-						slotProps={{
-							htmlInput: {
-								maxLength: 13,
-								inputMode: 'tel',
-							},
-						}}
-					/>
+            // Mua ngay: tạo đơn với đúng sản phẩm đang chọn
+            // Thanh toán giỏ hàng: tạo đơn từ giỏ hàng hiện tại
+            const order = validBuyNow
+                ? await orderApi.buyNow({
+                      order: orderInfo,
+                      food: {
+                          productId: product.id,
+                          size: option.size,
+                          price: option.price,
+                          quantity,
+                      },
+                  })
+                : await orderApi.create(orderInfo);
 
-					<TextField
-						label="Địa chỉ giao hàng"
-						value={form.address}
-						onChange={set('address')}
-						required
-						multiline
-						minRows={2}
-						slotProps={{
-							htmlInput: { maxLength: 500 },
-						}}
-					/>
+            // Chỉ xóa giỏ hàng khi đặt hàng từ giỏ hàng
+            if (!isBuyNow) {
+                await clearAfterOrder();
+            }
 
-					<TextField
-						label="Ghi chú cho quán (không bắt buộc)"
-						value={form.note}
-						onChange={set('note')}
-						slotProps={{
-							htmlInput: { maxLength: 255 },
-						}}
-					/>
+            // Thanh toán PayOS
+            if (method === 'PAYOS' && order.checkoutUrl) {
+                window.location.href = order.checkoutUrl;
+                return;
+            }
 
-					<FormControl>
-						<FormLabel>Phương thức thanh toán</FormLabel>
+            notify('Đặt hàng thành công!');
+            navigate(`/orders/${order.id}`, { replace: true });
+        } catch (err) {
+            setError(getErrorMessage(err));
+        } finally {
+            setBusy(false);
+        }
+    };
 
-						<RadioGroup
-							value={method}
-							onChange={(e) =>
-								setMethod(e.target.value as PaymentMethod)
-							}
-						>
-							{(Object.keys(PAYMENT_METHOD_LABEL) as PaymentMethod[]).map(
-								(m) => (
-									<FormControlLabel
-										key={m}
-										value={m}
-										control={<Radio />}
-										label={PAYMENT_METHOD_LABEL[m]}
-									/>
-								),
-							)}
-						</RadioGroup>
-					</FormControl>
-				</Stack>
+    // Không có sản phẩm hợp lệ khi chọn mua ngay
+    if (isBuyNow && !validBuyNow && !busy) {
+        return (
+            <EmptyState
+                title="Không tìm thấy thông tin sản phẩm"
+                actionLabel="Xem thực đơn"
+                actionTo="/"
+            />
+        );
+    }
 
-				<Box>
-					<Receipt>
-						{items.map((i) => (
-							<ReceiptRow
-								key={i.id}
-								label={`${i.quantity} × ${i.productName}`}
-								value={formatPrice(i.price * i.quantity)}
-							/>
-						))}
+    // Giỏ hàng trống và không phải luồng mua ngay
+    if (!isBuyNow && items.length === 0 && !busy) {
+        return (
+            <EmptyState
+                title="Giỏ hàng đang trống"
+                actionLabel="Xem thực đơn"
+                actionTo="/"
+            />
+        );
+    }
 
-						<Box sx={dashed} />
+    return (
+        <Box>
+            <Typography variant="h4" gutterBottom>
+                Thanh toán
+            </Typography>
 
-						<ReceiptRow
-							label="Tổng cộng"
-							value={formatPrice(cart?.totalPrice)}
-							bold
-						/>
-					</Receipt>
+            <Box
+                sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                        xs: '1fr',
+                        md: '1fr 380px',
+                    },
+                    gap: 4,
+                    alignItems: 'start',
+                }}
+            >
+                <Stack
+                    component="form"
+                    id="checkout-form"
+                    spacing={2}
+                    onSubmit={submit}
+                >
+                    {error && <Alert severity="error">{error}</Alert>}
 
-					<Stack spacing={1} sx={{ mt: 3 }}>
-						<Button
-							type="submit"
-							form="checkout-form"
-							variant="contained"
-							size="large"
-							disabled={busy}
-						>
-							{busy
-								? 'Đang đặt hàng…'
-								: method === 'PAYOS'
-									? 'Đặt hàng và thanh toán'
-									: 'Đặt hàng'}
-						</Button>
+                    <TextField
+                        label="Tên người nhận"
+                        value={form.receiverName}
+                        onChange={set('receiverName')}
+                        required
+                        slotProps={{
+                            htmlInput: { maxLength: 100 },
+                        }}
+                    />
 
-						<Button component={RouterLink} to="/cart">
-							Quay lại giỏ hàng
-						</Button>
-					</Stack>
-				</Box>
-			</Box>
-		</Box>
-	);
+                    <TextField
+                        label="Số điện thoại"
+                        type="tel"
+                        value={form.phone}
+                        onChange={set('phone')}
+                        required
+                        placeholder="0901234567"
+                        slotProps={{
+                            htmlInput: {
+                                maxLength: 13,
+                                inputMode: 'tel',
+                            },
+                        }}
+                    />
+
+                    <TextField
+                        label="Địa chỉ giao hàng"
+                        value={form.address}
+                        onChange={set('address')}
+                        required
+                        multiline
+                        minRows={2}
+                        slotProps={{
+                            htmlInput: { maxLength: 500 },
+                        }}
+                    />
+
+                    <TextField
+                        label="Ghi chú cho quán (không bắt buộc)"
+                        value={form.note}
+                        onChange={set('note')}
+                        slotProps={{
+                            htmlInput: { maxLength: 255 },
+                        }}
+                    />
+
+                    <FormControl>
+                        <FormLabel>Phương thức thanh toán</FormLabel>
+
+                        <RadioGroup
+                            value={method}
+                            onChange={(e) =>
+                                setMethod(e.target.value as PaymentMethod)
+                            }
+                        >
+                            {(Object.keys(
+                                PAYMENT_METHOD_LABEL,
+                            ) as PaymentMethod[]).map((m) => (
+                                <FormControlLabel
+                                    key={m}
+                                    value={m}
+                                    control={<Radio />}
+                                    label={PAYMENT_METHOD_LABEL[m]}
+                                />
+                            ))}
+                        </RadioGroup>
+                    </FormControl>
+                </Stack>
+
+                <Box>
+                    <Receipt>
+                        {validBuyNow ? (
+                            <ReceiptRow
+                                label={`${quantity} × ${product.name} (${option.size})`}
+                                value={formatPrice(option.price * quantity)}
+                            />
+                        ) : (
+                            items.map((item) => (
+                                <ReceiptRow
+                                    key={item.id}
+                                    label={`${item.quantity} × ${item.productName}`}
+                                    value={formatPrice(
+                                        item.price * item.quantity,
+                                    )}
+                                />
+                            ))
+                        )}
+
+                        <Box sx={dashed} />
+
+                        <ReceiptRow
+                            label="Tổng cộng"
+                            value={formatPrice(totalPrice)}
+                            bold
+                        />
+                    </Receipt>
+
+                    <Stack spacing={1} sx={{ mt: 3 }}>
+                        <Button
+                            type="submit"
+                            form="checkout-form"
+                            variant="contained"
+                            size="large"
+                            disabled={busy}
+                        >
+                            {busy
+                                ? 'Đang đặt hàng…'
+                                : method === 'PAYOS'
+                                  ? 'Đặt hàng và thanh toán'
+                                  : 'Đặt hàng'}
+                        </Button>
+
+                        <Button
+                            component={RouterLink}
+                            to={
+                                validBuyNow
+                                    ? `/product/${product.id}`
+                                    : '/cart'
+                            }
+                        >
+                            {validBuyNow
+                                ? 'Quay lại sản phẩm'
+                                : 'Quay lại giỏ hàng'}
+                        </Button>
+                    </Stack>
+                </Box>
+            </Box>
+        </Box>
+    );
 }

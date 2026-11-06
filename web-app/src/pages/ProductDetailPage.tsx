@@ -142,13 +142,13 @@ export default function ProductDetailPage() {
 
 	// Chuyển thẳng sang trang đặt hàng, truyền thông tin món đã chọn
 	const handleBuyNow = () => {
-		if (!product || !selected || !requireLogin()) return;
-
-		navigate('/order', {
+    if (!product || !selected || !requireLogin()) return;
+		navigate('/checkout', {
 			state: {
 				product,
 				option: selected,
 				quantity,
+				buyNow: true,
 			},
 		});
 	};
