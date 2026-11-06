@@ -7,9 +7,13 @@ import com.meal.product.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,17 +23,24 @@ public class CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
+    @CacheEvict(cacheNames = "categories", allEntries = true)
     public CategoryResponse create(CategoryRequest categoryRequest) {
         var category = categoryMapper.toCategory(categoryRequest);
 
-        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
+        return categoryMapper.toCategoryResponse(
+                categoryRepository.save(category)
+        );
     }
 
+    @Cacheable(cacheNames = "categories")
     public List<CategoryResponse> findAll() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toCategoryResponse).toList();
+        return categoryRepository.findAll()
+                .stream()
+                .map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @CacheEvict(cacheNames = "categories", allEntries = true)
     public void deleteById(String id) {
         categoryRepository.deleteById(id);
     }

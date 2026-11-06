@@ -27,6 +27,12 @@ public class SecurityConfig {
             "/food/update",
     };
 
+    @NonFinal
+    private final String[] PUBLIC_MATCHES = {
+            "/food",
+            "/category"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -34,7 +40,7 @@ public class SecurityConfig {
                 authorizeRequests
                         .requestMatchers(INTERNAL_ENDPOINTS).hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/food/update").hasAnyAuthority("UPDATE_FOOD")
-                        .requestMatchers(HttpMethod.GET, "/food", "/category").permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_MATCHES).permitAll()
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2

@@ -19,6 +19,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,6 +46,7 @@ public class FoodService {
     PostClient postClient;
     KafkaTemplate<String, ProductEvent> kafkaTemplate;
 
+    @CacheEvict(cacheNames = "productList", allEntries = true)
     public FoodResponse createFood(FoodRequest request, MultipartFile file) {
         if (foodRepository.existsByName(request.name())){
             throw new AppException(ErrorCode.PRODUCT_EXIST);
@@ -78,6 +82,10 @@ public class FoodService {
         return foodMapper.toFoodResponse(food);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "products", key = "#id"),
+            @CacheEvict(cacheNames = "productList", allEntries = true)
+    })
     public FoodResponse updateFood(String id, FoodUpdateRequest request, MultipartFile file) {
         var food = foodRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
@@ -120,6 +128,7 @@ public class FoodService {
                 .build();
     }
 
+    @Cacheable(cacheNames = "products", key = "#id", sync = true)
     public FoodResponse getFoodById(String id) {
         var food = foodRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
@@ -143,6 +152,11 @@ public class FoodService {
                 .build();
     }
 
+    @Cacheable(
+            cacheNames = "productList",
+            key = "'page:' + #page + ':size:' + #size ",
+            sync = true
+    )
     public PageResponse<FoodResponse> findAllFood(int page, int size) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").descending();
@@ -160,6 +174,11 @@ public class FoodService {
                 .build();
     }
 
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "products", key = "#id"),
+            @CacheEvict(cacheNames = "productList", allEntries = true)
+    })
     public void deleteFoodById(String id) {
         foodRepository.deleteById(id);
 
