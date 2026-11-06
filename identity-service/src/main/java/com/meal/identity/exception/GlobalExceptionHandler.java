@@ -3,6 +3,8 @@ package com.meal.identity.exception;
 import com.meal.identity.dto.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,6 +34,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(apiResponse);
+    }
+
+    @ExceptionHandler(value = TooManyAttemptsException.class)
+    ResponseEntity<Map<String, Object>> handleTooManyAttempts(TooManyAttemptsException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        long retryAfter = Math.max(1, e.getRetryAfterSeconds());
+
+        Map<String, Object> body = Map.of(
+                "code", errorCode.getCode(),
+                "message", errorCode.getMessage(),
+                "results", Map.of("retryAfterSeconds", retryAfter));
+
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfter))
+                .body(body);
     }
 
     @ExceptionHandler(value = AppException.class)

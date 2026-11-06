@@ -9,6 +9,7 @@ import com.meal.identity.entity.Role;
 import com.meal.identity.entity.User;
 import com.meal.identity.exception.AppException;
 import com.meal.identity.exception.ErrorCode;
+import com.meal.identity.exception.TooManyAttemptsException;
 import com.meal.identity.repository.InvalidateTokenRepository;
 import com.meal.identity.repository.RoleRepository;
 import com.meal.identity.repository.UserRepository;
@@ -20,6 +21,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -59,6 +61,14 @@ public class AuthenticationService {
 
     @NonFinal
     private static final String GRANT_TYPE = "authorization_code";
+
+    @NonFinal
+    String dummyPasswordHash;
+
+    @PostConstruct
+    void initDummyPasswordHash() {
+        dummyPasswordHash = passwordEncoder.encode("not-a-real-password");
+    }
 
     final PasswordEncoder passwordEncoder;
     final UserRepository userRepository;
@@ -133,15 +143,16 @@ public class AuthenticationService {
 
         long locked = loginAttemptService.getLockRemainingSeconds(request.getUsername());
         if (locked > 0) {
-            throw new AppException(ErrorCode.TOO_MANY_ATTEMPTS);
+            throw new TooManyAttemptsException(locked);
         }
 
         var user = request.getUsername().contains("@")
                 ? userRepository.findByEmail(request.getUsername()).orElse(null)
                 : userRepository.findByUsername(request.getUsername()).orElse(null);
 
-        boolean authenticated = Objects.nonNull(user)
-                && passwordEncoder.matches(request.getPassword(), user.getPassword());
+        String hashToCheck = user != null ? user.getPassword() : dummyPasswordHash;
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), hashToCheck);
+        boolean authenticated = user != null && passwordMatches;
 
         if (!authenticated) {
             loginAttemptService.recordFailure(request.getUsername());
