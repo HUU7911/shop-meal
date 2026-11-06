@@ -759,6 +759,24 @@ public class Application {
     }
 }
 ```
+ 3. Cache
+```xml
+
+<dependencies>
+    <!-- Spring Cache abstraction -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+
+    <!-- Redis Cache -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+</dependencies>
+
+```
 ---
 
 # 🌐 Frontend

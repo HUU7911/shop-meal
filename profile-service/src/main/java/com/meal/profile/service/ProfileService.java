@@ -12,6 +12,8 @@ import com.meal.profile.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ public class ProfileService {
         return profileMapper.toProfileResponse(response);
     }
 
+    @Cacheable(cacheNames = "profile")
     public ProfileResponse getMyProfile() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -71,6 +74,8 @@ public class ProfileService {
         return profileMapper.toProfileResponse(profileRepository.save(profile));
     }
 
+    @CacheEvict(cacheNames = "profiles",
+            key = "T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
     public ProfileResponse uploadAvatar(MultipartFile file) throws IOException {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 

@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,6 +35,7 @@ public class ProductSearchService {
     ElasticsearchOperations elasticsearchOperations;
     public enum SortOption { RELEVANCE, PRICE_ASC, PRICE_DESC }
 
+    @Cacheable(cacheNames = "search", key = "#keyword")
     public PageResponse<ProductDocument> searchProduct(
             String keyword, String category,
             Type type, BigDecimal minPrice,
