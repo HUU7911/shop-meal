@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import type { ApiResponse } from './types';
+import { getRateLimitInfo } from './rateLimit';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8888/api/v1';
 
@@ -10,7 +11,6 @@ export const tokenStore = {
   set: (token: string) => sessionStorage.setItem(TOKEN_KEY, token),
   clear: () => sessionStorage.removeItem(TOKEN_KEY),
 };
-
 
 export const AUTH_LOGOUT_EVENT = 'shopmeal:auth-logout';
 export const AUTH_TOKEN_EVENT = 'shopmeal:auth-token';
@@ -104,6 +104,8 @@ const MESSAGE_VI: Record<string, string> = {
 };
 
 export function getErrorMessage(error: unknown, fallback = 'Đã có lỗi xảy ra, vui lòng thử lại.'): string {
+  const rateLimit = getRateLimitInfo(error);
+  if (rateLimit) return rateLimit.message;
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as { message?: string; code?: number } | undefined;
     if (data?.message) return MESSAGE_VI[data.message] ?? data.message;

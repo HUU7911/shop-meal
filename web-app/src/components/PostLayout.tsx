@@ -25,6 +25,7 @@ import { postApi } from '../api/services';
 import AuthImage from './AuthImage';
 import PostEditForm from './PostEditForm';
 import { useAuth } from '../auth/AuthContext';
+import { getRateLimitInfo } from '../api/rateLimit';
 
 const PAGE_SIZE = 9;
 
@@ -214,7 +215,8 @@ export default function PostLayout() {
 		} catch (err) {
 			console.error('Không thể tải danh sách bài viết:', err);
 			setError(
-				'Không thể tải bài viết. Vui lòng kiểm tra kết nối hoặc đăng nhập lại rồi thử lần nữa.',
+				getRateLimitInfo(err)?.message ??
+					'Không thể tải bài viết. Vui lòng kiểm tra kết nối hoặc đăng nhập lại rồi thử lần nữa.',
 			);
 			setPosts([]);
 		} finally {
