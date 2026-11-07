@@ -7,7 +7,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -28,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -73,13 +71,14 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeaders.substring(7);
-        log.debug("token:{}", token);
 
-        return identityService.introspect(token).flatMap(introspectResponse -> {
-           return (introspectResponse.getResults().isValid())
-                   ? chain.filter(exchange)
-                   : unauthenticated(exchange.getResponse());
-        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
+        return identityService.introspect(token)
+                .map(response ->
+                        !Objects.isNull(response.getResults()) && response.getResults().isValid())
+                .onErrorReturn(false)
+                .flatMap(valid -> valid
+                        ? chain.filter(exchange)
+                        : unauthenticated(exchange.getResponse()));
     }
 
     @Override
@@ -92,24 +91,24 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .anyMatch(s -> request.getURI().getPath().matches(API_PREFIX + s));
     }
 
-    public Mono<Void> unauthenticated(ServerHttpResponse response) {
+    private Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
-                .message("Unauthenticated")
+                .message("unauthenticated")
                 .build();
 
-        String body = " ";
+        String body;
         try {
             body = objectMapper.writeValueAsString(apiResponse);
-        } catch (JacksonException e){
-            apiResponse.setMessage(String.valueOf(e.fillInStackTrace()));
+        } catch (JacksonException e) {
+            body = "{\"code\":1401,\"message\":\"unauthenticated\"}";
         }
 
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
         return response.writeWith(
-          Mono.just(response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8)))
-        );
+                Mono.just(response.bufferFactory()
+                        .wrap(body.getBytes(StandardCharsets.UTF_8))));
     }
 }
