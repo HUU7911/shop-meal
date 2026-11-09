@@ -1,7 +1,10 @@
 package com.meal.product.service;
 
 import com.meal.product.dto.request.CategoryRequest;
+import com.meal.product.dto.request.CategoryUpdateRequest;
 import com.meal.product.dto.response.CategoryResponse;
+import com.meal.product.exception.AppException;
+import com.meal.product.exception.ErrorCode;
 import com.meal.product.mapper.CategoryMapper;
 import com.meal.product.repository.CategoryRepository;
 import lombok.AccessLevel;
@@ -30,6 +33,17 @@ public class CategoryService {
         return categoryMapper.toCategoryResponse(
                 categoryRepository.save(category)
         );
+    }
+
+    @CacheEvict(cacheNames = "categories", allEntries = true)
+    public CategoryResponse update(String name, CategoryUpdateRequest request) {
+        var category = categoryRepository.findById(name).orElseThrow(
+                () -> new AppException(ErrorCode.ACCESS_DENIED));
+
+        categoryMapper.updateCategory(category, request);
+        category = categoryRepository.save(category);
+
+        return categoryMapper.toCategoryResponse(category);
     }
 
     @Cacheable(cacheNames = "categories")

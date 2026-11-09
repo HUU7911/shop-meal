@@ -52,7 +52,6 @@ export const profileApi = {
 };
 
 // ---------------- product-service ----------------
-/** Khớp FoodRequest / FoodUpdateRequest: `size[i]` đi cùng `price[i]`. */
 export interface FoodPayload {
   name: string;
   size: string[];
