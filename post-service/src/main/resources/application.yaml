@@ -1,4 +1,11 @@
 spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
   application:
     name: post-service
   mongodb:
