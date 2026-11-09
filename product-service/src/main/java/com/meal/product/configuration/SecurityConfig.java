@@ -1,6 +1,5 @@
 package com.meal.product.configuration;
 
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,27 +20,15 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecode customJwtDecode;
 
-    @NonFinal
-    private final String[] INTERNAL_ENDPOINTS = {
-            "/food/create",
-            "/food/update",
-    };
-
-    @NonFinal
-    private final String[] PUBLIC_MATCHES = {
-            "/food",
-            "/category"
-    };
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 
-        http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                        .requestMatchers(INTERNAL_ENDPOINTS).hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/food/update").hasAnyAuthority("UPDATE_FOOD")
-                        .requestMatchers(HttpMethod.GET, PUBLIC_MATCHES).permitAll()
-                        .anyRequest().authenticated());
+        http.authorizeHttpRequests(a -> a
+                        .requestMatchers(HttpMethod.GET, "/food", "/food/**", "/category").permitAll() // chỉnh theo nhu cầu
+                        .requestMatchers(HttpMethod.POST, "/food/create", "/category/create").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers(HttpMethod.PUT, "/food/update/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers(HttpMethod.DELETE, "/food/delete/**", "/category/delete/**").hasAnyRole("ADMIN","STAFF")
+                .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(configurer -> configurer.decoder(customJwtDecode)
