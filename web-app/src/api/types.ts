@@ -42,8 +42,7 @@ export interface SizeOption {
 export interface AddToCartRequest {
   productId: string;
   size: string;
-  price: number;
-  images?: string;
+  quantity?: number;
 }
 
 export interface AuthenticationResponse {
@@ -103,6 +102,7 @@ export interface CartItem {
   id: string;
   productId: string;
   productName: string;
+  size?: string;
   price: number;
   image?: string;
   quantity: number;
@@ -158,7 +158,6 @@ export interface CreateOrderRequest {
 export interface FoodOrderRequest {
   productId: string;
   size: string;
-  price: number;
   quantity: number;
 }
 

@@ -230,6 +230,7 @@ export const cartApi = {
   increase: (itemId: string) => unwrap<Cart>(api.patch(`/cart/items/${itemId}/increase`)),
   decrease: (itemId: string) => unwrap<Cart>(api.patch(`/cart/items/${itemId}/decrease`)),
   remove: (itemId: string) => unwrap<Cart>(api.delete(`/cart/items/${itemId}`)),
+  clear: () => unwrap<void>(api.delete('/cart/clear-my-cart')),
 };
 
 // ---------------- order-service ----------------

@@ -23,7 +23,6 @@ public class AuthenticationRequestInterceptor implements RequestInterceptor {
         }
 
         var auth = attributes.getRequest().getHeader("Authorization");
-        log.info("token:{}", auth);
         if (StringUtils.hasText(auth)) {
             template.header("Authorization", auth);
         }

@@ -25,6 +25,11 @@ public enum ErrorCode {
     INVALID_QUANTITY(1007, "Quantity must be at least 1", HttpStatus.BAD_REQUEST),
     NOTE_TOO_LONG(1008, "Note must be at most 255 characters", HttpStatus.BAD_REQUEST),
     CART_NOT_FOUND(1009, "Cart not found", HttpStatus.NOT_FOUND),
+    SIZE_NOT_FOUND(1100, "size not found", HttpStatus.NOT_FOUND),
+    INVALID_REQUEST(1101, "Invalid request", HttpStatus.BAD_REQUEST),
+    PRODUCT_SERVICE_UNAVAILABLE(1102, "Product service is unavailable, please try again", HttpStatus.SERVICE_UNAVAILABLE),
+    CART_CONFLICT(1103, "Cart was modified by another request, please try again", HttpStatus.CONFLICT),
+    INVALID_PRODUCT_DATA(1104, "Invalid product data", HttpStatus.BAD_GATEWAY)
     ;
 
     private int code;

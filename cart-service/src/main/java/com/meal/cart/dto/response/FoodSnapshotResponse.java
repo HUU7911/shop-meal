@@ -7,6 +7,9 @@ import java.util.List;
 
 @Builder
 public record FoodSnapshotResponse(
-        String id, String name,
-        String image, List<String> size, List<BigDecimal> price
+        String id,
+        String name,
+        String image,
+        List<String> size,
+        List<BigDecimal> price
 ) {}

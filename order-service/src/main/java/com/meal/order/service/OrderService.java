@@ -29,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,20 +123,52 @@ public class OrderService {
 
     @Transactional
     public OrderResponse buyNow(CreateOrderRequest request, FoodOrderRequest foodRequest) {
+        if (Objects.isNull(request)|| Objects.isNull(foodRequest)) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
+        if (Objects.isNull(request.paymentMethod())) {
+            throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
+        }
+
+        if (!StringUtils.hasText(request.receiverName())
+                || !StringUtils.hasText(request.phone())
+                || !StringUtils.hasText(request.address())) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
+        if (Objects.isNull(foodRequest.productId())
+                || Objects.isNull(foodRequest.quantity())
+                || foodRequest.quantity() <= 0
+                || foodRequest.quantity() > 100) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         var product = productClient.getProduct(foodRequest.productId());
-        if (Objects.isNull(product) || Objects.isNull(product.getResults())) {
+
+        if (Objects.isNull(product)|| Objects.isNull(product.getResults())) {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
+
         var food = product.getResults();
 
-        if (!String.valueOf(food.size()).equals(foodRequest.size())) {
+        if (food.size() == null
+                || foodRequest.size() == null
+                || !food.size().equals(foodRequest.size())) {
             throw new AppException(ErrorCode.INVALID_SIZE);
         }
 
         BigDecimal unitPrice = (BigDecimal) food.price();
-        BigDecimal totalAmount = unitPrice.multiply(BigDecimal.valueOf(foodRequest.quantity()));
+
+        if (unitPrice == null || unitPrice.signum() <= 0) {
+            throw new AppException(ErrorCode.INVALID_PRODUCT_PRICE);
+        }
+
+        BigDecimal totalAmount = unitPrice.multiply(
+                BigDecimal.valueOf(foodRequest.quantity())
+        );
 
         Order order = Order.builder()
                 .orderCode(generateOrderCode())
@@ -143,26 +176,31 @@ public class OrderService {
                 .receiverName(request.receiverName().trim())
                 .phone(request.phone().trim())
                 .address(request.address().trim())
-                .note(StringUtils.hasText(request.note()) ? request.note().trim() : null)
+                .note(StringUtils.hasText(request.note())
+                        ? request.note().trim()
+                        : null)
                 .status(OrderStatus.PENDING)
                 .paymentMethod(request.paymentMethod())
                 .paymentStatus(PaymentStatus.UNPAID)
                 .totalAmount(totalAmount)
                 .build();
 
-        order.getItems().add(OrderItem.builder()
-                .order(order)
-                .productId(food.id())
-                .size(foodRequest.size())
-                .unitPrice(unitPrice)
-                .quantity(foodRequest.quantity())
-                .image(food.image())
-                .build());
+        order.getItems().add(
+                OrderItem.builder()
+                        .order(order)
+                        .productId(food.id())
+                        .size(foodRequest.size())
+                        .unitPrice(unitPrice)
+                        .quantity(foodRequest.quantity())
+                        .image(food.image())
+                        .build()
+        );
 
         Order saved = orderRepository.save(order);
 
         PaymentResponse payment = null;
-        if (request.paymentMethod() == PaymentMethod.PAYOS) {
+
+        if (request.paymentMethod().equals(PaymentMethod.PAYOS)) {
             payment = createPayOSPayment(saved);
         }
 

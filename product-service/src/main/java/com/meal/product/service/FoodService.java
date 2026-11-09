@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -53,8 +54,7 @@ public class FoodService {
         }
 
         var food = foodMapper.toFood(request);
-        HashSet<Category> categories = new HashSet<>(
-                categoryRepository.findAllById(request.categories()));
+        HashSet<Category> categories = new HashSet<>(categoryRepository.findAllById(request.categories()));
         food.setCategories(categories);
         food.setCreatedDate(Instant.now());
 
@@ -142,13 +142,16 @@ public class FoodService {
                 () -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)
         );
 
-        food = foodRepository.save(food);
+        String image = (Objects.isNull(food.getImages()) || food.getImages().isEmpty())
+                ? null
+                : food.getImages().getFirst();
 
         return FoodSnapshotResponse.builder()
-                .id(id)
+                .id(food.getId())
                 .name(food.getName())
+                .size(food.getSize())
                 .price(food.getPrice())
-                .image(food.getImages().getFirst())
+                .image(image)
                 .build();
     }
 
@@ -174,7 +177,6 @@ public class FoodService {
                 .build();
     }
 
-
     @Caching(evict = {
             @CacheEvict(cacheNames = "products", key = "#id"),
             @CacheEvict(cacheNames = "productList", allEntries = true)
@@ -197,8 +199,7 @@ public class FoodService {
             kafkaTemplate.send("product-event", productEvent);
             log.info("publish product event success: {}", productEvent);
         }catch (Exception e){
-            e.printStackTrace();
-            log.error("publish product event error: {}", productEvent);
+            throw new AppException(ErrorCode.KAFKA_NO_AVAILABLE);
         }
     }
 }

@@ -41,6 +41,13 @@ public class UserController {
                 .build();
     }
 
+    @PutMapping("/update/myself")
+    ApiResponse<UserResponse> updateMySelf(@RequestBody UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .results(userService.updateMySelf(request))
+                .build();
+    }
+
     @GetMapping
     ApiResponse<List<UserResponse>> getAllUsers() {
         return ApiResponse.<List<UserResponse>>builder()

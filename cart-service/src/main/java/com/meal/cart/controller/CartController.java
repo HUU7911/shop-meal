@@ -4,6 +4,7 @@ import com.meal.cart.dto.ApiResponse;
 import com.meal.cart.dto.request.AddProductToCartRequest;
 import com.meal.cart.dto.response.CartResponse;
 import com.meal.cart.service.CartService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +19,7 @@ public class CartController {
     CartService cartService;
 
     @PostMapping("/add")
-    public ApiResponse<CartResponse> addProductToCart(@RequestBody AddProductToCartRequest request) {
+    public ApiResponse<CartResponse> addProductToCart(@RequestBody @Valid AddProductToCartRequest request) {
         return ApiResponse.<CartResponse>builder()
                 .results(cartService.addProductToCart(request))
                 .build();
@@ -53,7 +54,7 @@ public class CartController {
     }
 
     @DeleteMapping("/clear-my-cart")
-    ApiResponse<Void> clearMyCart() {
+    public ApiResponse<Void> clearMyCart() {
         cartService.deleteAllCart();
         return ApiResponse.<Void>builder()
                 .message("Cart cleared")

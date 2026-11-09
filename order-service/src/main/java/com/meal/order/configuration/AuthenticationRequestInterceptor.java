@@ -13,7 +13,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class AuthenticationRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
-        // Thread Netty (socket) không có HTTP request context -> bỏ qua
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
             return;
         }
@@ -22,6 +21,5 @@ public class AuthenticationRequestInterceptor implements RequestInterceptor {
         if (StringUtils.hasText(authHeader)) {
             template.header("Authorization", authHeader);
         }
-        // Đã bỏ log token: không bao giờ log JWT
     }
 }

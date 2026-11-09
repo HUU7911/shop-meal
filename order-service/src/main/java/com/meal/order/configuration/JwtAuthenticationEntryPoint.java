@@ -2,7 +2,6 @@ package com.meal.order.configuration;
 
 import com.meal.order.dto.ApiResponse;
 import com.meal.order.exception.ErrorCode;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,7 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+            throws IOException {
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
 
         response.setStatus(errorCode.getHttpStatusCode().value());

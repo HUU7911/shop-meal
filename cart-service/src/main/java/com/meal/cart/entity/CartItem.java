@@ -7,7 +7,10 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_cart_items_cart_product_size",
+                columnNames = {"cart_id", "product_id", "size"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,18 +25,21 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    Cart cart;
 
-    @Column(name = "product_id", nullable = false)
+    @Column(name = "product_id", nullable = false, length = 64)
     String productId;
 
     @Column(name = "product_name", nullable = false)
     String productName;
 
+    @Column(name = "size", nullable = false, length = 32)
+    String size;
+
     @Column(name = "price", nullable = false, precision = 19, scale = 2)
     BigDecimal price;
 
-    @Column(name = "image")
+    @Column(name = "image", length = 1000)
     String image;
 
     @Column(name = "quantity", nullable = false)

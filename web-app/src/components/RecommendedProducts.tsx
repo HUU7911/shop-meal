@@ -114,10 +114,6 @@ export default function RecommendedProducts() {
 		await add({
 			productId: product.id,
 			size: option.size,
-			price: option.price,
-			...(product.images?.[0]
-				? { images: product.images[0] }
-				: {}),
 		});
 	};
 

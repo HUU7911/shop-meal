@@ -1,4 +1,13 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+	createContext,
+	ReactNode,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { getErrorCode, getErrorMessage } from '../api/client';
 import { cartApi } from '../api/services';
 import type { AddToCartRequest, Cart } from '../api/types';
@@ -27,9 +36,15 @@ type CartValue = CartState & CartActions;
 const CartStateContext = createContext<CartState | null>(null);
 const CartActionsContext = createContext<CartActions | null>(null);
 
+// Cùng một món có thể có nhiều size (nhiều dòng), nên sắp xếp phụ theo size
+// để thứ tự các dòng luôn ổn định giữa các lần tải.
 const normalize = (cart: Cart): Cart => ({
 	...cart,
-	items: [...(cart.items ?? [])].sort((a, b) => a.productName.localeCompare(b.productName, 'vi')),
+	items: [...(cart.items ?? [])].sort(
+		(a, b) =>
+			a.productName.localeCompare(b.productName, 'vi') ||
+			(a.size ?? '').localeCompare(b.size ?? '', 'vi'),
+	),
 });
 
 const CART_NOT_FOUND = 1009;
@@ -39,6 +54,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	const notify = useNotify();
 	const [cart, setCart] = useState<Cart | null>(null);
 	const [loading, setLoading] = useState(false);
+
+	// Hàng đợi: các thao tác ghi vào giỏ chạy lần lượt, không chạy song song.
+	// Backend khóa giỏ theo user khi ghi, nên bấm +/- liên tục mà gửi song song
+	// sẽ phải chờ nhau hoặc bị lỗi xung đột. Xếp hàng ở đây thì tránh được.
+	const queueRef = useRef<Promise<unknown>>(Promise.resolve());
 
 	const refresh = useCallback(async () => {
 		if (!isAuthenticated) {
@@ -60,14 +80,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	}, [refresh]);
 
 	const run = useCallback(
-		async (action: () => Promise<Cart>): Promise<boolean> => {
-			try {
-				setCart(normalize(await action()));
-				return true;
-			} catch (e) {
-				notify(getErrorMessage(e), 'error');
-				return false;
-			}
+		(action: () => Promise<Cart>): Promise<boolean> => {
+			const task = queueRef.current.then(async () => {
+				try {
+					setCart(normalize(await action()));
+					return true;
+				} catch (e) {
+					notify(getErrorMessage(e), 'error');
+					return false;
+				}
+			});
+			// task không bao giờ reject (đã bắt lỗi ở trên) nên hàng đợi không bị kẹt
+			queueRef.current = task;
+			return task;
 		},
 		[notify],
 	);
@@ -75,22 +100,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	const clearAfterOrder = useCallback(async () => {
 		if (!isAuthenticated) return;
 		try {
-			let current = await cartApi.get();
-			// Xoá tuần tự để tránh ghi đè lẫn nhau trên cùng một giỏ.
-			// TODO: thay bằng endpoint "xoá toàn bộ giỏ" ở cart-service để chỉ cần 1 request.
-			for (const item of current.items ?? []) {
-				try {
-					current = await cartApi.remove(item.id);
-				} catch {
-					/* bỏ qua món lỗi, tiếp tục xoá các món còn lại */
-				}
-			}
-			const normalized = normalize(current);
-			setCart(normalized.items.length ? normalized : null);
-		} catch (e) {
-			if (getErrorCode(e) === CART_NOT_FOUND) setCart(null);
+			await cartApi.clear();
+		} catch {
+			/* giỏ sẽ được tải lại bên dưới */
 		}
-	}, [isAuthenticated]);
+		await refresh();
+	}, [isAuthenticated, refresh]);
 
 	const add = useCallback((request: AddToCartRequest) => run(() => cartApi.add(request)), [run]);
 	const increase = useCallback(async (id: string) => void (await run(() => cartApi.increase(id))), [run]);

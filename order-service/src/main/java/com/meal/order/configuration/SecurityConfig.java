@@ -20,28 +20,25 @@ public class SecurityConfig {
     private CustomJwtDecode customJwtDecode;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http){
 
-        http.authorizeHttpRequests(authorizeRequests ->
+        return http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .anyRequest().authenticated());
-
-        http.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(configurer ->
+                        .requestMatchers("/admin/**").hasAnyRole("STAFF", "ADMIN")
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(configurer ->
                                 configurer.decoder(customJwtDecode)
                                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-        );
-
-        http.csrf(AbstractHttpConfigurer::disable);
-
-        return http.build();
+        ).csrf(AbstractHttpConfigurer::disable).build();
     }
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimDelimiter("\\s*,\\s*");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);

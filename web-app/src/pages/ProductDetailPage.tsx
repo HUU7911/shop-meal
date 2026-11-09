@@ -119,30 +119,25 @@ export default function ProductDetailPage() {
 		setAdding(true);
 
 		try {
-			for (let i = 0; i < quantity; i++) {
-				const ok = await add({
-					productId: product.id,
-					size: selected.size,
-					price: selected.price,
-					images: product.images?.[0],
-				});
+			const ok = await add({
+				productId: product.id,
+				size: selected.size,
+				quantity,
+			});
 
-				if (!ok) return;
-			}
+			if (!ok) return;
 
 			notify(
-				`Đã thêm ${quantity} "${product.name}"${
-					selected.size ? ` (${selected.size})` : ''
+				`Đã thêm ${quantity} "${product.name}"${selected.size ? ` (${selected.size})` : ''
 				} vào giỏ hàng.`,
 			);
 		} finally {
 			setAdding(false);
 		}
 	};
-
 	// Chuyển thẳng sang trang đặt hàng, truyền thông tin món đã chọn
 	const handleBuyNow = () => {
-    if (!product || !selected || !requireLogin()) return;
+		if (!product || !selected || !requireLogin()) return;
 		navigate('/checkout', {
 			state: {
 				product,

@@ -1,4 +1,3 @@
-
 import {
     Alert,
     Box,
@@ -35,6 +34,13 @@ import { formatPrice, PAYMENT_METHOD_LABEL } from '../utils/format';
 
 const PHONE_RE = /^(0|\+84)\d{9}$/;
 
+// Giữ khớp với MAX_QUANTITY ở cart-service / order-service
+const MAX_QUANTITY = 99;
+
+/** "Phở bò (M)" hoặc "Phở bò" nếu món không có size. */
+const withSize = (name: string, size?: string) =>
+    size ? `${name} (${size})` : name;
+
 interface CheckoutLocationState {
     buyNow?: boolean;
     product?: Product;
@@ -63,7 +69,8 @@ export default function CheckoutPage() {
         !!product &&
         !!option &&
         Number.isInteger(quantity) &&
-        quantity >= 1;
+        quantity >= 1 &&
+        quantity <= MAX_QUANTITY;
 
     const [form, setForm] = useState({
         receiverName: '',
@@ -93,7 +100,7 @@ export default function CheckoutPage() {
 
     const items = cart?.items ?? [];
 
-    // Tổng tiền thay đổi theo luồng thanh toán
+    // Chỉ để hiển thị. Tổng tiền thật do server tính lại khi tạo đơn.
     const totalPrice = validBuyNow
         ? option.price * quantity
         : cart?.totalPrice ?? 0;
@@ -149,15 +156,12 @@ export default function CheckoutPage() {
                 paymentMethod: method,
             };
 
-            // Mua ngay: tạo đơn với đúng sản phẩm đang chọn
-            // Thanh toán giỏ hàng: tạo đơn từ giỏ hàng hiện tại
             const order = validBuyNow
                 ? await orderApi.buyNow({
                       order: orderInfo,
                       food: {
                           productId: product.id,
                           size: option.size,
-                          price: option.price,
                           quantity,
                       },
                   })
@@ -303,14 +307,14 @@ export default function CheckoutPage() {
                     <Receipt>
                         {validBuyNow ? (
                             <ReceiptRow
-                                label={`${quantity} × ${product.name} (${option.size})`}
+                                label={`${quantity} × ${withSize(product.name, option.size)}`}
                                 value={formatPrice(option.price * quantity)}
                             />
                         ) : (
                             items.map((item) => (
                                 <ReceiptRow
                                     key={item.id}
-                                    label={`${item.quantity} × ${item.productName}`}
+                                    label={`${item.quantity} × ${withSize(item.productName, item.size)}`}
                                     value={formatPrice(
                                         item.price * item.quantity,
                                     )}

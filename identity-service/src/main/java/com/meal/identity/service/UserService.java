@@ -24,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -134,6 +135,7 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new RuntimeException("User not found!"));
@@ -141,8 +143,25 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userMapper.updateUser(request, user);
 
-        var roles = roleRepository.findAllById(request.getRoles());
-        user.setRoles(new HashSet<>(roles));
+        if (StringUtils.hasText(request.getPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        if (Objects.nonNull(request.getRoles())) {
+            user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
+        }
+
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserResponse updateMySelf(UserUpdateRequest request) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new RuntimeException("User not found!"));
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userMapper.updateUser(request, user);
 
         return userMapper.toResponse(userRepository.save(user));
     }

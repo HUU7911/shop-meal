@@ -38,6 +38,7 @@ public class SecurityConfig{
     @NonFinal
     private final String[] PRIVATE_MATCHERS = {
             "/users",
+            "/users/update/{userId}",
             "/users/delete/{id}",
             "/internal/users/create",
             "/roles/update"
