@@ -29,7 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,6 +93,7 @@ public class OrderService {
                     .productId(cartItem.productId())
                     .productName(cartItem.productName())
                     .image(cartItem.image())
+                    .size(StringUtils.hasText(cartItem.size()) ? cartItem.size().trim() : null)
                     .unitPrice(cartItem.price())
                     .quantity(cartItem.quantity())
                     .build();
@@ -189,6 +189,7 @@ public class OrderService {
                 OrderItem.builder()
                         .order(order)
                         .productId(food.id())
+                        .productName(food.name())
                         .size(foodRequest.size())
                         .unitPrice(unitPrice)
                         .quantity(foodRequest.quantity())
@@ -378,10 +379,10 @@ public class OrderService {
                         item.getProductId(),
                         item.getProductName(),
                         item.getImage(),
+                        item.getSize(),
                         item.getUnitPrice(),
                         item.getQuantity(),
-                        item.getUnitPrice()
-                                .multiply(BigDecimal.valueOf(item.getQuantity()))
+                        item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
                 ))
                 .toList();
 

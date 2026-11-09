@@ -28,7 +28,8 @@ public enum ErrorCode {
     PRICE_CHANGED(2105, "price changed", HttpStatus.CONFLICT),
     INVALID_SIZE(2106, "invalid size", HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_PRICE(2107, "invalid product price", HttpStatus.BAD_REQUEST),
-    INVALID_PAYMENT_METHOD(2108, "invalid payment method", HttpStatus.BAD_REQUEST)
+    INVALID_PAYMENT_METHOD(2108, "invalid payment method", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED(402, "unauthorized", HttpStatus.UNAUTHORIZED)
     ;
 
     private final int code;
