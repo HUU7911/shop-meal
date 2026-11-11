@@ -37,13 +37,12 @@ public class FileRepository {
         }
 
         try (InputStream stream = file.getInputStream()) {
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(objectKey)
-                            .stream(stream, file.getSize(), -1)
-                            .contentType(contentType)
-                            .build()
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(objectKey)
+                    .stream(stream, file.getSize(), -1)
+                    .contentType(contentType)
+                    .build()
             );
         }
 
@@ -58,11 +57,10 @@ public class FileRepository {
     }
 
     public InputStream read(String objectKey) throws Exception {
-        return minioClient.getObject(
-                GetObjectArgs.builder()
-                        .bucket(bucket)
-                        .object(objectKey)
-                        .build()
+        return minioClient.getObject(GetObjectArgs.builder()
+                .bucket(bucket)
+                .object(objectKey)
+                .build()
         );
     }
 }
