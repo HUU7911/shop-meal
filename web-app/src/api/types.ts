@@ -157,14 +157,20 @@ export interface CreateOrderRequest {
 /** Món cần mua ngay (khớp FoodOrderRequest ở order-service). Giá chỉ để server đối chiếu, tổng tiền do server tính. */
 export interface FoodOrderRequest {
   productId: string;
-  size: string;
   quantity: number;
+  size: string;
+  price?: number;
+  images?: string;
 }
 
 /** Body của POST /order/buyNow/create: một request duy nhất gồm thông tin giao hàng + món mua. */
 export interface BuyNowRequest {
-  order: CreateOrderRequest;
-  food: FoodOrderRequest;
+  receiverName: string;
+  phone: string;
+  address: string;
+  note?: string;
+  paymentMethod: PaymentMethod;
+  foodRequest: FoodOrderRequest;
 }
 
 /** post-service: GET /banner/getAll. `url` là ảnh do file-service phục vụ (cần Bearer token). */

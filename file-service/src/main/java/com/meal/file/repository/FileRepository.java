@@ -2,10 +2,6 @@ package com.meal.file.repository;
 
 import com.meal.file.dto.FileInfor;
 import com.meal.file.entity.FileMgmt;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -15,102 +11,47 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.UUID;
 
 @Repository
 public class FileRepository {
+    @Value("${app.file.storage-dir}")
+    String storageDir;
 
-    private final MinioClient minioClient;
-
-    @Value("${minio.config.bucket}")
-    private String bucket;
-
-    @Value("${app.download}")
-    private String download;
-
-    public FileRepository(MinioClient minioClient) {
-        this.minioClient = minioClient;
-    }
+    @Value("${app.file.download-prefix}")
+    String urlPrefix;
 
     public FileInfor store(MultipartFile file) throws IOException {
+        Path folder = Paths.get(storageDir);
 
-        String extension = StringUtils.getFilenameExtension(
-                file.getOriginalFilename()
-        );
+        String fileExtension = StringUtils
+                .getFilenameExtension(file.getOriginalFilename());
 
-        String fileName = Objects.isNull(extension)
+        String fileName = Objects.isNull(fileExtension)
                 ? UUID.randomUUID().toString()
-                : UUID.randomUUID() + "." + extension;
+                : UUID.randomUUID() + "." + fileExtension;
 
-        String objectName = "products/" + fileName;
+        Path filePath = folder.resolve(fileName).normalize().toAbsolutePath();
 
-        // Calculate MD5 checksum
-        String md5;
-        try (InputStream inputStream = file.getInputStream()) {
-            md5 = DigestUtils.md5DigestAsHex(inputStream);
-        }
-
-        // Upload image to MinIO
-        try (InputStream inputStream = file.getInputStream()) {
-
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(objectName)
-                            .stream(
-                                    inputStream,
-                                    file.getSize(),
-                                    -1
-                            )
-                            .contentType(file.getContentType())
-                            .build()
-            );
-
-        } catch (Exception e) {
-            throw new IOException("Failed to upload file to MinIO", e);
-        }
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         return FileInfor.builder()
                 .name(fileName)
                 .size(file.getSize())
                 .contentType(file.getContentType())
-                .md5Checksum(md5)
-                .path(objectName)
-                .url(download + fileName)
+                .md5Checksum(DigestUtils.md5DigestAsHex(file.getInputStream()))
+                .path(filePath.toString())
+                .url(urlPrefix + fileName)
                 .build();
     }
 
     public Resource read(FileMgmt fileMgmt) throws IOException {
-
-        try (InputStream inputStream = minioClient.getObject(
-                GetObjectArgs.builder()
-                        .bucket(bucket)
-                        .object(fileMgmt.getPath())
-                        .build()
-        )) {
-
-            byte[] data = inputStream.readAllBytes();
-
-            return new ByteArrayResource(data);
-
-        } catch (Exception e) {
-            throw new IOException("Failed to download file from MinIO", e);
-        }
-    }
-
-    public void delete(FileMgmt fileMgmt) throws IOException {
-
-        try {
-            minioClient.removeObject(
-                    RemoveObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(fileMgmt.getPath())
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new IOException("Failed to delete file from MinIO", e);
-        }
+        var data = Files.readAllBytes(Path.of(fileMgmt.getPath()));
+        return new ByteArrayResource(data);
     }
 }

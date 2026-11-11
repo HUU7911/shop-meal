@@ -8,6 +8,7 @@ import com.meal.order.constants.PaymentStatus;
 import com.meal.order.dto.ApiResponse;
 import com.meal.order.dto.PageResponse;
 import com.meal.order.dto.client.*;
+import com.meal.order.dto.request.BuyNowRequest;
 import com.meal.order.dto.request.CreateOrderRequest;
 import com.meal.order.dto.response.OrderItemResponse;
 import com.meal.order.dto.response.OrderResponse;
@@ -122,13 +123,9 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse buyNow(CreateOrderRequest request, FoodOrderRequest foodRequest) {
-        if (Objects.isNull(request)|| Objects.isNull(foodRequest)) {
+    public OrderResponse buyNow(BuyNowRequest request) {
+        if (Objects.isNull(request)) {
             throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-
-        if (Objects.isNull(request.paymentMethod())) {
-            throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 
         if (!StringUtils.hasText(request.receiverName())
@@ -137,32 +134,55 @@ public class OrderService {
             throw new AppException(ErrorCode.INVALID_REQUEST);
         }
 
-        if (Objects.isNull(foodRequest.productId())
+        PaymentMethod paymentMethod = request.paymentMethod();
+
+        if (Objects.isNull(paymentMethod)
+                || (paymentMethod != PaymentMethod.COD
+                && paymentMethod != PaymentMethod.PAYOS)) {
+            throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
+        }
+
+        FoodOrderRequest foodRequest = request.foodRequest();
+
+        if (Objects.isNull(foodRequest)
+                || !StringUtils.hasText(foodRequest.productId())
                 || Objects.isNull(foodRequest.quantity())
                 || foodRequest.quantity() <= 0
-                || foodRequest.quantity() > 100) {
+                || foodRequest.quantity() > 100
+                || !StringUtils.hasText(foodRequest.size())) {
             throw new AppException(ErrorCode.INVALID_REQUEST);
         }
 
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userId = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
 
-        var product = productClient.getProduct(foodRequest.productId());
+        var productResponse = productClient.getProduct(foodRequest.productId());
 
-        if (Objects.isNull(product)|| Objects.isNull(product.getResults())) {
+        if (Objects.isNull(productResponse)
+                || Objects.isNull(productResponse.getResults())) {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        var food = product.getResults();
+        var food = productResponse.getResults();
 
-        if (food.size() == null
-                || foodRequest.size() == null
-                || !food.size().equals(foodRequest.size())) {
+        if (Objects.isNull(food.size())
+                || Objects.isNull(food.price())
+                || food.size().isEmpty()
+                || food.size().size() != food.price().size()) {
             throw new AppException(ErrorCode.INVALID_SIZE);
         }
 
-        BigDecimal unitPrice = (BigDecimal) food.price();
+        String selectedSize = foodRequest.size().trim();
+        int sizeIndex = food.size().indexOf(selectedSize);
 
-        if (unitPrice == null || unitPrice.signum() <= 0) {
+        if (sizeIndex < 0) {
+            throw new AppException(ErrorCode.INVALID_SIZE);
+        }
+
+        BigDecimal unitPrice = food.price().get(sizeIndex);
+
+        if (Objects.isNull(unitPrice) || unitPrice.signum() <= 0) {
             throw new AppException(ErrorCode.INVALID_PRODUCT_PRICE);
         }
 
@@ -180,34 +200,38 @@ public class OrderService {
                         ? request.note().trim()
                         : null)
                 .status(OrderStatus.PENDING)
-                .paymentMethod(request.paymentMethod())
+                .paymentMethod(paymentMethod)
                 .paymentStatus(PaymentStatus.UNPAID)
                 .totalAmount(totalAmount)
                 .build();
 
-        order.getItems().add(
-                OrderItem.builder()
-                        .order(order)
-                        .productId(food.id())
-                        .productName(food.name())
-                        .size(foodRequest.size())
-                        .unitPrice(unitPrice)
-                        .quantity(foodRequest.quantity())
-                        .image(food.image())
-                        .build()
-        );
+        OrderItem orderItem = OrderItem.builder()
+                .order(order)
+                .productId(food.id())
+                .productName(food.name())
+                .image(food.image())
+                .size(selectedSize)
+                .unitPrice(unitPrice)
+                .quantity(foodRequest.quantity())
+                .build();
 
-        Order saved = orderRepository.save(order);
+        order.getItems().add(orderItem);
+
+        Order savedOrder = orderRepository.save(order);
 
         PaymentResponse payment = null;
 
-        if (request.paymentMethod().equals(PaymentMethod.PAYOS)) {
-            payment = createPayOSPayment(saved);
+        if (paymentMethod == PaymentMethod.PAYOS) {
+            payment = createPayOSPayment(savedOrder);
         }
 
-        eventPublisher.publishEvent(new OrderCreatedEvent(saved.getId(), saved.getOrderCode()));
+        notifyQuietly(savedOrder);
 
-        return toResponse(saved, payment);
+        eventPublisher.publishEvent(
+                new OrderCreatedEvent(savedOrder.getId(), savedOrder.getOrderCode())
+        );
+
+        return toResponse(savedOrder, payment);
     }
 
     private PaymentResponse createPayOSPayment(Order order) {

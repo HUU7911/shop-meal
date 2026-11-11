@@ -3,6 +3,7 @@ package com.meal.order.controller;
 import com.meal.order.dto.ApiResponse;
 import com.meal.order.dto.PageResponse;
 import com.meal.order.dto.client.FoodOrderRequest;
+import com.meal.order.dto.request.BuyNowRequest;
 import com.meal.order.dto.request.CreateOrderRequest;
 import com.meal.order.dto.response.OrderResponse;
 import com.meal.order.service.OrderService;
@@ -28,12 +29,9 @@ public class OrderController {
     }
 
     @PostMapping("/buyNow/create")
-    ApiResponse<OrderResponse> buyNow(
-            @RequestBody CreateOrderRequest request,
-            @RequestBody FoodOrderRequest foodOrderRequest
-    ) {
+    ApiResponse<OrderResponse> buyNow(@RequestBody @Valid BuyNowRequest request) {
         return ApiResponse.<OrderResponse>builder()
-                .results(orderService.buyNow(request, foodOrderRequest))
+                .results(orderService.buyNow(request))
                 .build();
     }
 

@@ -61,10 +61,10 @@ type FieldErrors = Partial<Record<FieldKey, string>>;
 
 /** Khối nhóm các trường liên quan, có tiêu đề rõ ràng. */
 function Section({
-                     title,
-                     description,
-                     children,
-                 }: {
+    title,
+    description,
+    children,
+}: {
     title: string;
     description?: string;
     children: ReactNode;
@@ -226,6 +226,7 @@ export default function CheckoutPage() {
         setBusy(true);
         setError('');
 
+
         try {
             const orderInfo = {
                 receiverName: form.receiverName.trim(),
@@ -237,8 +238,8 @@ export default function CheckoutPage() {
 
             const order = validBuyNow
                 ? await orderApi.buyNow({
-                    order: orderInfo,
-                    food: {
+                    ...orderInfo,
+                    foodRequest: {
                         productId: product.id,
                         size: option.size,
                         quantity,
@@ -246,12 +247,10 @@ export default function CheckoutPage() {
                 })
                 : await orderApi.create(orderInfo);
 
-            // Chỉ xóa giỏ hàng khi đặt hàng từ giỏ hàng
             if (!isBuyNow) {
                 await clearAfterOrder();
             }
 
-            // Thanh toán PayOS
             if (method === 'PAYOS' && order.checkoutUrl) {
                 window.location.href = order.checkoutUrl;
                 return;
@@ -264,6 +263,7 @@ export default function CheckoutPage() {
         } finally {
             setBusy(false);
         }
+
     };
 
     // Không có sản phẩm hợp lệ khi chọn mua ngay

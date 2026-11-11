@@ -25,7 +25,7 @@ public class FileController {
     @PostMapping("/upload")
     ApiResponse<FileResponse> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
         return ApiResponse.<FileResponse>builder()
-                .results(fileService.save(file))
+                .results(fileService.uploadFile(file))
                 .build();
     }
 
@@ -36,13 +36,5 @@ public class FileController {
         return ResponseEntity.<Resource>ok()
                 .header(HttpHeaders.CONTENT_TYPE, fileData.contentType())
                 .body(fileData.resource());
-    }
-
-    @DeleteMapping("/delete/{fileName}")
-    ApiResponse<Void> deleteFile(@PathVariable("fileName") String fileName) {
-        fileService.deleteFile(fileName);
-        return ApiResponse.<Void>builder()
-                .message("file has been deleted")
-                .build();
     }
 }

@@ -20,14 +20,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FileService {
-
     FileRepository fileRepository;
     FileMgmtRepository fileMgmtRepository;
     FileMgmtMapper fileMgmtMapper;
 
-    public FileResponse save (MultipartFile file) throws IOException {
+    public FileResponse uploadFile(MultipartFile file) throws IOException {
+        // Store file
         var fileInfo = fileRepository.store(file);
 
+        // Create file management info
         var fileMgmt = fileMgmtMapper.toFileMgmt(fileInfo);
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         fileMgmt.setOwnerId(userId);
@@ -42,22 +43,10 @@ public class FileService {
 
     public FileData download(String fileName) throws IOException {
         var fileMgmt = fileMgmtRepository.findById(fileName).orElseThrow(
-                () -> new AppException(ErrorCode.UNAUTHORIZED)
-        );
+                () -> new AppException(ErrorCode.FILE_NOT_FOUND));
 
         var resource = fileRepository.read(fileMgmt);
 
         return new FileData(fileMgmt.getContentType(), resource);
-    }
-
-    public void deleteFile(String fileName){
-        var fileMgmt = fileMgmtRepository.findById(fileName).orElseThrow(
-                () -> new AppException(ErrorCode.UNAUTHORIZED));
-
-        try {
-            fileRepository.delete(fileMgmt);
-        }catch (IOException e) {
-            throw new AppException(ErrorCode.FILE_NOT_DELETED);
-        }
     }
 }
