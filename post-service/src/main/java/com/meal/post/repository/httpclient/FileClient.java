@@ -5,6 +5,8 @@ import com.meal.post.dto.response.FileResponse;
 import com.meal.post.configuration.AuthenticationRequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,4 +20,7 @@ import java.io.IOException;
 public interface FileClient {
     @PostMapping(value = "/file/media/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ApiResponse<FileResponse> uploadMedia(@RequestPart("file") MultipartFile file) throws IOException;
+
+    @DeleteMapping("/file/media/delete/{fileName}")
+    ApiResponse<Void> deleteFile(@PathVariable("fileName") String fileName);
 }

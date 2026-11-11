@@ -23,7 +23,6 @@ eureka:
       defaultZone: ${EUREKA}
 
 app:
-  localDir: "./upload"
   download: "http://localhost:8888/api/v1/file/media/download/"
 
 minio:
@@ -31,4 +30,4 @@ minio:
     endpoint: ${ENDPOINT}
     accessKey: ${ACCESS_KEY}
     secretKey: ${SECRET_KEY}
-    bucket: shop-meal-images
+    bucket: ${BUCKET}

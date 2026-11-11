@@ -56,5 +56,6 @@ public class BannerService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteBanner(String id) {
         bannerRepository.deleteById(id);
+        fileClient.deleteFile(id);
     }
 }

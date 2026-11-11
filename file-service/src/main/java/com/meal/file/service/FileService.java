@@ -49,4 +49,15 @@ public class FileService {
 
         return new FileData(fileMgmt.getContentType(), resource);
     }
+
+    public void deleteFile(String fileName){
+        var fileMgmt = fileMgmtRepository.findById(fileName).orElseThrow(
+                () -> new AppException(ErrorCode.UNAUTHORIZED));
+
+        try {
+            fileRepository.delete(fileMgmt);
+        }catch (IOException e) {
+            throw new AppException(ErrorCode.FILE_NOT_DELETED);
+        }
+    }
 }

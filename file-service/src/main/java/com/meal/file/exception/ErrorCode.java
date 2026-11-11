@@ -22,6 +22,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     ACCESS_DENIED(1007, "Access denied", HttpStatus.FORBIDDEN),
     INVALID_KEY(1008, "Invalid key", HttpStatus.BAD_REQUEST),
+    FILE_NOT_DELETED(1009, "file not deleted", HttpStatus.BAD_REQUEST)
     ;
 
     int code;
