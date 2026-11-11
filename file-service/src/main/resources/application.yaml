@@ -2,7 +2,7 @@ spring:
   application:
     name: file-service
   mongodb:
-    uri: mongodb://root:huumod7911@localhost:27017/file_db?authSource=admin
+    uri: ${FILE_URL}
   servlet:
     multipart:
       max-file-size: 10MB
@@ -25,3 +25,10 @@ eureka:
 app:
   localDir: "./upload"
   download: "http://localhost:8888/api/v1/file/media/download/"
+
+minio:
+  config:
+    endpoint: ${ENDPOINT}
+    accessKey: ${ACCESS_KEY}
+    secretKey: ${SECRET_KEY}
+    bucket: shop-meal-images
