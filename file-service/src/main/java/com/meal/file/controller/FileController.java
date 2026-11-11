@@ -6,35 +6,36 @@ import com.meal.file.service.FileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
 @RequestMapping("/media")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FileController {
-
     FileService fileService;
 
     @PostMapping("/upload")
-    ApiResponse<FileResponse> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
+    ApiResponse<FileResponse> uploadMedia(@RequestParam("file") MultipartFile file) throws Exception {
         return ApiResponse.<FileResponse>builder()
                 .results(fileService.uploadFile(file))
                 .build();
     }
 
-    @GetMapping("/download/{fileName}")
-    ResponseEntity<Resource> download(@PathVariable("fileName") String fileName) throws IOException {
-        var fileData = fileService.download(fileName);
-
-        return ResponseEntity.<Resource>ok()
-                .header(HttpHeaders.CONTENT_TYPE, fileData.contentType())
-                .body(fileData.resource());
+    @GetMapping("/download/{fileId}")
+    ResponseEntity<StreamingResponseBody> downloadMedia(@PathVariable String fileId) throws Exception {
+        var fileData = fileService.download(fileId);
+        StreamingResponseBody body = outputStream -> {
+            try (var inputStream = fileData.resource()) {
+                inputStream.transferTo(outputStream);
+            }
+        };
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(fileData.contentType()))
+                .body(body);
     }
 }

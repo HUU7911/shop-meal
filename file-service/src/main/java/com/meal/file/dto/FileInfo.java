@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FileInfor {
+public class FileInfo {
 
     String name;
     String ownerId;

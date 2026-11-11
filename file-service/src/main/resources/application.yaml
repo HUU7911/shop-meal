@@ -24,7 +24,6 @@ eureka:
 
 app:
   file:
-    storage-dir: ./upload
     download-prefix: "http://localhost:8888/api/v1/file/media/download/"
 
 minio:

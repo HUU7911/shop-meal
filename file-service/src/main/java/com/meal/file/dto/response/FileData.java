@@ -1,6 +1,6 @@
 package com.meal.file.dto.response;
 
-import org.springframework.core.io.Resource;
+import java.io.InputStream;
 
-public record FileData(String contentType, Resource resource) {
+public record FileData(String contentType, InputStream resource) {
 }

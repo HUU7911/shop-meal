@@ -1,6 +1,6 @@
 package com.meal.file.mapper;
 
-import com.meal.file.dto.FileInfor;
+import com.meal.file.dto.FileInfo;
 import com.meal.file.entity.FileMgmt;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,5 +9,5 @@ import org.mapstruct.Mapping;
 public interface FileMgmtMapper {
 
     @Mapping(target = "id", source = "name")
-    FileMgmt toFileMgmt(FileInfor fileInfor);
+    FileMgmt toFileMgmt(FileInfo fileInfor);
 }
