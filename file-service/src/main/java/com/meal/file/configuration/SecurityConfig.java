@@ -29,9 +29,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                        .requestMatchers(HttpMethod.GET, PUBLIC_MATCHERS).permitAll()
-                        .anyRequest().authenticated())
+                        authorizeRequests.requestMatchers(HttpMethod.GET, PUBLIC_MATCHERS).permitAll()
+                                .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecode)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))

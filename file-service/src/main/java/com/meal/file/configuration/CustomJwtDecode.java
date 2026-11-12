@@ -1,6 +1,7 @@
 package com.meal.file.configuration;
 
 import com.nimbusds.jwt.SignedJWT;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -10,6 +11,7 @@ import java.text.ParseException;
 
 @Configuration
 public class CustomJwtDecode implements JwtDecoder {
+    @NullMarked
     @Override
     public Jwt decode(String token) throws JwtException {
         try {
