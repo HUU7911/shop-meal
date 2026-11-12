@@ -26,6 +26,7 @@ public class FileRepository {
     private String urlPrefix;
 
     public FileInfo store(MultipartFile file) throws Exception {
+
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID() + (extension == null ? "" : "." + extension);
         String objectKey = "products/" + fileName;
