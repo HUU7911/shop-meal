@@ -193,7 +193,15 @@ const slideHeight = { xs: 170, sm: 240, md: 320 };
 
 function PromoSlider() {
 	const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
-	const [banners, setBanners] = useState<Banner[]>([]);
+	const [banners, setBanners] = useState<Banner[]>(() => {
+		try {
+			return JSON.parse(
+				localStorage.getItem('shop-meal-banners') || '[]'
+			);
+		} catch {
+			return [];
+		}
+	});
 	const [index, setIndex] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const total = banners.length;
@@ -207,6 +215,12 @@ function PromoSlider() {
 				if (!live) return;
 				setBanners(list);
 				setIndex(0);
+
+				try {
+					localStorage.setItem('shop-meal-banners', JSON.stringify(list));
+				} catch {
+					// ignore
+				}
 			})
 			.catch((error) => {
 				console.error('Không thể tải banner:', error);

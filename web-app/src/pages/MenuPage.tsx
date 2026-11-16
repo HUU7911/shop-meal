@@ -24,9 +24,8 @@ import { categoryLabel } from '../utils/format';
 
 // Chế độ tìm kiếm (?q=): danh sách phẳng, có phân trang
 const PAGE_SIZE = 12;
-// Chế độ danh mục: tải toàn bộ thực đơn từ product-service rồi nhóm theo danh mục (mỗi danh mục một slide)
-const CATALOG_PAGE_SIZE = 100;
-const CATALOG_MAX_PAGES = 10;
+const CATALOG_PAGE_SIZE = 12;
+const CATALOG_MAX_PAGES = 1;
 const UNCATEGORIZED = '__OTHER__';
 // Thứ tự hiển thị mặc định khi chưa đăng nhập (GET /product/category yêu cầu đăng nhập)
 const DEFAULT_CATEGORIES = ['CAFE', 'NOODLE', 'RICE', 'MILK_TEA'];
@@ -110,14 +109,6 @@ export default function MenuPage() {
 				setCategoryOrder(names);
 				setCatalogLoading(false);
 
-				const lastPage = Math.min(first.totalPage, CATALOG_MAX_PAGES);
-				if (lastPage > 1) {
-					const rest = await Promise.all(
-						Array.from({ length: lastPage - 1 }, (_, i) => productApi.list(i + 2, CATALOG_PAGE_SIZE)),
-					);
-					if (!active) return;
-					setCatalog([...first.data, ...rest.flatMap((r) => r.data)]);
-				}
 			} catch (e) {
 				if (!active) return;
 				setCatalogError(getErrorMessage(e));
