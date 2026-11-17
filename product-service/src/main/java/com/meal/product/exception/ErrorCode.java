@@ -23,7 +23,8 @@ public enum ErrorCode {
     ACCESS_DENIED(1007, "Access denied", HttpStatus.FORBIDDEN),
     INVALID_KEY(1008, "Invalid key", HttpStatus.BAD_REQUEST),
     KAFKA_NO_AVAILABLE(1009, "kafka no available", HttpStatus.BAD_REQUEST),
-    INVALID_REQUEST(1100, "invalid request", HttpStatus.BAD_REQUEST)
+    INVALID_REQUEST(1100, "invalid request", HttpStatus.BAD_REQUEST),
+    CATEGORY_NOT_FOUND(1101, "category not found", HttpStatus.NOT_FOUND)
     ;
 
     int code;

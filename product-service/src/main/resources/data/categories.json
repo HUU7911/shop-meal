@@ -1,0 +1,34 @@
+[
+  {
+	"name": "Cơm",
+	"description": "Các món ăn từ cơm như cơm tấm, cơm gà, cơm rang, cơm sườn và các món cơm văn phòng."
+  },
+  {
+	"name": "Mì và bún",
+	"description": "Các món ăn từ mì, bún, miến với nhiều cách chế biến như mì xào, bún trộn và bún thịt nướng."
+  },
+  {
+	"name": "Món nước",
+	"description": "Các món ăn có nước dùng như phở bò, bún bò Huế, hủ tiếu, mì hoành thánh và bánh canh."
+  },
+  {
+	"name": "Đồ ăn nhanh",
+	"description": "Các món ăn nhanh tiện lợi như hamburger, pizza, gà rán, khoai tây chiên và sandwich."
+  },
+  {
+	"name": "Hải sản",
+	"description": "Các món ăn được chế biến từ hải sản như tôm, cua, ghẹ, mực, cá và các loại ốc."
+  },
+  {
+	"name": "Món chay",
+	"description": "Các món ăn chay được chế biến từ rau củ, nấm, đậu phụ và các nguyên liệu có nguồn gốc thực vật."
+  },
+  {
+	"name": "Đồ uống",
+	"description": "Các loại đồ uống như trà sữa, cà phê, trà trái cây, nước ép, sinh tố và nước giải khát."
+  },
+  {
+	"name": "Tráng miệng",
+	"description": "Các món tráng miệng và đồ ngọt như bánh ngọt, chè, kem, pudding và trái cây."
+  }
+]

@@ -1,0 +1,1033 @@
+[
+  {
+	"id": "5c748d0e-4fff-4d16-980f-3d0aaed366c6",
+	"name": "Cơm tấm sườn nướng",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cơm tấm ăn kèm sườn heo nướng, đồ chua và nước mắm.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Cơm"
+	]
+  },
+  {
+	"id": "758ba9de-af9a-44d2-b0a9-b2cf16fba438",
+	"name": "Cơm gà xối mỡ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cơm nóng ăn cùng đùi gà chiên giòn, dưa leo và nước sốt.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  50000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Cơm"
+	]
+  },
+  {
+	"id": "6cdd177c-8e90-49d8-8b9d-323aa2a96ab8",
+	"name": "Cơm chiên hải sản",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cơm rang cùng tôm, mực, trứng và rau củ.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  55000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Cơm",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "b19d2372-c10f-4e38-941a-09feb4a0501b",
+	"name": "Cơm bò lúc lắc",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Thịt bò áp chảo mềm thơm dùng kèm cơm và rau củ.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  65000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Cơm"
+	]
+  },
+  {
+	"id": "373391b7-7218-413e-9200-80e5f5f27a31",
+	"name": "Cơm sườn bì chả",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cơm tấm với sườn nướng, bì heo và chả trứng.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  50000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Cơm"
+	]
+  },
+  {
+	"id": "2a030b35-8f65-4197-a98d-0e0c5b22dd67",
+	"name": "Cơm cá kho tộ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cá kho đậm đà ăn cùng cơm trắng và rau luộc.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  48000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1515003197210-e0cd7184f8b5?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Cơm",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "0c229d9c-15b7-4e7b-9f66-f30041d98754",
+	"name": "Bún thịt nướng",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bún tươi ăn cùng thịt heo nướng, rau sống, đậu phộng và nước mắm.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  40000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Mì và bún"
+	]
+  },
+  {
+	"id": "0faa66b7-68cc-456a-ae76-16d70d5cf41e",
+	"name": "Mì xào bò",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Mì xào nóng với thịt bò, cải thìa và cà rốt.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Mì và bún"
+	]
+  },
+  {
+	"id": "f56dddb6-8c6c-409e-a6df-83af3eb87b81",
+	"name": "Bún chả Hà Nội",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bún ăn cùng chả viên, thịt nướng và nước mắm chua ngọt.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  50000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Mì và bún"
+	]
+  },
+  {
+	"id": "80492c77-0991-48b0-972a-7ff24f147f69",
+	"name": "Miến xào cua",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Miến dai xào cùng thịt cua, trứng và rau củ.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  60000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Mì và bún",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "b8f74f84-95cc-487c-b390-649defcc9c3e",
+	"name": "Bún nem nướng",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bún tươi ăn kèm nem nướng, rau sống và nước chấm.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  42000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Mì và bún"
+	]
+  },
+  {
+	"id": "03686a75-9b6d-4760-8d94-6a8b69ee3fb5",
+	"name": "Mì trộn tóp mỡ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Mì trộn sốt đậm vị cùng tóp mỡ giòn và hành phi.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  35000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Mì và bún"
+	]
+  },
+  {
+	"id": "d4ead10a-0174-412c-a812-977cf6961421",
+	"name": "Phở bò tái",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Phở với nước dùng bò thơm, thịt bò tái và hành lá.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  55000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món nước"
+	]
+  },
+  {
+	"id": "70ad4ee6-94d1-4534-91a4-5d61a128b9bf",
+	"name": "Bún bò Huế",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bún bò với nước dùng sả ớt, thịt bò và chả Huế.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  55000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món nước"
+	]
+  },
+  {
+	"id": "4d4d5aa6-d0a3-46c5-8455-731bbc5116f7",
+	"name": "Hủ tiếu Nam Vang",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Hủ tiếu nước với tôm, thịt, trứng cút và rau thơm.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  50000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món nước",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "b2c77b10-ddab-4aed-8d5a-0958def2337d",
+	"name": "Bánh canh cua",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bánh canh sợi dai trong nước dùng cua sánh, ăn kèm chả cua.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  60000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món nước",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "f3f64f44-8ffa-472b-9350-efb99bc9d0cf",
+	"name": "Mì hoành thánh",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Mì trứng dùng cùng hoành thánh nhân thịt và nước dùng thanh.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  50000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món nước"
+	]
+  },
+  {
+	"id": "9ebe8d48-7235-4538-a92a-88ae15a3adc9",
+	"name": "Bún riêu cua",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bún nước dùng cà chua, riêu cua, đậu phụ và rau sống.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món nước",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "080b7288-0287-4dbe-99a8-fdb9f0b8be28",
+	"name": "Hamburger bò phô mai",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bánh mì kẹp bò áp chảo, phô mai, rau xà lách và sốt.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  55000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ ăn nhanh"
+	]
+  },
+  {
+	"id": "d9b43bd9-820e-450d-93da-e02a43fd2704",
+	"name": "Pizza hải sản",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Pizza phủ tôm, mực, phô mai và sốt cà chua.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  99000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ ăn nhanh",
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "7218705e-ac11-43a3-8159-fc2e0a7689f7",
+	"name": "Gà rán giòn",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Miếng gà tẩm bột chiên giòn, dùng kèm tương ớt.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ ăn nhanh"
+	]
+  },
+  {
+	"id": "f8014752-3b7e-411f-b975-25b811971e50",
+	"name": "Khoai tây chiên",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Khoai tây cắt que chiên vàng, rắc muối nhẹ.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  30000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ ăn nhanh"
+	]
+  },
+  {
+	"id": "8a63c440-1360-4e7e-ba77-20ecdc6d6986",
+	"name": "Sandwich gà",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bánh mì sandwich kẹp gà, rau xanh và sốt mayonnaise.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  40000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ ăn nhanh"
+	]
+  },
+  {
+	"id": "2561f917-debc-4e23-89ac-b829dc7f76b1",
+	"name": "Hot dog xúc xích",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bánh mì dài kẹp xúc xích, tương cà và mù tạt.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  35000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1612392062798-2dba7f2f4b3a?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ ăn nhanh"
+	]
+  },
+  {
+	"id": "78e6601a-dfa8-4410-9b2e-4f6dd6d65d2a",
+	"name": "Tôm sú hấp sả",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Tôm sú hấp cùng sả, giữ vị ngọt tự nhiên.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  120000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "04906440-5a2d-4359-8506-b9e3de93e9c9",
+	"name": "Mực xào sa tế",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Mực tươi xào sa tế cùng hành tây và rau củ.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  95000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- seafood?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "ee43d639-1cb8-4f77-bc13-e8a42fef4446",
+	"name": "Ghẹ hấp",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Ghẹ hấp chín, dùng kèm muối tiêu chanh.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  160000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- crab?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "f835ea86-efca-48b1-aa77-7ff4c54b5578",
+	"name": "Cá basa kho tiêu",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cá basa kho với nước mắm, tiêu và hành.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  65000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- fish?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "0e76c6b0-e024-4831-b9a4-05a9f8a4c872",
+	"name": "Ốc len xào dừa",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Ốc len xào nước cốt dừa béo thơm.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  75000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- shellfish?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "07534699-1c87-4f93-988d-a56573cee587",
+	"name": "Chả giò tôm cua",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Chả giò nhân tôm cua và rau củ, chiên vàng.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  60000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- springroll?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Hải sản"
+	]
+  },
+  {
+	"id": "180a8333-faa0-417a-b971-90503c403c39",
+	"name": "Đậu hũ sốt cà chua",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Đậu hũ mềm nấu cùng sốt cà chua và hành lá.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  35000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- tofu?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món chay"
+	]
+  },
+  {
+	"id": "bb6bcdff-7312-478d-b134-ed0096b0d4ab",
+	"name": "Cơm chiên rau củ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cơm rang với cà rốt, đậu Hà Lan, bắp và nấm.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  40000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- rice?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món chay",
+	  "Cơm"
+	]
+  },
+  {
+	"id": "5c80e389-3621-4838-bf53-81751995aad3",
+	"name": "Bún chay",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bún ăn cùng đậu hũ, nấm và rau củ.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  40000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- noodles?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món chay",
+	  "Mì và bún"
+	]
+  },
+  {
+	"id": "dc2f5cba-74da-4480-ae77-3f8922c4798f",
+	"name": "Nấm kho tiêu",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Nấm kho đậm vị với tiêu và nước tương.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- mushrooms?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món chay"
+	]
+  },
+  {
+	"id": "76704532-9a1d-45b0-bc2c-3f799afe04bf",
+	"name": "Gỏi cuốn chay",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bánh tráng cuốn rau sống, bún, đậu hũ và chấm tương.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  35000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- rolls?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món chay"
+	]
+  },
+  {
+	"id": "f54b8e1f-f08c-4bb1-8a62-6e0c347badc8",
+	"name": "Canh rau củ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Canh thanh nhẹ nấu từ các loại rau củ theo mùa.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  30000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- soup?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Món chay"
+	]
+  },
+  {
+	"id": "8a105be3-79a6-49e2-9ec0-2605405b5c86",
+	"name": "Trà sữa truyền thống",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Trà sữa thơm béo, có thể dùng kèm trân châu.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  35000,
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "DRINK",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ uống"
+	]
+  },
+  {
+	"id": "0b4ae3cf-2277-44b0-88ef-e6fe2bac70ff",
+	"name": "Cà phê sữa đá",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Cà phê pha phin kết hợp sữa đặc và đá.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  30000,
+	  35000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "DRINK",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ uống"
+	]
+  },
+  {
+	"id": "ba7c29a2-b9dc-4f53-8915-570711f5eb62",
+	"name": "Trà đào cam sả",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Trà trái cây với đào, cam và hương sả.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  40000,
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "DRINK",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ uống"
+	]
+  },
+  {
+	"id": "2786ad89-8c22-442d-85b1-43770e20d32b",
+	"name": "Nước ép cam",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Nước cam ép tươi, dùng lạnh.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  35000,
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- juice?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "DRINK",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ uống"
+	]
+  },
+  {
+	"id": "0027e95f-8369-44b7-8be6-c4cfff6ac1b1",
+	"name": "Sinh tố bơ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bơ xay cùng sữa tạo thức uống sánh mịn.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  40000,
+	  50000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- avocado?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "DRINK",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ uống"
+	]
+  },
+  {
+	"id": "42a2845f-7fa2-4894-a82e-bb47c363311f",
+	"name": "Nước chanh",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Nước chanh pha tươi, vị chua ngọt dễ uống.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  25000,
+	  30000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- lemonade?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "DRINK",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Đồ uống"
+	]
+  },
+  {
+	"id": "52843c70-1f3c-4b8f-9d5a-bff94ecf1ccd",
+	"name": "Chè ba màu",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Chè gồm đậu, thạch và nước cốt dừa.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  30000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- dessert?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Tráng miệng"
+	]
+  },
+  {
+	"id": "7dac090b-d9f9-48c1-b2e2-4318490c24b5",
+	"name": "Chè đậu đỏ",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Chè đậu đỏ nấu mềm, dùng nóng hoặc lạnh.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  25000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- dessert?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Tráng miệng"
+	]
+  },
+  {
+	"id": "35729533-4292-4370-b7f7-ab24798799b0",
+	"name": "Kem vani",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Kem vị vani mát lạnh, béo thơm.",
+	"size": [
+	  "Nhỏ",
+	  "Lớn"
+	],
+	"price": [
+	  30000,
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- icecream?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Tráng miệng"
+	]
+  },
+  {
+	"id": "1205d01f-a586-4dd1-9aa0-e5a6e3aca665",
+	"name": "Pudding caramel",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Pudding trứng mềm mịn phủ lớp caramel.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  25000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- pudding?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Tráng miệng"
+	]
+  },
+  {
+	"id": "cd1f4d77-9cfb-465e-8da5-e0f00439c27e",
+	"name": "Bánh tiramisu",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Bánh tiramisu nhiều lớp với hương cà phê và kem.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  45000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- cake?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Tráng miệng"
+	]
+  },
+  {
+	"id": "03af8d51-5502-435f-ba77-7eb53d6aed27",
+	"name": "Trái cây theo mùa",
+	"position": "298 đường Cầu Diễn, Phường Tây Tựu, TP Hà Nội",
+	"timeWork": "8:00-20:00",
+	"description": "Đĩa trái cây tươi cắt miếng theo mùa.",
+	"size": [
+	  "Thường"
+	],
+	"price": [
+	  35000
+	],
+	"images": [
+	  "https://images.unsplash.com/photo- fruit?auto=format&fit=crop&w=900&q=80"
+	],
+	"type": "FOOD",
+	"createdDate": "2026-11-18T00:00:00Z",
+	"categories": [
+	  "Tráng miệng"
+	]
+  }
+]

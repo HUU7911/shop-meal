@@ -23,7 +23,7 @@ public class SecurityConfig {
 
     @NonFinal
     private String[] PUBLIC_MATCHERS = new String[]{
-            "/product",
+            "/product"
     };
 
     @Bean
@@ -31,6 +31,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
+//                        .requestMatchers(HttpMethod.DELETE, "/product/delete-all").permitAll()
                         .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
