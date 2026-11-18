@@ -1,0 +1,482 @@
+[
+  {
+	"id": "a1000000-0000-4000-8000-000000000001",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "5c748d0e-4fff-4d16-980f-3d0aaed366c6",
+	"productName": "Cơm tấm sườn nướng",
+	"postTitle": "Cơm tấm sườn nướng - Hương vị quen thuộc khó quên",
+	"postContent": "Cơm tấm sườn nướng là món ăn quen thuộc được nhiều người yêu thích. Miếng sườn được tẩm ướp đậm đà, nướng thơm lừng, ăn cùng cơm tấm dẻo thơm, đồ chua và nước mắm chua ngọt. Đây chắc chắn là lựa chọn tuyệt vời cho bữa trưa đầy năng lượng!",
+	"createdDate": "2026-11-01T08:00:00Z",
+	"modifiedDate": "2026-11-01T08:15:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000002",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "758ba9de-af9a-44d2-b0a9-b2cf16fba438",
+	"productName": "Cơm gà xối mỡ",
+	"postTitle": "Cơm gà xối mỡ giòn rụm hấp dẫn",
+	"postContent": "Bạn đang tìm kiếm một món ăn vừa ngon vừa no bụng? Cơm gà xối mỡ là gợi ý không thể bỏ qua. Đùi gà được chiên vàng giòn bên ngoài nhưng vẫn giữ được độ mềm ngọt bên trong. Kết hợp cùng cơm nóng, dưa leo và nước sốt tạo nên một món ăn vô cùng hấp dẫn.",
+	"createdDate": "2026-11-01T13:13:00Z",
+	"modifiedDate": "2026-11-01T13:38:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000003",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "6cdd177c-8e90-49d8-8b9d-323aa2a96ab8",
+	"productName": "Cơm chiên hải sản",
+	"postTitle": "Đổi vị với cơm chiên hải sản thơm ngon",
+	"postContent": "Cơm chiên hải sản mang đến sự kết hợp tuyệt vời giữa hạt cơm rang tơi, tôm tươi, mực, trứng và rau củ. Từng nguyên liệu hòa quyện tạo nên hương vị đậm đà, thơm ngon. Đây là món ăn thích hợp cho những ai yêu thích hải sản và muốn có một bữa ăn đầy đủ dinh dưỡng.",
+	"createdDate": "2026-11-01T18:26:00Z",
+	"modifiedDate": "2026-11-01T18:56:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000004",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "b19d2372-c10f-4e38-941a-09feb4a0501b",
+	"productName": "Cơm bò lúc lắc",
+	"postTitle": "Cơm bò lúc lắc dành cho tín đồ thịt bò",
+	"postContent": "Cơm bò lúc lắc là sự kết hợp giữa những miếng thịt bò mềm mọng được áp chảo thơm phức cùng rau củ tươi ngon. Thịt bò được chế biến vừa chín tới, giữ được vị ngọt tự nhiên. Ăn cùng cơm trắng nóng hổi tạo nên một bữa ăn hấp dẫn và giàu năng lượng.",
+	"createdDate": "2026-11-01T23:39:00Z",
+	"modifiedDate": "2026-11-02T00:19:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000005",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "373391b7-7218-413e-9200-80e5f5f27a31",
+	"productName": "Cơm sườn bì chả",
+	"postTitle": "Một phần cơm sườn bì chả đầy đủ hương vị",
+	"postContent": "Nếu yêu thích những món cơm truyền thống, bạn không nên bỏ qua cơm sườn bì chả. Một phần cơm gồm sườn nướng thơm, bì heo dai giòn và chả trứng béo ngậy. Kết hợp với nước mắm đậm đà tạo nên hương vị khó cưỡng cho mỗi bữa ăn.",
+	"createdDate": "2026-11-02T04:52:00Z",
+	"modifiedDate": "2026-11-02T05:42:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000006",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "2a030b35-8f65-4197-a98d-0e0c5b22dd67",
+	"productName": "Cơm cá kho tộ",
+	"postTitle": "Cơm cá kho tộ - Bữa cơm đậm chất gia đình",
+	"postContent": "Cơm cá kho tộ mang hương vị thân thuộc của những bữa cơm gia đình Việt. Cá được kho kỹ với nước mắm, tiêu và các loại gia vị, tạo nên phần thịt cá đậm đà và thấm vị. Ăn cùng cơm trắng và rau luộc sẽ khiến bữa ăn thêm trọn vẹn.",
+	"createdDate": "2026-11-02T09:05:00Z",
+	"modifiedDate": "2026-11-02T09:25:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000007",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "0c229d9c-15b7-4e7b-9f66-f30041d98754",
+	"productName": "Bún thịt nướng",
+	"postTitle": "Bún thịt nướng - Sự kết hợp hài hòa",
+	"postContent": "Bún thịt nướng là món ăn hấp dẫn với sự kết hợp giữa bún tươi, thịt heo nướng thơm lừng, rau sống và đậu phộng rang. Điểm nhấn của món ăn chính là nước mắm chua ngọt giúp cân bằng hương vị. Một lựa chọn tuyệt vời cho những ngày muốn đổi món.",
+	"createdDate": "2026-11-02T14:18:00Z",
+	"modifiedDate": "2026-11-02T14:48:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000008",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "0faa66b7-68cc-456a-ae76-16d70d5cf41e",
+	"productName": "Mì xào bò",
+	"postTitle": "Mì xào bò nóng hổi cho ngày bận rộn",
+	"postContent": "Mì xào bò là món ăn quen thuộc nhưng luôn có sức hấp dẫn riêng. Sợi mì được xào nóng cùng thịt bò mềm, cải thìa và cà rốt tươi ngon. Hương vị đậm đà cùng màu sắc bắt mắt khiến món ăn trở thành lựa chọn phù hợp cho cả bữa trưa và bữa tối.",
+	"createdDate": "2026-11-02T19:31:00Z",
+	"modifiedDate": "2026-11-02T20:11:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000009",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "f56dddb6-8c6c-409e-a6df-83af3eb87b81",
+	"productName": "Bún chả Hà Nội",
+	"postTitle": "Thưởng thức hương vị bún chả Hà Nội",
+	"postContent": "Bún chả Hà Nội là món ăn đặc trưng với chả viên và thịt nướng thơm phức. Bún tươi được ăn cùng nước mắm chua ngọt, thêm rau sống giúp món ăn trở nên hài hòa. Nếu bạn yêu thích ẩm thực miền Bắc, đây là món ăn rất đáng để thưởng thức.",
+	"createdDate": "2026-11-03T00:44:00Z",
+	"modifiedDate": "2026-11-03T01:34:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000010",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "80492c77-0991-48b0-972a-7ff24f147f69",
+	"productName": "Miến xào cua",
+	"postTitle": "Miến xào cua thơm ngon khó cưỡng",
+	"postContent": "Miến xào cua là món ăn hấp dẫn dành cho những ai yêu thích hải sản. Sợi miến dai mềm được xào cùng thịt cua, trứng và rau củ, tạo nên sự hòa quyện giữa nhiều nguyên liệu. Món ăn có hương vị thơm ngon và rất thích hợp để đổi vị.",
+	"createdDate": "2026-11-03T05:57:00Z",
+	"modifiedDate": "2026-11-03T06:17:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000011",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "b8f74f84-95cc-487c-b390-649defcc9c3e",
+	"productName": "Bún nem nướng",
+	"postTitle": "Bún nem nướng thơm lừng hấp dẫn",
+	"postContent": "Bún nem nướng là lựa chọn tuyệt vời cho những ai thích món ăn thanh nhẹ nhưng vẫn đầy đủ hương vị. Nem được nướng thơm, ăn cùng bún tươi, rau sống và nước chấm đặc trưng. Tất cả tạo nên một món ăn hài hòa và dễ thưởng thức.",
+	"createdDate": "2026-11-03T11:10:00Z",
+	"modifiedDate": "2026-11-03T11:40:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000012",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "03686a75-9b6d-4760-8d94-6a8b69ee3fb5",
+	"productName": "Mì trộn tóp mỡ",
+	"postTitle": "Mì trộn tóp mỡ - Món ngon dành cho tín đồ ăn vặt",
+	"postContent": "Mì trộn tóp mỡ gây ấn tượng bởi sợi mì dai kết hợp nước sốt đậm vị. Tóp mỡ giòn rụm và hành phi thơm tạo nên điểm nhấn đặc biệt cho món ăn. Đây là lựa chọn thú vị dành cho những ai muốn thưởng thức một món mì khác biệt.",
+	"createdDate": "2026-11-03T16:23:00Z",
+	"modifiedDate": "2026-11-03T17:03:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000013",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "d4ead10a-0174-412c-a812-977cf6961421",
+	"productName": "Phở bò tái",
+	"postTitle": "Phở bò tái nóng hổi cho buổi sáng",
+	"postContent": "Một bát phở bò tái nóng hổi luôn là lựa chọn tuyệt vời để bắt đầu ngày mới. Nước dùng bò thơm ngon kết hợp bánh phở mềm, thịt bò tái và hành lá tạo nên hương vị truyền thống khó quên. Hãy thưởng thức ngay khi còn nóng để cảm nhận trọn vẹn hương vị.",
+	"createdDate": "2026-11-03T21:36:00Z",
+	"modifiedDate": "2026-11-03T22:26:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000014",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "70ad4ee6-94d1-4534-91a4-5d61a128b9bf",
+	"productName": "Bún bò Huế",
+	"postTitle": "Bún bò Huế đậm đà hương vị miền Trung",
+	"postContent": "Bún bò Huế nổi bật với nước dùng thơm mùi sả, vị cay nhẹ của ớt cùng thịt bò và chả Huế. Sợi bún mềm kết hợp nước dùng đậm đà tạo nên món ăn hấp dẫn. Đây là lựa chọn dành cho những ai yêu thích hương vị đặc trưng của ẩm thực miền Trung.",
+	"createdDate": "2026-11-04T02:49:00Z",
+	"modifiedDate": "2026-11-04T03:09:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000015",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "4d4d5aa6-d0a3-46c5-8455-731bbc5116f7",
+	"productName": "Hủ tiếu Nam Vang",
+	"postTitle": "Hủ tiếu Nam Vang đầy đủ topping",
+	"postContent": "Hủ tiếu Nam Vang hấp dẫn với nước dùng thanh ngọt, sợi hủ tiếu mềm cùng tôm, thịt, trứng cút và rau thơm. Mỗi nguyên liệu đều góp phần tạo nên hương vị riêng biệt. Đây là món ăn thích hợp cho bữa sáng hoặc bữa trưa.",
+	"createdDate": "2026-11-04T08:02:00Z",
+	"modifiedDate": "2026-11-04T08:32:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000016",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "b2c77b10-ddab-4aed-8d5a-0958def2337d",
+	"productName": "Bánh canh cua",
+	"postTitle": "Bánh canh cua sánh thơm hấp dẫn",
+	"postContent": "Bánh canh cua là món ăn được nhiều người yêu thích nhờ nước dùng cua sánh thơm và sợi bánh canh dai mềm. Phần chả cua ăn kèm giúp tăng thêm hương vị cho món ăn. Một tô bánh canh nóng hổi sẽ là lựa chọn tuyệt vời trong những ngày se lạnh.",
+	"createdDate": "2026-11-04T13:15:00Z",
+	"modifiedDate": "2026-11-04T13:55:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000017",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "f3f64f44-8ffa-472b-9350-efb99bc9d0cf",
+	"productName": "Mì hoành thánh",
+	"postTitle": "Mì hoành thánh - Món ngon nhẹ nhàng",
+	"postContent": "Mì hoành thánh là món ăn kết hợp giữa sợi mì trứng dai ngon và hoành thánh nhân thịt mềm thơm. Nước dùng thanh nhẹ giúp món ăn trở nên dễ thưởng thức. Đây là lựa chọn phù hợp cho những ai muốn có một bữa ăn ngon miệng mà không quá ngấy.",
+	"createdDate": "2026-11-04T18:28:00Z",
+	"modifiedDate": "2026-11-04T18:48:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000018",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "9ebe8d48-7235-4538-a92a-88ae15a3adc9",
+	"productName": "Bún riêu cua",
+	"postTitle": "Bún riêu cua với hương vị chua dịu",
+	"postContent": "Bún riêu cua hấp dẫn bởi nước dùng cà chua có vị chua dịu, kết hợp riêu cua thơm ngon, đậu phụ và rau sống. Sự kết hợp giữa các nguyên liệu tạo nên một món ăn hài hòa và dễ ăn. Đừng bỏ lỡ món ngon truyền thống này nhé!",
+	"createdDate": "2026-11-04T23:41:00Z",
+	"modifiedDate": "2026-11-05T00:11:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000019",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "080b7288-0287-4dbe-99a8-fdb9f0b8be28",
+	"productName": "Hamburger bò phô mai",
+	"postTitle": "Hamburger bò phô mai dành cho tín đồ đồ ăn nhanh",
+	"postContent": "Hamburger bò phô mai là món ăn tiện lợi với bánh mì mềm, thịt bò áp chảo thơm ngon, phô mai béo ngậy và rau xà lách tươi. Tất cả được kết hợp cùng nước sốt đặc trưng tạo nên hương vị hấp dẫn. Rất phù hợp cho những ngày bận rộn.",
+	"createdDate": "2026-11-05T04:54:00Z",
+	"modifiedDate": "2026-11-05T05:34:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000020",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "d9b43bd9-820e-450d-93da-e02a43fd2704",
+	"productName": "Pizza hải sản",
+	"postTitle": "Pizza hải sản - Bữa tiệc hương vị biển",
+	"postContent": "Pizza hải sản là sự kết hợp tuyệt vời giữa đế bánh thơm mềm, tôm, mực tươi ngon, phô mai béo và sốt cà chua. Mỗi miếng bánh đều mang đến hương vị hấp dẫn. Đây là món ăn lý tưởng để thưởng thức cùng gia đình và bạn bè.",
+	"createdDate": "2026-11-05T10:07:00Z",
+	"modifiedDate": "2026-11-05T10:37:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000021",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "7218705e-ac11-43a3-8159-fc2e0a7689f7",
+	"productName": "Gà rán giòn",
+	"postTitle": "Gà rán giòn - Món ngon không thể bỏ qua",
+	"postContent": "Những miếng gà rán vàng ruộm với lớp vỏ giòn tan luôn có sức hấp dẫn đặc biệt. Phần thịt gà bên trong mềm ngọt, ăn kèm tương ớt tạo nên hương vị đậm đà. Đây là món ăn phù hợp cho những buổi tụ tập hoặc những lúc muốn ăn ngon.",
+	"createdDate": "2026-11-05T15:20:00Z",
+	"modifiedDate": "2026-11-05T16:00:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000022",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "f8014752-3b7e-411f-b975-25b811971e50",
+	"productName": "Khoai tây chiên",
+	"postTitle": "Khoai tây chiên giòn rụm cho mọi lứa tuổi",
+	"postContent": "Khoai tây chiên là món ăn vặt quen thuộc được nhiều người yêu thích. Những thanh khoai được chiên vàng đều, bên ngoài giòn nhẹ và bên trong mềm bùi. Chỉ cần thêm một chút muối là đã đủ tạo nên món ăn hấp dẫn để nhâm nhi bất cứ lúc nào.",
+	"createdDate": "2026-11-05T20:33:00Z",
+	"modifiedDate": "2026-11-05T20:53:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000023",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "8a63c440-1360-4e7e-ba77-20ecdc6d6986",
+	"productName": "Sandwich gà",
+	"postTitle": "Sandwich gà tiện lợi cho ngày năng động",
+	"postContent": "Sandwich gà là món ăn gọn nhẹ nhưng vẫn đầy đủ hương vị. Bánh mì mềm được kẹp cùng thịt gà, rau xanh và sốt mayonnaise béo thơm. Đây là lựa chọn lý tưởng cho bữa sáng hoặc những lúc cần một món ăn nhanh chóng.",
+	"createdDate": "2026-11-06T01:46:00Z",
+	"modifiedDate": "2026-11-06T02:16:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000024",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "2561f917-debc-4e23-89ac-b829dc7f76b1",
+	"productName": "Hot dog xúc xích",
+	"postTitle": "Hot dog xúc xích - Bữa ăn nhanh đầy hấp dẫn",
+	"postContent": "Hot dog xúc xích là món ăn nhanh tiện lợi với bánh mì dài mềm, xúc xích thơm ngon, tương cà và mù tạt. Sự kết hợp giữa vị béo, mặn và chua nhẹ tạo nên món ăn hấp dẫn. Rất thích hợp cho những bữa ăn nhẹ trong ngày.",
+	"createdDate": "2026-11-06T06:59:00Z",
+	"modifiedDate": "2026-11-06T07:39:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000025",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "78e6601a-dfa8-4410-9b2e-4f6dd6d65d2a",
+	"productName": "Tôm sú hấp sả",
+	"postTitle": "Tôm sú hấp sả giữ trọn vị ngọt tự nhiên",
+	"postContent": "Tôm sú hấp sả là món ăn dành cho những ai yêu thích hải sản tươi ngon. Tôm được hấp cùng sả để giữ được vị ngọt tự nhiên và hương thơm dịu nhẹ. Khi thưởng thức cùng muối tiêu chanh, món ăn càng trở nên hấp dẫn.",
+	"createdDate": "2026-11-06T12:12:00Z",
+	"modifiedDate": "2026-11-06T12:32:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000026",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "04906440-5a2d-4359-8506-b9e3de93e9c9",
+	"productName": "Mực xào sa tế",
+	"postTitle": "Mực xào sa tế cay thơm đậm vị",
+	"postContent": "Mực xào sa tế là món ăn hấp dẫn với những miếng mực tươi được xào cùng sa tế, hành tây và rau củ. Hương vị cay thơm hòa quyện cùng độ giòn ngọt của mực tạo nên trải nghiệm thú vị. Đây là lựa chọn dành cho những ai yêu thích món ăn đậm vị.",
+	"createdDate": "2026-11-06T17:25:00Z",
+	"modifiedDate": "2026-11-06T17:55:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000027",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "ee43d639-1cb8-4f77-bc13-e8a42fef4446",
+	"productName": "Ghẹ hấp",
+	"postTitle": "Ghẹ hấp tươi ngon dành cho tín đồ hải sản",
+	"postContent": "Ghẹ hấp là món ăn đơn giản nhưng giữ được hương vị ngọt tự nhiên của hải sản. Ghẹ được hấp chín vừa tới, phần thịt chắc và thơm. Khi chấm cùng muối tiêu chanh, vị ngọt của ghẹ càng trở nên nổi bật.",
+	"createdDate": "2026-11-06T22:38:00Z",
+	"modifiedDate": "2026-11-06T23:18:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000028",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "f835ea86-efca-48b1-aa77-7ff4c54b5578",
+	"productName": "Cá basa kho tiêu",
+	"postTitle": "Cá basa kho tiêu đậm đà đưa cơm",
+	"postContent": "Cá basa kho tiêu là món ăn mang hương vị truyền thống của bữa cơm Việt. Cá được kho cùng nước mắm, tiêu và hành cho đến khi thấm đều gia vị. Phần thịt cá mềm béo, nước kho đậm đà rất thích hợp để ăn cùng cơm trắng.",
+	"createdDate": "2026-11-07T03:51:00Z",
+	"modifiedDate": "2026-11-07T04:21:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000029",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "0e76c6b0-e024-4831-b9a4-05a9f8a4c872",
+	"productName": "Ốc len xào dừa",
+	"postTitle": "Ốc len xào dừa béo thơm lạ miệng",
+	"postContent": "Ốc len xào dừa là món ăn mang hương vị đặc trưng với phần nước cốt dừa béo ngậy hòa quyện cùng vị ngọt tự nhiên của ốc. Mùi thơm hấp dẫn khiến món ăn trở thành lựa chọn thú vị cho những buổi ăn nhẹ hoặc tụ tập cùng bạn bè.",
+	"createdDate": "2026-11-07T09:04:00Z",
+	"modifiedDate": "2026-11-07T09:54:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000030",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "07534699-1c87-4f93-988d-a56573cee587",
+	"productName": "Chả giò tôm cua",
+	"postTitle": "Chả giò tôm cua giòn rụm thơm ngon",
+	"postContent": "Chả giò tôm cua là món ăn hấp dẫn với lớp vỏ vàng giòn và phần nhân tôm cua kết hợp rau củ bên trong. Khi thưởng thức, bạn sẽ cảm nhận được vị thơm ngon của hải sản hòa quyện cùng độ giòn tan của lớp bánh bên ngoài.",
+	"createdDate": "2026-11-07T14:17:00Z",
+	"modifiedDate": "2026-11-07T14:37:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000031",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "180a8333-faa0-417a-b971-90503c403c39",
+	"productName": "Đậu hũ sốt cà chua",
+	"postTitle": "Đậu hũ sốt cà chua thanh đạm dễ ăn",
+	"postContent": "Đậu hũ sốt cà chua là món ăn đơn giản, phù hợp với những ai yêu thích hương vị nhẹ nhàng. Đậu hũ mềm được nấu cùng sốt cà chua chua ngọt và hành lá thơm. Món ăn này rất thích hợp khi dùng cùng cơm nóng.",
+	"createdDate": "2026-11-07T19:30:00Z",
+	"modifiedDate": "2026-11-07T20:00:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000032",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "bb6bcdff-7312-478d-b134-ed0096b0d4ab",
+	"productName": "Cơm chiên rau củ",
+	"postTitle": "Cơm chiên rau củ đầy màu sắc",
+	"postContent": "Cơm chiên rau củ là lựa chọn tuyệt vời cho những ai muốn thưởng thức món ăn thanh nhẹ. Cơm được rang cùng cà rốt, đậu Hà Lan, bắp và nấm, tạo nên màu sắc bắt mắt cùng hương vị tự nhiên. Một món ăn đơn giản nhưng không kém phần hấp dẫn.",
+	"createdDate": "2026-11-08T00:43:00Z",
+	"modifiedDate": "2026-11-08T01:23:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000033",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "5c80e389-3621-4838-bf53-81751995aad3",
+	"productName": "Bún chay",
+	"postTitle": "Bún chay thanh đạm cho ngày nhẹ nhàng",
+	"postContent": "Bún chay là món ăn phù hợp với những ai yêu thích thực phẩm có nguồn gốc từ rau củ. Bún tươi được kết hợp cùng đậu hũ, nấm và nhiều loại rau củ tạo nên hương vị thanh nhẹ. Đây là lựa chọn lý tưởng cho một bữa ăn đơn giản và dễ chịu.",
+	"createdDate": "2026-11-08T05:56:00Z",
+	"modifiedDate": "2026-11-08T06:16:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000034",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "dc2f5cba-74da-4480-ae77-3f8922c4798f",
+	"productName": "Nấm kho tiêu",
+	"postTitle": "Nấm kho tiêu đậm vị cho bữa cơm chay",
+	"postContent": "Nấm kho tiêu mang đến hương vị đậm đà nhờ sự kết hợp giữa nấm tươi, tiêu và nước tương. Nấm được kho thấm gia vị, giữ được độ mềm và hương thơm tự nhiên. Đây là món ăn rất hợp khi dùng cùng cơm nóng.",
+	"createdDate": "2026-11-08T11:09:00Z",
+	"modifiedDate": "2026-11-08T11:39:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000035",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "76704532-9a1d-45b0-bc2c-3f799afe04bf",
+	"productName": "Gỏi cuốn chay",
+	"postTitle": "Gỏi cuốn chay tươi mát và thanh nhẹ",
+	"postContent": "Gỏi cuốn chay là món ăn thanh mát với bánh tráng cuốn rau sống, bún tươi và đậu hũ. Khi chấm cùng nước tương hoặc tương đậu, món ăn trở nên thơm ngon và hấp dẫn hơn. Đây là lựa chọn phù hợp cho những ngày muốn ăn uống nhẹ nhàng.",
+	"createdDate": "2026-11-08T16:22:00Z",
+	"modifiedDate": "2026-11-08T17:02:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000036",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "f54b8e1f-f08c-4bb1-8a62-6e0c347badc8",
+	"productName": "Canh rau củ",
+	"postTitle": "Canh rau củ thanh mát cho bữa cơm",
+	"postContent": "Canh rau củ là món ăn đơn giản với các loại rau củ tươi theo mùa. Nước canh thanh nhẹ, dễ ăn và phù hợp để dùng trong bữa cơm gia đình. Nếu bạn đang tìm kiếm một món ăn nhẹ nhàng, đây là lựa chọn rất đáng thử.",
+	"createdDate": "2026-11-08T21:35:00Z",
+	"modifiedDate": "2026-11-08T21:55:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000037",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "8a105be3-79a6-49e2-9ec0-2605405b5c86",
+	"productName": "Trà sữa truyền thống",
+	"postTitle": "Trà sữa truyền thống - Thức uống được yêu thích",
+	"postContent": "Trà sữa truyền thống là thức uống quen thuộc với hương trà thơm kết hợp vị sữa béo nhẹ. Bạn có thể thưởng thức cùng trân châu dai dai để tăng thêm trải nghiệm. Đây là lựa chọn tuyệt vời cho những buổi gặp gỡ bạn bè hoặc khi muốn tự thưởng cho bản thân.",
+	"createdDate": "2026-11-09T02:48:00Z",
+	"modifiedDate": "2026-11-09T03:18:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000038",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "0b4ae3cf-2277-44b0-88ef-e6fe2bac70ff",
+	"productName": "Cà phê sữa đá",
+	"postTitle": "Cà phê sữa đá đậm đà tỉnh táo mỗi ngày",
+	"postContent": "Cà phê sữa đá là thức uống quen thuộc của người Việt. Cà phê pha phin mang vị đắng đặc trưng, hòa quyện cùng sữa đặc ngọt béo và đá lạnh tạo nên hương vị cân bằng. Một ly cà phê sữa đá sẽ giúp ngày mới thêm tỉnh táo và tràn đầy năng lượng.",
+	"createdDate": "2026-11-09T08:01:00Z",
+	"modifiedDate": "2026-11-09T08:41:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000039",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "ba7c29a2-b9dc-4f53-8915-570711f5eb62",
+	"productName": "Trà đào cam sả",
+	"postTitle": "Trà đào cam sả thơm mát giải nhiệt",
+	"postContent": "Trà đào cam sả là thức uống kết hợp giữa vị trà thanh nhẹ, đào ngọt dịu, cam tươi và hương sả thơm đặc trưng. Sự hòa quyện giữa các nguyên liệu mang đến cảm giác tươi mát, rất phù hợp để thưởng thức trong những ngày nóng.",
+	"createdDate": "2026-11-09T13:14:00Z",
+	"modifiedDate": "2026-11-09T13:34:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000040",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "2786ad89-8c22-442d-85b1-43770e20d32b",
+	"productName": "Nước ép cam",
+	"postTitle": "Nước ép cam tươi cho ngày năng động",
+	"postContent": "Nước ép cam là thức uống được yêu thích nhờ hương vị chua ngọt tự nhiên và cảm giác tươi mát. Cam được ép tươi để giữ hương vị đặc trưng, ngon hơn khi dùng lạnh. Đây là lựa chọn phù hợp để giải khát trong ngày.",
+	"createdDate": "2026-11-09T18:27:00Z",
+	"modifiedDate": "2026-11-09T18:57:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000041",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "0027e95f-8369-44b7-8be6-c4cfff6ac1b1",
+	"productName": "Sinh tố bơ",
+	"postTitle": "Sinh tố bơ béo mịn thơm ngon",
+	"postContent": "Sinh tố bơ là thức uống hấp dẫn với kết cấu sánh mịn và vị béo tự nhiên của bơ. Khi kết hợp cùng sữa, món uống trở nên thơm ngon và dễ thưởng thức hơn. Đây là lựa chọn tuyệt vời cho những ai yêu thích các loại sinh tố trái cây.",
+	"createdDate": "2026-11-09T23:40:00Z",
+	"modifiedDate": "2026-11-10T00:20:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000042",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "42a2845f-7fa2-4894-a82e-bb47c363311f",
+	"productName": "Nước chanh",
+	"postTitle": "Nước chanh chua ngọt giải khát tức thì",
+	"postContent": "Một ly nước chanh mát lạnh luôn là lựa chọn tuyệt vời trong những ngày nóng. Nước chanh được pha tươi với vị chua ngọt cân bằng, mang lại cảm giác sảng khoái. Đơn giản nhưng luôn hấp dẫn và phù hợp với nhiều người.",
+	"createdDate": "2026-11-10T04:53:00Z",
+	"modifiedDate": "2026-11-10T05:13:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000043",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "52843c70-1f3c-4b8f-9d5a-bff94ecf1ccd",
+	"productName": "Chè ba màu",
+	"postTitle": "Chè ba màu ngọt mát đầy hấp dẫn",
+	"postContent": "Chè ba màu là món tráng miệng quen thuộc với sự kết hợp của các loại đậu, thạch và nước cốt dừa. Nhiều tầng màu sắc bắt mắt cùng vị ngọt béo hài hòa tạo nên món chè hấp dẫn. Thưởng thức một ly chè mát lạnh sau bữa ăn sẽ thật tuyệt vời.",
+	"createdDate": "2026-11-10T10:06:00Z",
+	"modifiedDate": "2026-11-10T10:36:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000044",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "7dac090b-d9f9-48c1-b2e2-4318490c24b5",
+	"productName": "Chè đậu đỏ",
+	"postTitle": "Chè đậu đỏ ngọt dịu cho ngày thư giãn",
+	"postContent": "Chè đậu đỏ là món tráng miệng mang hương vị truyền thống. Những hạt đậu đỏ được nấu mềm, hòa quyện cùng vị ngọt dịu tạo nên món chè thơm ngon. Bạn có thể thưởng thức nóng hoặc lạnh tùy sở thích.",
+	"createdDate": "2026-11-10T15:19:00Z",
+	"modifiedDate": "2026-11-10T15:59:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000045",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "35729533-4292-4370-b7f7-ab24798799b0",
+	"productName": "Kem vani",
+	"postTitle": "Kem vani mát lạnh xua tan cái nóng",
+	"postContent": "Kem vani là món tráng miệng được yêu thích bởi hương thơm dịu nhẹ và vị béo ngọt đặc trưng. Từng muỗng kem mát lạnh mang đến cảm giác dễ chịu, đặc biệt trong những ngày thời tiết nóng bức. Đây là món ăn phù hợp với mọi lứa tuổi.",
+	"createdDate": "2026-11-10T20:32:00Z",
+	"modifiedDate": "2026-11-10T20:52:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000046",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "1205d01f-a586-4dd1-9aa0-e5a6e3aca665",
+	"productName": "Pudding caramel",
+	"postTitle": "Pudding caramel mềm mịn béo thơm",
+	"postContent": "Pudding caramel là món tráng miệng hấp dẫn với kết cấu mềm mịn của trứng sữa và lớp caramel ngọt thơm bên trên. Sự kết hợp giữa vị béo và chút đắng nhẹ của caramel tạo nên hương vị cân bằng. Một món ăn nhỏ nhưng đủ khiến bạn hài lòng.",
+	"createdDate": "2026-11-11T01:45:00Z",
+	"modifiedDate": "2026-11-11T02:15:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000047",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "cd1f4d77-9cfb-465e-8da5-e0f00439c27e",
+	"productName": "Bánh tiramisu",
+	"postTitle": "Bánh tiramisu thơm vị cà phê",
+	"postContent": "Bánh tiramisu là món tráng miệng nổi tiếng với nhiều lớp bánh mềm hòa quyện cùng kem béo mịn và hương cà phê đặc trưng. Mỗi miếng bánh mang đến sự kết hợp hài hòa giữa vị ngọt và chút đắng nhẹ. Đây là lựa chọn tuyệt vời cho những ai yêu thích bánh ngọt.",
+	"createdDate": "2026-11-11T06:58:00Z",
+	"modifiedDate": "2026-11-11T07:38:00Z"
+  },
+  {
+	"id": "a1000000-0000-4000-8000-000000000048",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"productId": "03af8d51-5502-435f-ba77-7eb53d6aed27",
+	"productName": "Trái cây theo mùa",
+	"postTitle": "Trái cây theo mùa tươi ngon mỗi ngày",
+	"postContent": "Trái cây theo mùa là lựa chọn tráng miệng tự nhiên và đầy màu sắc. Các loại trái cây tươi được cắt thành từng miếng vừa ăn, giữ được hương vị đặc trưng của từng loại. Một đĩa trái cây mát lạnh sẽ giúp bữa ăn thêm trọn vẹn và nhẹ nhàng.",
+	"createdDate": "2026-11-11T12:11:00Z",
+	"modifiedDate": "2026-11-11T12:31:00Z"
+  }
+]

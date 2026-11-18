@@ -1,0 +1,38 @@
+[
+  {
+	"id": "b2000000-0000-4000-8000-000000000001",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"postTitle": "Giới thiệu về hệ thống Shop Meal",
+	"postContent": "Shop Meal là hệ thống đặt đồ ăn trực tuyến được xây dựng nhằm mang đến trải nghiệm mua sắm tiện lợi, nhanh chóng và dễ dàng cho khách hàng. Với Shop Meal, người dùng có thể khám phá nhiều món ăn hấp dẫn thuộc các danh mục khác nhau, xem thông tin chi tiết sản phẩm, lựa chọn món ăn yêu thích và đặt hàng chỉ với vài thao tác đơn giản. Hệ thống cung cấp giao diện thân thiện, giúp khách hàng dễ dàng tìm kiếm món ăn theo tên hoặc danh mục, quản lý giỏ hàng và theo dõi trạng thái đơn hàng. Shop Meal hướng đến việc kết nối khách hàng với các sản phẩm đồ ăn đa dạng, đồng thời hỗ trợ quá trình quản lý đơn hàng và thanh toán một cách thuận tiện. Chúng tôi luôn mong muốn mang đến cho khách hàng những trải nghiệm đặt món trực tuyến tốt nhất.",
+	"imageUrl": "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+	"createdDate": "2026-11-01T08:00:00Z",
+	"modifiedDate": "2026-11-01T08:00:00Z"
+  },
+  {
+	"id": "b2000000-0000-4000-8000-000000000002",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"postTitle": "Khám phá các dịch vụ của hệ thống Shop Meal",
+	"postContent": "Shop Meal cung cấp nhiều dịch vụ hỗ trợ khách hàng trong quá trình lựa chọn và đặt món ăn trực tuyến. Đầu tiên, khách hàng có thể duyệt danh sách sản phẩm theo từng danh mục, xem hình ảnh, mô tả và giá bán của từng món ăn. Tiếp theo, chức năng tìm kiếm giúp người dùng nhanh chóng tìm thấy sản phẩm phù hợp với nhu cầu. Hệ thống giỏ hàng cho phép thêm, cập nhật số lượng hoặc xóa các sản phẩm trước khi tiến hành đặt hàng. Sau khi đặt hàng, khách hàng có thể xem lại thông tin đơn hàng và theo dõi trạng thái xử lý. Ngoài ra, Shop Meal còn hỗ trợ quản lý tài khoản cá nhân, cập nhật thông tin hồ sơ và đăng nhập bằng tài khoản Google nếu được cấu hình. Đối với nhân viên và quản trị viên, hệ thống cung cấp các chức năng quản lý sản phẩm, danh mục, bài viết và đơn hàng nhằm hỗ trợ hoạt động vận hành.",
+	"imageUrl": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
+	"createdDate": "2026-11-02T08:00:00Z",
+	"modifiedDate": "2026-11-02T08:00:00Z"
+  },
+  {
+	"id": "b2000000-0000-4000-8000-000000000003",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"postTitle": "Các chính sách của hệ thống Shop Meal",
+	"postContent": "Shop Meal hướng đến việc xây dựng môi trường mua sắm trực tuyến minh bạch và an toàn cho khách hàng. Khi sử dụng hệ thống, khách hàng cần cung cấp thông tin tài khoản chính xác để hỗ trợ quá trình đặt hàng và liên hệ khi cần thiết. Thông tin cá nhân của người dùng được sử dụng cho các mục đích liên quan đến việc cung cấp dịch vụ, quản lý tài khoản và xử lý đơn hàng. Khách hàng nên kiểm tra kỹ thông tin sản phẩm, số lượng, địa chỉ nhận hàng và tổng giá trị đơn hàng trước khi xác nhận đặt mua. Đối với việc thay đổi hoặc hủy đơn hàng, khách hàng cần liên hệ với bộ phận hỗ trợ để được kiểm tra tình trạng xử lý và hướng dẫn phù hợp. Các yêu cầu liên quan đến sản phẩm hoặc đơn hàng sẽ được tiếp nhận và hỗ trợ dựa trên thông tin thực tế của giao dịch. Shop Meal khuyến khích khách hàng sử dụng tài khoản cá nhân an toàn, không chia sẻ mật khẩu và chủ động liên hệ khi phát hiện vấn đề bất thường.",
+	"imageUrl": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d",
+	"createdDate": "2026-11-03T08:00:00Z",
+	"modifiedDate": "2026-11-03T08:00:00Z"
+  },
+  {
+	"id": "b2000000-0000-4000-8000-000000000004",
+	"userId": "00000000-0000-0000-0000-000000000001",
+	"postTitle": "Các phương thức thanh toán tại Shop Meal",
+	"postContent": "Shop Meal hỗ trợ các phương thức thanh toán nhằm mang đến sự linh hoạt và thuận tiện cho khách hàng khi đặt món. Khách hàng có thể lựa chọn thanh toán khi nhận hàng (COD), tức là thanh toán trực tiếp cho nhân viên giao hàng sau khi nhận được đơn. Bên cạnh đó, hệ thống hỗ trợ thanh toán trực tuyến thông qua cổng thanh toán PayOS, giúp khách hàng thực hiện giao dịch bằng các phương thức được PayOS hỗ trợ như chuyển khoản ngân hàng hoặc quét mã QR. Khi lựa chọn thanh toán trực tuyến, khách hàng cần thực hiện giao dịch theo hướng dẫn và chờ hệ thống xác nhận kết quả thanh toán. Đối với đơn hàng thanh toán khi nhận hàng, trạng thái thanh toán sẽ được cập nhật sau khi giao dịch hoàn tất. Khách hàng nên kiểm tra kỹ thông tin đơn hàng và số tiền cần thanh toán trước khi xác nhận giao dịch. Việc lựa chọn phương thức thanh toán phù hợp giúp quá trình đặt hàng trên Shop Meal trở nên đơn giản và thuận tiện hơn.",
+	"imageUrl": "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1",
+	"createdDate": "2026-11-04T08:00:00Z",
+	"modifiedDate": "2026-11-04T08:00:00Z"
+  }
+]
