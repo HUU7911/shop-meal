@@ -94,20 +94,44 @@ export default function MenuPage() {
 		setCatalogLoading(true);
 		setCatalogError(null);
 
-		// Thứ tự danh mục theo quản trị; khách chưa đăng nhập không gọi được nên dùng thứ tự mặc định.
-		// Gọi song song với trang đầu tiên thay vì chờ nhau.
 		const namesPromise: Promise<string[]> = isAuthenticated
-			? productApi.categories().then((l) => l.map((c) => c.name)).catch(() => [] as string[])
+			? productApi.categories()
+				.then((l) => l.map((c) => c.name))
+				.catch(() => [] as string[])
 			: Promise.resolve([]);
 
 		(async () => {
 			try {
-				const [first, names] = await Promise.all([productApi.list(1, CATALOG_PAGE_SIZE), namesPromise]);
+				const [first, names] = await Promise.all([
+					productApi.list(1, CATALOG_PAGE_SIZE),
+					namesPromise
+				]);
+
 				if (!active) return;
-				// Hiển thị ngay khi có trang đầu, các trang còn lại sẽ được nối thêm sau
-				setCatalog(first.data);
+
 				setCategoryOrder(names);
+				setCatalog(first.data);
 				setCatalogLoading(false);
+
+				const remainingPages = await Promise.all(
+					Array.from(
+						{ length: Math.max(0, first.totalPage - 1) },
+						(_, i) => productApi.list(i + 2, CATALOG_PAGE_SIZE)
+					)
+				);
+
+				if (!active) return;
+
+				const allProducts = [
+					...first.data,
+					...remainingPages.flatMap((page) => page.data)
+				];
+
+				const uniqueProducts = Array.from(
+					new Map(allProducts.map((p) => [p.id, p])).values()
+				);
+
+				setCatalog(uniqueProducts);
 
 			} catch (e) {
 				if (!active) return;
