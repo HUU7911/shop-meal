@@ -66,7 +66,7 @@ services:
       - "9001:9001"
     environment:
       MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: 123456
+      MINIO_ROOT_PASSWORD: 12345678
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
