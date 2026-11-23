@@ -31,7 +31,6 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
-//                        .requestMatchers(HttpMethod.DELETE, "/product/delete-all").permitAll()
                         .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
