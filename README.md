@@ -1026,7 +1026,7 @@ Có thể sử dụng Docker để chạy các thành phần hạ tầng thay v�
 
 ```bash
 git clone https://github.com/HUU7911/shop-meal.git
-cd shop-meal-master
+cd shop-meal
 ```
 
 ## 13.3. Configure Environment
