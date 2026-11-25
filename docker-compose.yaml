@@ -1,78 +1,477 @@
+name: shop-meal
+
+x-backend-env: &backend-env
+  EUREKA: http://discovery-service:8761/eureka/
+  MYSQL_USERNAME: root
+  MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD:-shopmeal_mysql}
+  SPRING_DATA_REDIS_HOST: redis
+  SPRING_DATA_REDIS_PORT: "6379"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
 services:
-  broker:
-    image: apache/kafka:latest
-    container_name: broker
+# Database and tech
+  mysql:
+    image: mysql:8.4
+    container_name: shop-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-shopmeal_mysql}
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - shop-meal
+
+  mongodb:
+    image: mongo:8
+    container_name: shop-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-shopmeal_mongo}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --quiet --username \"$${MONGO_INITDB_ROOT_USERNAME}\" --password \"$${MONGO_INITDB_ROOT_PASSWORD}\" --authenticationDatabase admin --eval \"db.adminCommand('ping').ok\"" ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    networks:
+      - shop-meal
+
+  redis:
+    image: redis:8-alpine
+    container_name: shop-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 15
+    networks:
+      - shop-meal
+
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: shop-kafka
+    restart: unless-stopped
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
+    ports:
+      - "29092:29092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    networks:
+      - shop-meal
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.4.1
     container_name: shop-elasticsearch
+    restart: unless-stopped
     environment:
       discovery.type: single-node
-      USERNAME: elastic
-      PASSWORD: 123456
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
     ports:
       - "9200:9200"
-
-  mysql:
-    image: mysql:latest
-    container_name: shop-mysql
-    environment:
-      MYSQL_DATABASE: identity_db
-      MYSQL_ROOT_USERNAME: root
-      MYSQL_ROOT_PASSWORD: 123456
-    ports:
-      - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
-
-  mongodb:
-    image: mongo:latest
-    container_name: shop-mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
-    volumes:
-      - mongodb_data:/data/db
-
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:9200 >/dev/null" ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+    networks:
+      - shop-meal
 
   minio:
-    image: cgr.dev/chainguard/minio:latest
-    container_name: minio
+    image: minio/minio:latest
+    container_name: shop-minio
     restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-shopmeal}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-shopmeal_minio_password}
     ports:
       - "9000:9000"
       - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: 12345678
     volumes:
       - minio_data:/data
-    command: server /data --console-address ":9001"
+    networks:
+      - shop-meal
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: shop-minio-init
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      until mc alias set shop http://minio:9000
+      "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}"; do sleep 2; done;
+      mc mb --ignore-existing shop/"$${MINIO_BUCKET}"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-shopmeal}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-shopmeal_minio_password}
+      MINIO_BUCKET: ${MINIO_BUCKET:-shop-meal}
+    networks:
+      - shop-meal
+
+  # Discovery-service
+  discovery-service:
+    image: shop-meal/discovery-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-01/discovery-service
+    container_name: discovery-service
+    restart: unless-stopped
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - shop-meal
+
+  # Api-gateway
+  api-gateway:
+    image: shop-meal/api-gateway:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-01/api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      SPRING_DATA_REDIS_HOST: redis
+      APP_IDENTITY_URL: http://identity-service:8080/identity
+      APP_CORS_ALLOWED_ORIGINS: http://localhost,http://127.0.0.1
+    depends_on:
+      discovery-service:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    ports:
+      - "8888:8888"
+    networks:
+      - shop-meal
+
+  # Identity-service
+  identity-service:
+    image: shop-meal/identity-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-01/identity-service
+    container_name: identity-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      IDENTITY_URL: jdbc:mysql://mysql:3306/identity_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SIGNER_KEY: ${SIGNER_KEY:-ShopMealDockerDevelopmentSecretKeyAtLeast32CharactersLong}
+      VALID_DURATION: ${VALID_DURATION:-3600}
+      REFRESHABLE_DURATION: ${REFRESHABLE_DURATION:-36000}
+      CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      REDIRECT_URL: ${GOOGLE_REDIRECT_URL:-http://localhost/authenticate}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Profile-service
+  profile-service:
+    image: shop-meal/profile-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-01/profile-service
+    container_name: profile-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      PROFILE_URL: jdbc:mysql://mysql:3306/profile_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Product-service
+  product-service:
+    image: shop-meal/product-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-02/product-service
+    container_name: product-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      PRODUCT_URL: jdbc:mysql://mysql:3306/food_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # File-service
+  file-service:
+    image: shop-meal/file-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-02/file-service
+    container_name: file-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      FILE_URL: mongodb://root:${MONGO_ROOT_PASSWORD:-shopmeal_mongo}@mongodb:27017/file_db?authSource=admin
+      ENDPOINT: http://minio:9000
+      ACCESS_KEY: ${MINIO_ROOT_USER:-shopmeal}
+      SECRET_KEY: ${MINIO_ROOT_PASSWORD:-shopmeal_minio_password}
+      BUCKET: ${MINIO_BUCKET:-shop-meal}
+      APP_FILE_DOWNLOAD_PREFIX: http://localhost/api/v1/file/media/download/
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Cart-service
+  cart-service:
+    image: shop-meal/cart-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-03/cart-service
+    container_name: cart-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      CART_URL: jdbc:mysql://mysql:3306/cart_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Order-service
+  order-service:
+    image: shop-meal/order-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-03/order-service
+    container_name: order-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      ORDER_URL: jdbc:mysql://mysql:3306/order_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      APP_SOCKET_ALLOWED_ORIGIN: http://localhost
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    expose:
+      - "8099"
+    networks:
+      - shop-meal
+
+  # Notification-service
+  notification-service:
+    image: shop-meal/notification-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-04/notification-service
+    container_name: notification-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      NOTIFICATION_SERVICE_DB: mongodb://root:${MONGO_ROOT_PASSWORD:-shopmeal_mongo}@mongodb:27017/notification_db?authSource=admin
+      API_KEY_BREVO: ${API_KEY_BREVO:-development-placeholder}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Search-service
+  search-service:
+    image: shop-meal/search-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-04/search-service
+    container_name: search-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      ELASTIC_SEARCH: http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Payment-service
+  payment-service:
+    image: shop-meal/payment-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-05/payment-service
+    container_name: payment-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      PAYMENT_URL: jdbc:mysql://mysql:3306/payment_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      PAYOS_CLIENT_ID: ${PAYOS_CLIENT_ID:-development-placeholder}
+      PAYOS_API_KEY: ${PAYOS_API_KEY:-development-placeholder}
+      PAYOS_CHECKSUM_KEY: ${PAYOS_CHECKSUM_KEY:-development-placeholder}
+      PAYOS_RETURN_URL: http://localhost/payment/success
+      PAYOS_CANCEL_URL: http://localhost/payment/cancel
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # Post-service
+  post-service:
+    image: shop-meal/post-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: mb-05/post-service
+    container_name: post-service
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      POST_DB: mongodb://root:${MONGO_ROOT_PASSWORD:-shopmeal_mongo}@mongodb:27017/post_db?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    networks:
+      - shop-meal
+
+  # frontend
+  web-app:
+    image: shop-meal/web-app:latest
+    build:
+      context: ./web-app
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+        VITE_SOCKET_URL: /
+    container_name: shop-web
+    restart: unless-stopped
+    depends_on:
+      - api-gateway
+      - order-service
+    ports:
+      - "80:80"
+    networks:
+      - shop-meal
+
+networks:
+  shop-meal:
+    name: shop-meal-network
+    driver: bridge
 
 volumes:
   mysql_data:
   mongodb_data:
   redis_data:
+  kafka_data:
+  elasticsearch_data:
   minio_data:
