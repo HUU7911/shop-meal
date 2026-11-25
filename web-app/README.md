@@ -55,7 +55,7 @@ Frontend đã khớp với code backend hiện tại ở các điểm sau:
 
 ## Lỗi / thiếu sót ở backend (frontend không tự sửa được)
 
-1. **Quên mật khẩu**: gateway (`PUBLIC_ENDPOINT`) và `identity-service/SecurityConfig` chưa mở `/auth/forgot-password`, `/auth/verify-otp`, `/auth/reset-password` -> khách nhận 401.
+1. **Quên mật khẩu**: gateway (`PUBLIC_ENDPOINT`) và `../mb-01/identity-service` chưa mở `/auth/forgot-password`, `/auth/verify-otp`, `/auth/reset-password` -> khách nhận 401.
 2. **Refresh token**: `refreshToken()` tìm user bằng `findByUsername(sub)` nhưng `sub` là userId -> luôn lỗi. Tương tự `/users/myInfor`. Nên dùng `findById`.
 3. **Đăng nhập Google**: `outboundIdentityClient` trả `access_token` của Google chứ không phải JWT của hệ thống.
 4. **Dọn giỏ sau khi đặt**: order-service gọi `DELETE /cart/my-cart` nhưng cart-service chưa có endpoint đó (lỗi bị nuốt). Frontend tạm xoá từng món.

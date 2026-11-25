@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/api-gateway/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cart-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/discovery-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/file-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/identity-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/notification-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/order-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/payment-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/post-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/product-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/profile-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/search-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-01/api-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-01/discovery-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-01/identity-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-01/profile-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-02/file-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-02/product-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-03/cart-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-03/order-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-04/notification-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-04/search-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-05/payment-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mb-05/post-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$USER_HOME$/src/main/java" charset="UTF-8" />
   </component>
 </project>
