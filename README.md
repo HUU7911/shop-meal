@@ -630,7 +630,7 @@ Quy trình đăng nhập:
 
 Sau khi đăng nhập thành công, frontend sử dụng Access Token trong các request cần xác thực.
 
-```http
+```text
 Authorization: Bearer <access_token>
 ```
 
@@ -853,19 +853,19 @@ http://localhost:8888/api/v1
 
 ## 10.2. Example Requests
 
-```http
+```http request
 GET http://localhost:8888/api/v1/product/food
 ```
 
-```http
+```http request
 GET http://localhost:8888/api/v1/cart/my-cart
 ```
 
-```http
+```http request
 GET http://localhost:8888/api/v1/order/my-orders
 ```
 
-```http
+```http request
 GET http://localhost:8888/api/v1/search/product
 ```
 
@@ -910,7 +910,7 @@ Frontend được phát triển bằng React và TypeScript, sử dụng Materia
 
 Frontend sử dụng biến môi trường:
 
-```env
+```dotenv
 VITE_API_BASE_URL=http://localhost:8888/api/v1
 VITE_SOCKET_URL=http://localhost:8099
 ```
@@ -929,14 +929,14 @@ cp .env.example .env
 
 ## 12.1. Database Configuration
 
-```env
+```dotenv
 MYSQL_USERNAME=root
 MYSQL_PASSWORD=your_mysql_password
 ```
 
 ## 12.2. JWT Configuration
 
-```env
+```dotenv
 SIGNER_KEY=your_jwt_signer_key
 VALID_DURATION=3600
 REFRESHABLE_DURATION=36000
@@ -944,7 +944,7 @@ REFRESHABLE_DURATION=36000
 
 ## 12.3. MongoDB Configuration
 
-```env
+```dotenv
 FILE_URL=mongodb://root:password@localhost:27017/file_db?authSource=admin
 
 NOTIFICATION_SERVICE_DB=mongodb://root:password@localhost:27017/notification_db?authSource=admin
@@ -954,7 +954,7 @@ POST_DB=mongodb://root:password@localhost:27017/post_db?authSource=admin
 
 ## 12.4. MinIO Configuration
 
-```env
+```dotenv
 ENDPOINT=http://localhost:9000
 ACCESS_KEY=your_access_key
 SECRET_KEY=your_secret_key
@@ -963,7 +963,7 @@ BUCKET=shop-meal
 
 ## 12.5. Elasticsearch Configuration
 
-```env
+```dotenv
 ELASTIC_SEARCH=http://localhost:9200
 ```
 
@@ -971,13 +971,13 @@ Các thông tin xác thực Elasticsearch cần được cấu hình tương ứ
 
 ## 12.6. Kafka Configuration
 
-```env
+```dotenv
 SPRING_KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 ```
 
 ## 12.7. Google OAuth Configuration
 
-```env
+```dotenv
 CLIENT_ID=your_google_client_id
 CLIENT_SECRET=your_google_client_secret
 REDIRECT_URL=http://localhost:5173/authenticate
@@ -985,13 +985,13 @@ REDIRECT_URL=http://localhost:5173/authenticate
 
 ## 12.8. Brevo Configuration
 
-```env
+```dotenv
 API_KEY_BREVO=your_brevo_api_key
 ```
 
 ## 12.9. PayOS Configuration
 
-```env
+```dotenv
 PAYOS_CLIENT_ID=your_payos_client_id
 PAYOS_API_KEY=your_payos_api_key
 PAYOS_CHECKSUM_KEY=your_payos_checksum_key
@@ -1025,7 +1025,7 @@ Có thể sử dụng Docker để chạy các thành phần hạ tầng thay v�
 ## 13.2. Clone Project
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/HUU7911/shop-meal.git
 cd shop-meal-master
 ```
 
