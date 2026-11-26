@@ -109,6 +109,16 @@
         </processorPath>
         <module name="notification-service" />
       </profile>
+      <profile name="Annotation profile for contract-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.48/lombok-1.18.48.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.48/lombok-1.18.48.jar" />
+        </processorPath>
+        <module name="contract-service" />
+      </profile>
       <profile name="Annotation profile for Shop Meal" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -124,6 +134,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="cart-service" options="-parameters" />
+      <module name="contract-service" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
       <module name="file-service" options="-parameters" />
       <module name="identity-service" options="-parameters" />
