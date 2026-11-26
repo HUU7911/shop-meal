@@ -24,7 +24,8 @@ public enum ErrorCode {
     INVALID_KEY(1008, "Invalid key", HttpStatus.BAD_REQUEST),
     FILE_NOT_DELETED(1009, "file not deleted", HttpStatus.BAD_REQUEST),
     FILE_NOT_FOUND(1010, "File not found", HttpStatus.NOT_FOUND),
-    INVALID_FILE(1011, "invalidate file", HttpStatus.CONFLICT)
+    INVALID_FILE(1011, "invalidate file", HttpStatus.CONFLICT),
+    BUCKET_EXISTED(1012, "bucket has exited", HttpStatus.CREATED)
     ;
 
     int code;

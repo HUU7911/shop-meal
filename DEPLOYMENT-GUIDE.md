@@ -1,137 +1,178 @@
+# SHOP MEAL – INSTALLATION GUIDE
 
-# Shop Meal - Docker Deployment
+## 1. Yêu cầu phần cứng
 
-## 1. Requirements
+Do hệ thống chạy nhiều container cùng lúc, bao gồm các dịch vụ backend, frontend và cơ sở dữ liệu, máy tính cần đáp ứng các yêu cầu phần cứng sau:
 
-- Docker
-- Docker Compose
-- Minimum 8GB RAM recommended
-- Available ports: 80, 3306, 27017, 6379, 8761, 8888, 9000, 9001, 9200, 29092
+| Thành phần | Tối thiểu | Khuyến nghị |
+|---|---:|---:|
+| CPU | 4 cores | 8 cores trở lên |
+| RAM | 8 GB | 16 GB trở lên |
+| Ổ cứng trống | 20 GB | 40 GB trở lên |
+| Kết nối mạng | Có Internet | Internet ổn định |
 
-## 2. Project Architecture
+**Lưu ý:**
+- RAM 8 GB có thể không đủ để vận hành toàn bộ hệ thống một cách ổn định.
+- Nên sử dụng ổ SSD để cải thiện tốc độ khởi động container và truy xuất dữ liệu.
+- Cần đảm bảo ổ cứng còn đủ dung lượng để lưu trữ Docker Images, Containers và Volumes.
+- Nếu sử dụng máy ảo, cần phân bổ đủ CPU, RAM và dung lượng ổ cứng cho máy ảo.
 
-The Shop Meal system consists of:
+## 2. Yêu cầu môi trường
 
-### Backend Microservices
+Trước khi triển khai hệ thống, cần chuẩn bị:
 
-- API Gateway
-- Discovery Service
-- Identity Service
-- Profile Service
-- Product Service
-- File Service
-- Cart Service
-- Order Service
-- Notification Service
-- Search Service
-- Payment Service
-- Post Service
+- Docker Desktop hoặc Docker Engine.
+- Docker Compose.
+- Git để tải mã nguồn dự án.
+- Kết nối Internet để tải các Docker Images cần thiết.
 
-### Frontend
+## 3. Hướng dẫn cài đặt
 
-- React
-- TypeScript
-- Vite
-- Material UI
-- Nginx
+### 3.1. Tải mã nguồn
 
-### Infrastructure
+Clone dự án về máy tính:
 
-- MySQL
-- MongoDB
-- Redis
-- Apache Kafka
-- Elasticsearch
-- MinIO
+```bash
+git clone <repository-url>
+```
 
-## 3. Environment Configuration
+Di chuyển vào thư mục dự án:
 
-Copy the environment file:
+```bash
+cd shop-meal
+```
+
+### 3.2. Cấu hình môi trường
+
+Tạo file `.env` tại thư mục gốc của dự án.
 
 ```bash
 cp .env.example .env
 ```
 
-Update the environment variables in `.env`.
+Nếu sử dụng Windows CMD:
 
-Configure Google OAuth, Brevo and PayOS credentials if these integrations are required.
-
-## 4. Build and Start
-
-Validate Docker Compose:
-
-```bash
-docker compose config
+```cmd
+copy .env.example .env
 ```
 
-Build all images and start containers:
+Mở file `.env` và cấu hình các thông tin cần thiết:
+
+- Thông tin đăng nhập MySQL.
+- Thông tin đăng nhập MongoDB.
+- Thông tin tài khoản MinIO.
+- Thông tin xác thực Google OAuth.
+- API Key của các dịch vụ bên ngoài.
+- Thông tin cấu hình thanh toán PayOS.
+- Các khóa và thời hạn sử dụng JWT.
+
+Đảm bảo các giá trị trong file `.env` phù hợp với cấu hình trong `docker-compose.yml` và các service tương ứng.
+
+### 3.3. Khởi chạy hệ thống
+
+Mở terminal tại thư mục gốc của dự án và thực hiện:
 
 ```bash
 docker compose up -d --build
 ```
 
-## 5. Check Services
+Lệnh này sẽ:
+- Build các Docker Images từ mã nguồn.
+- Tải các Docker Images cần thiết.
+- Tạo các container.
+- Khởi chạy các dịch vụ theo cấu hình Docker Compose.
+
+### 3.4. Kiểm tra trạng thái
+
+Kiểm tra các container:
 
 ```bash
 docker compose ps
 ```
 
-View all logs:
+Theo dõi log của toàn bộ hệ thống:
 
 ```bash
 docker compose logs -f
 ```
 
-View API Gateway logs:
+Theo dõi log của một service cụ thể:
 
 ```bash
-docker compose logs -f api-gateway
+docker compose logs -f <service-name>
 ```
 
-## 6. Access Application
+### 3.5. Truy cập hệ thống
 
-| Component | URL |
+Sau khi các container khởi chạy thành công, có thể truy cập các dịch vụ thông qua trình duyệt:
+
+| Dịch vụ | Địa chỉ |
 |---|---|
-| Frontend | http://localhost |
+| Website | http://localhost |
 | API Gateway | http://localhost:8888 |
-| Eureka | http://localhost:8761 |
-| Elasticsearch | http://localhost:9200 |
-| MinIO API | http://localhost:9000 |
+| Eureka Dashboard | http://localhost:8761 |
 | MinIO Console | http://localhost:9001 |
 
-## 7. Docker Management
+Các địa chỉ trên sử dụng cổng mặc định được ánh xạ trong Docker Compose. Nếu thay đổi cấu hình cổng, cần truy cập bằng cổng tương ứng.
 
-Stop containers:
+## 4. Quản lý hệ thống
+
+### 4.1. Dừng hệ thống
+
+Dừng các container nhưng giữ nguyên dữ liệu:
 
 ```bash
-docker compose down
+docker compose stop
 ```
 
-Restart containers:
+### 4.2. Khởi động lại hệ thống
+
+```bash
+docker compose start
+```
+
+### 4.3. Khởi động lại toàn bộ container
 
 ```bash
 docker compose restart
 ```
 
-Rebuild one service:
+### 4.4. Build lại và khởi động hệ thống
+
+Sử dụng khi có thay đổi mã nguồn:
 
 ```bash
-docker compose up -d --build product-service
+docker compose up -d --build
 ```
 
-Remove containers and volumes:
+### 4.5. Xóa các container
+
+```bash
+docker compose down
+```
+
+Lệnh này xóa các container và network do Compose tạo ra, nhưng không xóa dữ liệu trong named volumes.
+
+### 4.6. Xóa toàn bộ dữ liệu
 
 ```bash
 docker compose down -v
 ```
 
-WARNING: The last command permanently deletes persistent database and storage data.
+**Cảnh báo:** Lệnh này xóa cả các volumes, đồng nghĩa với việc dữ liệu trong MySQL, MongoDB, Redis, Elasticsearch và MinIO có thể bị mất. Chỉ sử dụng khi thực sự muốn triển khai lại từ đầu.
 
-## 8. Notes
+## 5. Xử lý sự cố thường gặp
 
-- MySQL initialization scripts only run when the data directory is empty.
-- Google OAuth requires valid credentials.
-- Brevo requires a valid API key.
-- PayOS requires valid client ID, API key and checksum key.
-- Default passwords are for development only.
-- Configure secure credentials before production deployment.
+| Sự cố | Hướng xử lý |
+|---|---|
+| Docker không khởi động | Kiểm tra Docker Desktop hoặc Docker Engine |
+| Container liên tục khởi động lại | Kiểm tra log bằng `docker compose logs -f` |
+| Không thể tải Docker Image | Kiểm tra kết nối Internet và Docker Hub |
+| Không thể kết nối cơ sở dữ liệu | Kiểm tra trạng thái container và thông tin cấu hình trong `.env` |
+| Không truy cập được website | Kiểm tra container frontend và cấu hình cổng |
+| Không truy cập được API | Kiểm tra API Gateway và trạng thái các backend service |
+| Máy tính thiếu bộ nhớ | Tăng RAM cấp cho Docker hoặc đóng các ứng dụng không cần thiết |
+
+---
+
+**Lưu ý:** Không chỉnh sửa trực tiếp cấu hình bên trong container đang chạy. Khi cần thay đổi cấu hình hoặc mã nguồn, hãy cập nhật file tương ứng trong dự án và build lại container bằng Docker Compose.

@@ -117,7 +117,7 @@ services:
       - shop-meal
 
   minio:
-    image: minio/minio:latest
+    image: pgsty/silo:latest
     container_name: shop-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
@@ -129,24 +129,11 @@ services:
       - "9001:9001"
     volumes:
       - minio_data:/data
-    networks:
-      - shop-meal
-
-  minio-init:
-    image: minio/mc:latest
-    container_name: shop-minio-init
-    depends_on:
-      minio:
-        condition: service_started
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      until mc alias set shop http://minio:9000
-      "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}"; do sleep 2; done;
-      mc mb --ignore-existing shop/"$${MINIO_BUCKET}"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-shopmeal}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-shopmeal_minio_password}
-      MINIO_BUCKET: ${MINIO_BUCKET:-shop-meal}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
     networks:
       - shop-meal
 
@@ -292,12 +279,10 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-      minio-init:
-        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
       discovery-service:
         condition: service_started
-    networks:
-      - shop-meal
 
   # Cart-service
   cart-service:
