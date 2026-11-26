@@ -2,6 +2,7 @@ package com.meal.search.controller;
 
 import com.meal.contract.common.ApiResponse;
 import com.meal.contract.common.PageResponse;
+import com.meal.contract.constant.SortOption;
 import com.meal.contract.constant.Type;
 import com.meal.search.document.ProductDocument;
 import com.meal.search.service.ProductSearchService;
@@ -31,7 +32,7 @@ public class SearchController {
             @RequestParam(required = false) Type type,
             @RequestParam(required = false) @PositiveOrZero BigDecimal minPrice,
             @RequestParam(required = false) @PositiveOrZero BigDecimal maxPrice,
-            @RequestParam(defaultValue = "RELEVANCE") ProductSearchService.SortOption sort,
+            @RequestParam(defaultValue = "RELEVANCE") SortOption sort,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
 
