@@ -1,7 +1,7 @@
 package com.meal.product.controller;
 
-import com.meal.product.dto.ApiResponse;
-import com.meal.product.dto.PageResponse;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
 import com.meal.product.dto.request.FoodRequest;
 import com.meal.product.dto.request.FoodUpdateRequest;
 import com.meal.product.dto.response.FoodInfoResponse;

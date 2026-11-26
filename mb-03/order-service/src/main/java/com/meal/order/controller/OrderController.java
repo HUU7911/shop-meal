@@ -1,7 +1,7 @@
 package com.meal.order.controller;
 
-import com.meal.order.dto.ApiResponse;
-import com.meal.order.dto.PageResponse;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
 import com.meal.order.dto.request.BuyNowRequest;
 import com.meal.order.dto.request.CreateOrderRequest;
 import com.meal.order.dto.response.OrderResponse;

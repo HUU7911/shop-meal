@@ -36,8 +36,10 @@ export const authApi = {
 };
 
 export const userApi = {
-  list: () => unwrap<User[]>(api.get('/identity/users')),
-  createStaff: (body: UserCreationRequest) => unwrap<User>(api.post('/identity/internal/users/create', body)),
+  list: (page = 1, size = 10) =>
+      unwrap<PageResponse<User>>(api.get('/identity/users', { params: { page, size } })),
+  createStaff: (body: UserCreationRequest) =>
+      unwrap<User>(api.post('/identity/internal/users/create', body)),
 };
 
 // ---------------- profile-service ----------------

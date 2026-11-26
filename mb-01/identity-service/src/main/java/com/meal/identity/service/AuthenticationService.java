@@ -1,6 +1,6 @@
 package com.meal.identity.service;
 
-import com.meal.identity.constant.RoleDefine;
+import com.meal.contract.constant.RoleDefine;
 import com.meal.identity.dto.request.*;
 import com.meal.identity.dto.response.AuthenticationResponse;
 import com.meal.identity.dto.response.IntrospectResponse;

@@ -1,6 +1,6 @@
 package com.meal.post.controller;
 
-import com.meal.post.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.post.dto.response.BannerResponse;
 import com.meal.post.service.BannerService;
 import lombok.AccessLevel;

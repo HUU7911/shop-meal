@@ -1,9 +1,9 @@
 package com.meal.cart.controller;
 
-import com.meal.cart.dto.ApiResponse;
 import com.meal.cart.dto.request.AddProductToCartRequest;
 import com.meal.cart.dto.response.CartResponse;
 import com.meal.cart.service.CartService;
+import com.meal.contract.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

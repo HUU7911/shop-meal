@@ -1,9 +1,9 @@
 package com.meal.search.controller;
 
-import com.meal.search.constants.Type;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
+import com.meal.contract.constant.Type;
 import com.meal.search.document.ProductDocument;
-import com.meal.search.dto.ApiResponse;
-import com.meal.search.dto.PageResponse;
 import com.meal.search.service.ProductSearchService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

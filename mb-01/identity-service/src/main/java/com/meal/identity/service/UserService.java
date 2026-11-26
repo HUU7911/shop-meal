@@ -1,7 +1,8 @@
 package com.meal.identity.service;
 
-import com.meal.event.dto.NotificationEvent;
-import com.meal.identity.constant.RoleDefine;
+import com.meal.contract.common.PageResponse;
+import com.meal.contract.constant.RoleDefine;
+import com.meal.contract.event.NotificationEvent;
 import com.meal.identity.dto.request.UserCreationRequest;
 import com.meal.identity.dto.request.UserUpdateRequest;
 import com.meal.identity.dto.response.UserResponse;
@@ -19,6 +20,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -126,12 +129,20 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getAllUsers() {
-        return userRepository
-                .findAll()
-                .stream()
-                .map(userMapper::toResponse)
-                .toList();
+    public PageResponse<UserResponse> getAllUsers(int page, int size) {
+        Sort sort = Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(page-1, size, sort);
+        var pageData = userRepository.findAll(pageable);
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPage(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(pageData.stream()
+                        .map(userMapper::toResponse)
+                        .toList())
+                .build();
     }
 
     @Transactional

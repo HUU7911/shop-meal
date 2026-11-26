@@ -1,34 +1,9 @@
 package com.meal.contract.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileResponse {
-
-    String id;
-
-    String userId;
-
-    String username;
-
-    String firstName;
-
-    String lastName;
-
-    String phoneNumber;
-
-    String email;
-
-    String address;
-
-    String avatar;
-
-    LocalDate dob;
+public record ProfileResponse(
+        String userId,
+        String firstName,
+        String lastName,
+        String email,
+        String address) {
 }

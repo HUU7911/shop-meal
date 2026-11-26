@@ -1,6 +1,6 @@
 package com.meal.payment.exception;
 
-import com.meal.payment.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

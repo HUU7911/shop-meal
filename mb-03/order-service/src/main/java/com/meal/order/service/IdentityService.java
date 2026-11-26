@@ -1,7 +1,7 @@
 package com.meal.order.service;
 
-import com.meal.order.dto.client.IntrospectRequest;
-import com.meal.order.dto.client.IntrospectResponse;
+import com.meal.contract.dto.IntrospectRequest;
+import com.meal.contract.dto.IntrospectResponse;
 import com.meal.order.repository.httpclient.IdentityClient;
 import feign.FeignException;
 import lombok.AccessLevel;

@@ -1,7 +1,7 @@
 package com.meal.post.controller;
 
-import com.meal.post.dto.ApiResponse;
-import com.meal.post.dto.PageResponse;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
 import com.meal.post.dto.request.PostRequest;
 import com.meal.post.dto.request.PostUpdateRequest;
 import com.meal.post.dto.response.PostForProductResponse;

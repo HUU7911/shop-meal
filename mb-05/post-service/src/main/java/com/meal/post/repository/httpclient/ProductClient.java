@@ -1,7 +1,7 @@
 package com.meal.post.repository.httpclient;
 
+import com.meal.contract.common.ApiResponse;
 import com.meal.post.configuration.AuthenticationRequestInterceptor;
-import com.meal.post.dto.ApiResponse;
 import com.meal.post.dto.response.FoodInfoResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

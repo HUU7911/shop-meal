@@ -1,6 +1,6 @@
 package com.meal.file.controller;
 
-import com.meal.file.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.file.dto.response.FileResponse;
 import com.meal.file.service.FileService;
 import lombok.AccessLevel;

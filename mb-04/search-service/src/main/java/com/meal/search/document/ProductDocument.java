@@ -1,6 +1,6 @@
 package com.meal.search.document;
 
-import com.meal.search.constants.Type;
+import com.meal.contract.constant.Type;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.Id;

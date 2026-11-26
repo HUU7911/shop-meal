@@ -1,6 +1,6 @@
 package com.meal.identity.controller;
 
-import com.meal.identity.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.identity.dto.request.RoleRequest;
 import com.meal.identity.dto.request.RoleUpdateRequest;
 import com.meal.identity.dto.response.RoleResponse;

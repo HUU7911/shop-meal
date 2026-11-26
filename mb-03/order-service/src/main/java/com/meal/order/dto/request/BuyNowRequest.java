@@ -1,7 +1,7 @@
 package com.meal.order.dto.request;
 
-import com.meal.order.constants.PaymentMethod;
-import com.meal.order.dto.client.FoodOrderRequest;
+import com.meal.contract.constant.PaymentMethod;
+import com.meal.contract.dto.FoodOrderRequest;
 
 public record BuyNowRequest(
         String receiverName,

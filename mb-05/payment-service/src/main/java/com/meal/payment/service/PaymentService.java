@@ -1,7 +1,7 @@
 package com.meal.payment.service;
 
-import com.meal.event.dto.PaymentPaidEvent;
-import com.meal.payment.constant.PaymentStatus;
+import com.meal.contract.constant.PaymentStatus;
+import com.meal.contract.event.PaymentPaidEvent;
 import com.meal.payment.dto.request.CreatePaymentRequest;
 import com.meal.payment.dto.response.PaymentResponse;
 import com.meal.payment.entity.Payment;

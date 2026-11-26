@@ -1,6 +1,6 @@
 package com.meal.identity.configuration;
 
-import com.meal.identity.constant.RoleDefine;
+import com.meal.contract.constant.RoleDefine;
 import com.meal.identity.entity.Role;
 import com.meal.identity.entity.User;
 import com.meal.identity.repository.RoleRepository;

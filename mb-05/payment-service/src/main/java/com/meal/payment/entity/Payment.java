@@ -1,6 +1,6 @@
 package com.meal.payment.entity;
 
-import com.meal.payment.constant.PaymentStatus;
+import com.meal.contract.constant.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

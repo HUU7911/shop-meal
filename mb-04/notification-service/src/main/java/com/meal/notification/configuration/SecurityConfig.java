@@ -1,10 +1,8 @@
 package com.meal.notification.configuration;
 
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,17 +19,10 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
-    @NonFinal
-    private String[] PUBLIC_MATCHERS = new String[]{
-            "/email/send",
-    };
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http){
         http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                        .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
-                        .anyRequest().authenticated());
+                authorizeRequests.anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
 

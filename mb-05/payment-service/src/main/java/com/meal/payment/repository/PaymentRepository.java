@@ -1,6 +1,6 @@
 package com.meal.payment.repository;
 
-import com.meal.payment.constant.PaymentStatus;
+import com.meal.contract.constant.PaymentStatus;
 import com.meal.payment.entity.Payment;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;

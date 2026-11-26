@@ -1,6 +1,6 @@
 package com.meal.order.repository;
 
-import com.meal.order.constants.OrderStatus;
+import com.meal.contract.constant.OrderStatus;
 import com.meal.order.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -4,7 +4,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
-import com.meal.order.dto.client.IntrospectRequest;
+import com.meal.contract.dto.IntrospectRequest;
 import com.meal.order.service.IdentityService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;

@@ -1,6 +1,7 @@
 package com.meal.identity.controller;
 
-import com.meal.identity.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
 import com.meal.identity.dto.request.UserCreationRequest;
 import com.meal.identity.dto.request.UserUpdateRequest;
 import com.meal.identity.dto.response.UserResponse;
@@ -9,8 +10,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -49,9 +48,12 @@ public class UserController {
     }
 
     @GetMapping
-    ApiResponse<List<UserResponse>> getAllUsers() {
-        return ApiResponse.<List<UserResponse>>builder()
-                .results(userService.getAllUsers())
+    ApiResponse<PageResponse<UserResponse>> getAllUsers(
+            @RequestParam(value = "page", required = false, defaultValue = "10") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .results(userService.getAllUsers(page, size))
                 .build();
     }
 

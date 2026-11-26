@@ -1,8 +1,8 @@
 package com.meal.order.controller;
 
-import com.meal.order.constants.OrderStatus;
-import com.meal.order.dto.ApiResponse;
-import com.meal.order.dto.PageResponse;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
+import com.meal.contract.constant.OrderStatus;
 import com.meal.order.dto.request.UpdateOrderStatusRequest;
 import com.meal.order.dto.response.OrderResponse;
 import com.meal.order.service.OrderService;

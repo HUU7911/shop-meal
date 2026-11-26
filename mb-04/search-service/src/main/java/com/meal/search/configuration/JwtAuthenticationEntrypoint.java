@@ -1,6 +1,6 @@
 package com.meal.search.configuration;
 
-import com.meal.search.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.search.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

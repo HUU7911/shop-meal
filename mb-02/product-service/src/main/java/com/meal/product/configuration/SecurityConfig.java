@@ -1,5 +1,6 @@
 package com.meal.product.configuration;
 
+import com.meal.contract.constant.RoleDefine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 
         http.authorizeHttpRequests(a -> a
-                        .requestMatchers(HttpMethod.GET, "/food", "/food/**", "/category").permitAll() // chỉnh theo nhu cầu
-                        .requestMatchers(HttpMethod.POST, "/food/create", "/category/create").hasAnyRole("ADMIN","STAFF")
-                        .requestMatchers(HttpMethod.PUT, "/food/update/**").hasAnyRole("ADMIN","STAFF")
-                        .requestMatchers(HttpMethod.DELETE, "/food/delete/**", "/category/delete/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers(HttpMethod.GET, "/food", "/food/**", "/category").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/food/create", "/category/create")
+                            .hasAnyRole(RoleDefine.ADMIN.name(), RoleDefine.STAFF.name())
+                        .requestMatchers(HttpMethod.PUT, "/food/update/**")
+                            .hasAnyRole(RoleDefine.ADMIN.name(), RoleDefine.STAFF.name())
+                        .requestMatchers(HttpMethod.DELETE, "/food/delete/**", "/category/delete/**")
+                            .hasAnyRole(RoleDefine.ADMIN.name(), RoleDefine.STAFF.name())
                 .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2

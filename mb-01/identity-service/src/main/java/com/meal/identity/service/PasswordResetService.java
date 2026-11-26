@@ -1,6 +1,6 @@
 package com.meal.identity.service;
 
-import com.meal.event.dto.NotificationEvent;
+import com.meal.contract.event.NotificationEvent;
 import com.meal.identity.dto.request.ForgotPasswordRequest;
 import com.meal.identity.dto.request.ResetPasswordRequest;
 import com.meal.identity.dto.request.VerifyOtpRequest;

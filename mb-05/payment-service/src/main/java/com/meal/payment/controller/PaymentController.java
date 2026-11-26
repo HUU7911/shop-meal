@@ -1,6 +1,6 @@
 package com.meal.payment.controller;
 
-import com.meal.payment.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.payment.dto.request.CreatePaymentRequest;
 import com.meal.payment.dto.response.PaymentResponse;
 import com.meal.payment.service.PaymentService;

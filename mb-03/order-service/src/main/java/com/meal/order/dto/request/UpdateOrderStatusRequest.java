@@ -1,6 +1,6 @@
 package com.meal.order.dto.request;
 
-import com.meal.order.constants.OrderStatus;
+import com.meal.contract.constant.OrderStatus;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateOrderStatusRequest(

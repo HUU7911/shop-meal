@@ -1,6 +1,6 @@
 package com.meal.product.configuration;
 
-import com.meal.product.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.product.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

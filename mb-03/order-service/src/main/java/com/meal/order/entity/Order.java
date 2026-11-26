@@ -1,8 +1,8 @@
 package com.meal.order.entity;
 
-import com.meal.order.constants.OrderStatus;
-import com.meal.order.constants.PaymentMethod;
-import com.meal.order.constants.PaymentStatus;
+import com.meal.contract.constant.OrderStatus;
+import com.meal.contract.constant.PaymentMethod;
+import com.meal.contract.constant.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

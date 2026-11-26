@@ -1,11 +1,10 @@
 package com.meal.order.service;
 
-import com.meal.event.dto.NotificationEvent;
+import com.meal.contract.event.NotificationEvent;
 import com.meal.order.entity.Order;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.meal.product.dto.response;
 
-import com.meal.product.constant.Type;
+import com.meal.contract.constant.Type;
 import com.meal.product.entity.Category;
 
 import java.math.BigDecimal;

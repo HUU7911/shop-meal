@@ -1,6 +1,6 @@
 package com.meal.identity.exception;
 
-import com.meal.identity.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

@@ -1,6 +1,6 @@
 package com.meal.product.entity;
 
-import com.meal.product.constant.Type;
+import com.meal.contract.constant.Type;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

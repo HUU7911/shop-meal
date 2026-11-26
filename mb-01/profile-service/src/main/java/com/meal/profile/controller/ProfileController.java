@@ -1,6 +1,6 @@
 package com.meal.profile.controller;
 
-import com.meal.profile.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.profile.dto.request.ProfileCreationRequest;
 import com.meal.profile.dto.request.ProfileUpdateRequest;
 import com.meal.profile.dto.response.ProfileResponse;

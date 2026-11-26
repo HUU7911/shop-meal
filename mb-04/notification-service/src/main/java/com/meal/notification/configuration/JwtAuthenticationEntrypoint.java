@@ -1,6 +1,6 @@
 package com.meal.notification.configuration;
 
-import com.meal.notification.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.notification.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

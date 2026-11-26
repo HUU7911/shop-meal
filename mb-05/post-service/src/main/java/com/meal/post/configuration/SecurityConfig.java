@@ -1,5 +1,6 @@
 package com.meal.post.configuration;
 
+import com.meal.contract.constant.RoleDefine;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers(AUTH_ENDPOINT).hasAnyRole("STAFF", "ADMIN")
+                        .requestMatchers(AUTH_ENDPOINT).hasAnyRole(RoleDefine.ADMIN.name(), RoleDefine.STAFF.name())
                         .requestMatchers(HttpMethod.GET, "/banner/getAll", "/getAllPost").permitAll()
                         .anyRequest().authenticated());
 

@@ -1,7 +1,7 @@
 package com.meal.even.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.meal.search.constants.Type;
+import com.meal.contract.constant.Type;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

@@ -1,6 +1,6 @@
 package com.meal.file.exception;
 
-import com.meal.file.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

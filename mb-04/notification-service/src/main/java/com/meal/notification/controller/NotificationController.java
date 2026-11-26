@@ -1,6 +1,6 @@
 package com.meal.notification.controller;
 
-import com.meal.even.dto.NotificationEvent;
+import com.meal.contract.event.NotificationEvent;
 import com.meal.notification.dto.request.Recipient;
 import com.meal.notification.dto.request.SendEmailRequest;
 import com.meal.notification.service.EmailService;

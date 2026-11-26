@@ -1,8 +1,8 @@
 package com.meal.order.dto.response;
 
-import com.meal.order.constants.OrderStatus;
-import com.meal.order.constants.PaymentMethod;
-import com.meal.order.constants.PaymentStatus;
+import com.meal.contract.constant.OrderStatus;
+import com.meal.contract.constant.PaymentMethod;
+import com.meal.contract.constant.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;

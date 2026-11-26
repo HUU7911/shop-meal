@@ -1,13 +1,13 @@
 package com.meal.order.service;
 
-import com.meal.event.dto.OrderCreatedEvent;
-import com.meal.event.dto.OrderStatusChangedEvent;
-import com.meal.order.constants.OrderStatus;
-import com.meal.order.constants.PaymentMethod;
-import com.meal.order.constants.PaymentStatus;
-import com.meal.order.dto.ApiResponse;
-import com.meal.order.dto.PageResponse;
-import com.meal.order.dto.client.*;
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.common.PageResponse;
+import com.meal.contract.constant.OrderStatus;
+import com.meal.contract.constant.PaymentMethod;
+import com.meal.contract.constant.PaymentStatus;
+import com.meal.contract.dto.*;
+import com.meal.contract.event.OrderCreatedEvent;
+import com.meal.contract.event.OrderStatusChangedEvent;
 import com.meal.order.dto.request.BuyNowRequest;
 import com.meal.order.dto.request.CreateOrderRequest;
 import com.meal.order.dto.response.OrderItemResponse;

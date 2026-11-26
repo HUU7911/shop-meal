@@ -2,7 +2,6 @@ package com.meal.search.document;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
 @Document(indexName = "categories")

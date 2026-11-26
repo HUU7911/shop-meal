@@ -1,6 +1,6 @@
 package com.meal.cart.exception;
 
-import com.meal.cart.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PessimisticLockingFailureException;

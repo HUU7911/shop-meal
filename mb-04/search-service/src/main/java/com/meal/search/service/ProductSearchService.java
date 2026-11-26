@@ -1,9 +1,9 @@
 package com.meal.search.service;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
-import com.meal.search.constants.Type;
+import com.meal.contract.common.PageResponse;
+import com.meal.contract.constant.Type;
 import com.meal.search.document.ProductDocument;
-import com.meal.search.dto.PageResponse;
 import com.meal.search.exception.AppException;
 import com.meal.search.exception.ErrorCode;
 import lombok.AccessLevel;

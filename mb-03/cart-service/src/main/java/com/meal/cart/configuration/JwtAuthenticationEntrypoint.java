@@ -1,7 +1,7 @@
 package com.meal.cart.configuration;
 
-import com.meal.cart.dto.ApiResponse;
 import com.meal.cart.exception.ErrorCode;
+import com.meal.contract.common.ApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

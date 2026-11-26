@@ -1,6 +1,6 @@
 package com.meal.even.dto;
 
-import com.meal.product.constant.Type;
+import com.meal.contract.constant.Type;
 import com.meal.product.entity.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -1,8 +1,8 @@
 package com.meal.cart.repository.httpclient;
 
 import com.meal.cart.configuration.AuthenticationRequestInterceptor;
-import com.meal.cart.dto.ApiResponse;
 import com.meal.cart.dto.response.FoodSnapshotResponse;
+import com.meal.contract.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
 package com.meal.product.controller;
 
-import com.meal.product.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.product.dto.request.CategoryRequest;
 import com.meal.product.dto.request.CategoryUpdateRequest;
 import com.meal.product.dto.response.CategoryResponse;
@@ -8,7 +8,6 @@ import com.meal.product.service.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.kafka.shaded.com.google.protobuf.Api;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

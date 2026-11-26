@@ -1,7 +1,7 @@
 package com.meal.identity.repository.httpclient;
 
+import com.meal.contract.common.ApiResponse;
 import com.meal.identity.configuration.AuthenticationRequestInterceptor;
-import com.meal.identity.dto.ApiResponse;
 import com.meal.identity.dto.request.ProfileCreationRequest;
 import com.meal.identity.dto.response.ProfileResponse;
 import org.springframework.cloud.openfeign.FeignClient;

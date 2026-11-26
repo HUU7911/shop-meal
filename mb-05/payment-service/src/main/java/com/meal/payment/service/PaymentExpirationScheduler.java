@@ -1,6 +1,6 @@
 package com.meal.payment.service;
 
-import com.meal.payment.constant.PaymentStatus;
+import com.meal.contract.constant.PaymentStatus;
 import com.meal.payment.entity.Payment;
 import com.meal.payment.repository.PaymentRepository;
 import lombok.AccessLevel;

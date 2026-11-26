@@ -1,6 +1,6 @@
 package com.meal.identity.configuration;
 
-import com.meal.identity.constant.RoleDefine;
+import com.meal.contract.constant.RoleDefine;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

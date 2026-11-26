@@ -1,6 +1,6 @@
 package com.meal.payment.configuration;
 
-import com.meal.payment.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.payment.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

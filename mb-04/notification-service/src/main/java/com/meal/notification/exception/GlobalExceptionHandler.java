@@ -1,6 +1,6 @@
 package com.meal.notification.exception;
 
-import com.meal.notification.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

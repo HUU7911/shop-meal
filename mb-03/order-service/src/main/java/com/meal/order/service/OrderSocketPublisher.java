@@ -1,8 +1,8 @@
 package com.meal.order.service;
 
 import com.corundumstudio.socketio.SocketIOServer;
-import com.meal.event.dto.OrderCreatedEvent;
-import com.meal.event.dto.OrderStatusChangedEvent;
+import com.meal.contract.event.OrderCreatedEvent;
+import com.meal.contract.event.OrderStatusChangedEvent;
 import com.meal.order.controller.SocketHandler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

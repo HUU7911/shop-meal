@@ -1,8 +1,8 @@
 package com.meal.order.repository.httpclient;
 
+import com.meal.contract.common.ApiResponse;
+import com.meal.contract.dto.CartResponse;
 import com.meal.order.configuration.AuthenticationRequestInterceptor;
-import com.meal.order.dto.ApiResponse;
-import com.meal.order.dto.client.CartResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
