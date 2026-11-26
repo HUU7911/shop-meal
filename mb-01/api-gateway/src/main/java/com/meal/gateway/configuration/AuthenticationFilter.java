@@ -1,6 +1,6 @@
 package com.meal.gateway.configuration;
 
-import com.meal.gateway.dto.ApiResponse;
+import com.meal.contract.common.ApiResponse;
 import com.meal.gateway.service.IdentityService;
 import lombok.AccessLevel;
 import lombok.NonNull;

@@ -21,6 +21,11 @@
 		<spring-cloud.version>2025.1.4</spring-cloud.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.meal</groupId>
+			<artifactId>contract-service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!-- Spring Cloud Gateway WebFlux -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
