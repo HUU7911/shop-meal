@@ -30,7 +30,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http){
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_MATCHERS).permitAll()
                         .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
