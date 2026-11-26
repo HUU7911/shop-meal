@@ -39,6 +39,7 @@
         <module>mb-01/discovery-service</module>
         <module>mb-01/identity-service</module>
         <module>mb-01/profile-service</module>
+        <module>mb-01/contract-service</module>
 
         <module>mb-02/product-service</module>
         <module>mb-02/file-service</module>
